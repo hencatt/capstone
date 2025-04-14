@@ -1,0 +1,76 @@
+body{
+    font-family: "Poppins", sans-serif;
+}
+.sidebar{
+    color: #F5F5F5;
+    background-color: #00ADF1;
+}
+
+.sidebarOptions{
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+}
+
+.topLeft{
+    margin-left: 1rem;
+}
+
+.sidebarOptions li{
+    list-style-type: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.3rem;
+}
+
+.sidebarOptions .categoryItem{
+    padding-left: 2rem;
+    color: #F5F5F5;
+    text-decoration: none;
+}
+
+.category{
+    font-size: 0.8rem;
+}
+
+#active{
+    font-weight: bold;
+}
+
+.logo{
+    width: 40px;
+    aspect-ratio: 1/1;
+}
+
+.neustLogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainContent{
+    padding-left: 3rem;
+}
+
+span{
+    vertical-align: middle;
+}
+
+.sidebar span{
+    font-size: .9rem;
+}
+
+.mainContent span a{
+    text-decoration: none;
+    color: red;
+}
+
+.itemText{
+    color: #00ADF1;
+}
+
+tbody td{
+    vertical-align: middle;
+}
+
+.logout{
+    margin-left: 1rem;
+}
