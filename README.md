@@ -8,5 +8,7 @@ capstone v2(12-04-2025) : created logout sessions
 capstone v2(12-05-2025 : add account function
 
 captone v3  : - created focal person dashboard;
+              - IMPORTANT!! updated gad_portal.sql (import first!);
               - added inventory table;
               - added add item function;
+              
