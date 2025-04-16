@@ -11,4 +11,7 @@ captone v3  : - created focal person dashboard;
               - IMPORTANT!! updated gad_portal.sql (import first!);
               - added inventory table;
               - added add item function;
-              
+
+capstone v3.5 : - created Technical Assistant dashboard (copy paste focal person);
+                - removed the focal person's ability to add items
+                - CRUD Function working (inventory)
