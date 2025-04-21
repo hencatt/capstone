@@ -15,3 +15,5 @@ captone v3  : - created focal person dashboard;
 capstone v3.5 : - created Technical Assistant dashboard (copy paste focal person);
                 - removed the focal person's ability to add items
                 - CRUD Function working (inventory)
+
+capstone v3.5.2 - created captcha and anti bruteforce
