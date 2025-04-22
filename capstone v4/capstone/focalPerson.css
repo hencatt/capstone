@@ -1,0 +1,143 @@
+body{
+    font-family: "Poppins", sans-serif;
+}
+.sidebar{
+    color: #F5F5F5;
+    background-color: #00ADF1;
+    height: 100vh;
+}
+
+.sidebarOptions{
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+}
+
+.topLeft{
+    margin-left: 1rem;
+}
+
+.sidebarOptions li{
+    list-style-type: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.3rem;
+}
+
+.sidebarOptions .categoryItem{
+    padding-left: 2rem;
+    color: #F5F5F5;
+    text-decoration: none;
+}
+
+.category{
+    font-size: 0.8rem;
+}
+
+#active{
+    font-weight: bold;
+}
+
+.logo{
+    width: 40px;
+    aspect-ratio: 1/1;
+}
+
+.neustLogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainContent{
+    padding-left: 3rem;
+}
+
+span{
+    vertical-align: middle;
+}
+
+.sidebar span{
+    font-size: .9rem;
+}
+
+.mainContent span a{
+    text-decoration: none;
+    color: red;
+}
+
+.itemText{
+    color: #00ADF1;
+}
+
+tbody td{
+    vertical-align: middle;
+}
+
+.logout{
+    margin-left: 1rem;
+}
+
+span:hover{
+    cursor: pointer;
+}
+
+.currentUserName{
+    margin-left: 1rem;
+}
+
+.tblCenter{
+    text-align: center;
+}
+
+.emp_table{
+    width: 100%;
+    margin-top: 4rem;;
+}
+
+.add_emp_btn{
+    display: flex;
+    justify-content: flex-end; 
+    margin: 2rem;
+}
+
+.add_emp_btn button{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #28a745; 
+    color: #fff; 
+    border: none;
+    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    gap: 0.5rem; 
+}
+
+.add_emp_btn button:hover {
+    background-color: #218838; 
+}
+
+.table {
+    border-collapse: collapse; /* Removes extra space between table borders */
+    width: 100%; /* Ensures the table spans the container */
+}
+
+.table th, .table td {
+    padding: 5px; /* Reduces padding inside table cells */
+    text-align: left; /* Aligns text to the left */
+}
+
+.table th {
+    background-color: #f4f4f4; /* Optional: Light background for headers */
+    font-weight: bold;
+    width: fit-content;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Optional: Adds a striped effect */
+}
+
+.table-striped tbody tr:nth-child(even) {
+    background-color: #ffffff; /* Optional: Adds a striped effect */
+}

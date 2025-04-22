@@ -1,0 +1,412 @@
+<?php
+    include '../variables.php';
+    include '../gad_portal.php';
+
+    session_start();
+
+    $currentId = $_SESSION['user_id'];
+    $con = new mysqli("localhost", "root", "", "gad_portal");
+    $sql = "SELECT fname, lname FROM accounts_tbl WHERE id = '$currentId'";
+    $result = $con->query($sql);
+    if($result->num_rows > 0){
+        while($row = $result->fetch_assoc()){
+        $currentUser = htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']);
+        }
+    }else{
+        echo "<script>console.log('No UserID Found')</script>";
+    }
+
+
+    // Prevent browser caching
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Pragma: no-cache");
+    header("Expires: 0");
+
+    if (isset($_POST['addItem'])) {
+        $itemName = htmlspecialchars($_POST['name']);
+        $itemQuant = htmlspecialchars($_POST['quantity']);
+        $itemDesc = htmlspecialchars($_POST['desc']);
+        $itemStatus = htmlspecialchars($_POST['status']);
+    
+        $itemCheck = "SELECT itemName FROM inventory_tbl WHERE itemName = '$itemName'";
+        $scanResult = $con->query($itemCheck);
+    
+        if (isset($_FILES['fileToUpload']) && $_FILES['fileToUpload']['error'] === UPLOAD_ERR_OK) {
+            $mime = mime_content_type($_FILES['fileToUpload']['tmp_name']);
+            $imageData = file_get_contents($_FILES['fileToUpload']['tmp_name']);
+            $itemImg = "data:$mime;base64," . base64_encode($imageData); // ✅ THIS LINE FIXED
+    
+            if ($scanResult->num_rows > 0) {
+                echo "<script>alert('Item Already Exist!')</script>";
+            } else {
+                $sql = "INSERT INTO inventory_tbl (itemName, itemDesc, itemImage, itemStatus, itemQuantity) 
+                        VALUES ('$itemName','$itemDesc','$itemImg','$itemStatus','$itemQuant')";
+    
+                if ($con->query($sql)) {
+                    echo "<script>alert('Item Added!')</script>";
+                } else {
+                    echo "Error: " . $con->error;
+                }
+            }
+        } else {
+            echo "<script>alert('Error Uploading File')</script>";
+        }
+    
+        $con->close();
+    }
+
+
+        // EDIT FUNCTION
+        if (isset($_POST['updateItem'])) {
+            $id = htmlspecialchars($_POST['itemID']);
+            $newName = htmlspecialchars($_POST['updateName']);
+            $newQty = htmlspecialchars($_POST['updateQuantity']);
+            $newDesc = htmlspecialchars($_POST['updateDesc']);
+            $newStatus = htmlspecialchars($_POST['updateStatus']);
+
+            if (isset($_FILES['UpdateFileToUpload']) && $_FILES['UpdateFileToUpload']['error'] === UPLOAD_ERR_OK) {
+                $mime = mime_content_type($_FILES['UpdateFileToUpload']['tmp_name']);
+                $imageData = file_get_contents($_FILES['UpdateFileToUpload']['tmp_name']);
+                $itemImg = "data:$mime;base64," . base64_encode($imageData);
+
+                $sql = "UPDATE inventory_tbl 
+                        SET itemName = ?, itemQuantity = ?, itemDesc = ?, itemStatus = ?, itemImage = ?
+                        WHERE id = ?";
+
+                $stmt = $con->prepare($sql);
+                $stmt->bind_param("sisssi", $newName, $newQty, $newDesc, $newStatus, $itemImg, $id);
+            } else {
+                $sql = "UPDATE inventory_tbl 
+                        SET itemName = ?, itemQuantity = ?, itemDesc = ?, itemStatus = ?
+                        WHERE id = ?";
+
+                $stmt = $con->prepare($sql);
+                $stmt->bind_param("sissi", $newName, $newQty, $newDesc, $newStatus, $id);
+            }
+
+            if ($stmt->execute()) {
+                echo "<script>alert('Item updated successfully!');</script>";
+            } else {
+                echo "<script>alert('Failed to update item.');</script>";
+            }
+
+            $stmt->close();
+            $con->close();
+        }
+
+        // DELETE FUNCTION
+        if(isset($_POST['deleteItem'])){
+            $id = htmlspecialchars($_POST['itemID']);
+            
+            $sql = 'DELETE FROM inventory_tbl WHERE id = ?';
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("i", $id);
+
+            if($stmt->execute()){
+                echo "<script>alert('Delete Successful')</script>";
+            }else{
+                echo "<script>alert('Error deleting: Please try again')</script>";
+            }
+
+            $stmt->close();
+            $con->close();
+        }
+
+    
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/techAss.css" type="text/css">
+    <!-- font link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- icon link -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <title>Focal Person</title>
+</head>
+<body>
+        <!-- Left Sidebar -->
+        <div class="row">
+            <div class="col sidebar">
+                <div class="row mt-lg-3 topLeft">
+                    <div class="col neustLogo">
+                        <img src="../assets/neust_logo-1-1799093319.png" alt="NeustLogo" class="logo">
+                    </div>
+                    <div class="col-lg-8">
+                        <label>NEUST GAD Portal</label>
+                    </div>
+                </div>
+                <div class="sidebarOptions">
+                    <label class="category">Home</label>
+                        <li id="active"><a href="#" class="categoryItem">
+                            <span class="material-symbols-outlined">dashboard</span>    
+                            Dashboard</a></li>
+                    <label class="category">General</label>
+                        <li><a href="#" class="categoryItem">
+                            <span class="material-symbols-outlined">groups</span>     
+                            Employees</a></li>
+                        <li><a href="#" class="categoryItem">
+                            <span class="material-symbols-outlined">inventory_2</span>  
+                            Inventory</a></li>
+                        <li><a href="#" class="categoryItem">
+                        <span class="material-symbols-outlined">event</span>  
+                        Events</a></li>
+                    <label class="category">Settings</label>
+                        <li><a href="#" class="categoryItem">
+                        <span class="material-symbols-outlined">person</span>  
+                        Account</a></li>
+                        <li><a href="../logout.php?logout=true" class="categoryItem">
+                        <span class="material-symbols-outlined">logout</span>  
+                        Logout</a></li>
+                </div>
+            </div>
+            <!-- Main Contents -->
+
+            <div class="col-lg-10 col-sm-8 col-xs-6 mt-lg-3 mainContent">
+                <div class="row">
+                    <div class="mainTop col-lg-6 d-flex flex-row align-items-center">
+                        <div class="search-container">
+                            <input type="text" class="search-bar" placeholder="Search">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                    </div>
+                    <div class="col d-flex flex-row align-items-center">
+                        <div class="notif">       
+                            <span class="material-symbols-outlined">notifications</span>
+                        </div> 
+                        <div class="logout">
+                            <span class="material-symbols-outlined"><a href="../logout.php?logout=true">logout</a></span>
+                        </div>
+                    </div>
+                    <div class="col d-flex flex-row align-items-center">
+                    <span class="material-symbols-outlined">
+                    account_circle
+                    </span>
+                    <label class="currentUserName"><?php echo $currentUser ?></label>
+                    </div>
+                </div>
+                
+                <!-- main overview -->
+                <div class="row overview mt-lg-5 mb-lg-5">
+                    <div class="col-lg-6 firCol">
+                        <h6>Number of Items</h6><br>
+                        <h4 class="itemText">
+                            <?php
+                            $con = new mysqli("localhost", "root", "", "gad_portal");
+                                $sql = "SELECT id, itemName, itemDesc, itemImage, itemStatus FROM inventory_tbl";
+                                $result = $con->query($sql);
+                                echo $result->num_rows;
+                            ?>
+                        </h4>
+                    </div>
+                    <div class="col secCol">
+                        <h6>Total Item Claims</h6><br>
+                        <h4 class="itemText">
+                        <?php
+                                $sql = "SELECT id, itemName, itemDesc, itemImage, itemStatus FROM inventory_tbl WHERE itemStatus = 'confirmed'";
+                                $result = $con->query($sql);
+                                echo $result->num_rows;
+                            ?>
+                        </h4>    
+                    </div>
+                </div>
+                <div class="row preview">
+                    <div class="col-lg-9">
+                        <!-- inventory overview -->
+                        <h1>Inventory</h1>
+                    </div>
+                    <div class="col d-flex align-items-center">
+                            <button class="btn btn-success"
+                            data-bs-toggle="modal" data-bs-target="#addItem"
+                            >Add Item</button>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Item Name</th>
+                                        <th scope="col" class="tblCenter">ID</th>
+                                        <th scope="col" class="tblCenter">Quantity</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                        <?php
+                                        $con = new mysqli("localhost", "root", "", "gad_portal");
+                                            $sql = "SELECT id, itemName, itemDesc, itemImage, itemStatus, itemQuantity FROM inventory_tbl";
+                                            $result = $con->query($sql);
+
+                                            if ($result->num_rows > 0) {
+                                                while($row = $result->fetch_assoc()) {
+                                                    echo '<tr>';
+                                                    echo '<td scope="row">' . htmlspecialchars($row['itemName']) . '</td>';
+                                                    echo '<td scope="row" class="tblCenter">' . htmlspecialchars($row['id']) . '</td>';
+                                                    echo '<td scope="row" class="tblCenter">' . htmlspecialchars($row['itemQuantity']) . '</td>';
+                                                    echo '<td scope="row">' . htmlspecialchars($row['itemDesc']) . '</td>';
+                                                    echo '<td scope="row"><img src="' . $row['itemImage'] . '" width="50" alt="Item image"></td>';
+                                                    echo '<td scope="row">' . htmlspecialchars($row['itemStatus']) . '</td>';
+                                                    echo '<td scope="row">' . 
+
+                                                    '<button data-bs-toggle="modal" data-bs-target="#editItem'.htmlspecialchars($row['id']).'">
+                                                    <span class="material-symbols-outlined">edit</span>
+                                                    </button>'
+                                                    .  
+
+                                                    '<button data-bs-toggle="modal" data-bs-target="#deleteItem'.htmlspecialchars($row['id']).'">
+                                                    <span class="material-symbols-outlined">delete</span>
+                                                    </button>
+                                                    ' . 
+
+                                                    '</td>';
+                                                    echo '</tr>';
+
+
+                                                        // EDIT MODAL
+                                                        echo '
+                                                        <div class="modal fade" id="editItem'.htmlspecialchars($row['id']).'" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5">Edit Item</h1>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form action="" method="POST" enctype="multipart/form-data">
+                                                                            <input type="hidden" name="itemID" value="'.htmlspecialchars($row['id']).'">
+                                                                            <label>Item Name:</label><br>    
+                                                                            <input value="'.htmlspecialchars($row['itemName']).'" disabled="true" class="form-control">
+                                                                            <label>Change to:</label>
+                                                                            <input type="text" name="updateName" id="updateItemName" placeholder="Enter Updated Name" class="form-control" value="'.htmlspecialchars($row['itemName']).'">
+                                                                            <br>
+
+                                                                            <label>Item Quantity:</label><br>    
+                                                                            <input value="'.htmlspecialchars($row['itemQuantity']).'" disabled="true" class="form-control">
+                                                                            <label>Change to:</label>
+                                                                            <input type="number" name="updateQuantity" id="updateItemQuantity" placeholder="Updated Quantity" class="form-control" value="'.htmlspecialchars($row['itemQuantity']).'">
+                                                                            <br>
+
+                                                                            <label>Description:</label><br> 
+                                                                            <textarea class="form-control" disabled="true">'.htmlspecialchars($row['itemDesc']).'</textarea>
+                                                                            <label>Change to:</label>
+                                                                            <textarea class="form-control" name="updateDesc" id="updateItemDesc" placeholder"Enter updated text here...">'.htmlspecialchars($row['itemDesc']).'</textarea>
+                                                                            <br>
+
+                                                                            <label>Status:</label><br> 
+                                                                            <input type="text" value="'.htmlspecialchars('itemStatus').'" disabled="true" class="form-control">
+                                                                            <label>Change To</label>
+                                                                            <select name="updateStatus" id="updateItemStatus" class="form-select">
+                                                                                <option value="pending">pending</option>
+                                                                                <option value="confirmed">confirmed</option>
+                                                                            </select>
+                                                                            <br>
+
+                                                                            <label>Image:</label><br> 
+                                                                            <img src="'.htmlspecialchars($row['itemImage']).'" alt="Item Image" width="50"><br>
+                                                                            <label>Change Image</label>
+                                                                            <input type="file" name="UpdateFileToUpload" class="form-control">
+                                                                            <input type="hidden" name="itemID" value="'.htmlspecialchars($row['id']).'">
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-primary" name="updateItem">Save Changes</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>';
+
+                                                    echo '
+                                                        <div class="modal fade" id="deleteItem'.htmlspecialchars($row['id']).'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5">Delete '.htmlspecialchars($row['itemName']).'</h1>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                <form method="POST">
+                                                                    <input type="hidden" name="itemID" value="'.htmlspecialchars($row['id']).'">
+                                                                    Are you sure you want to delete '.htmlspecialchars($row['itemName']).'?
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-primary" name="deleteItem">Yes</button>
+                                                                </form>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ';
+                                                }
+                                            } else {
+                                                echo "0 results";
+                                            }                                    
+                                            $con->close();
+                                        ?>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- addItemModal -->
+        <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Item</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            <label for="itemName">Item Name:</label><br>    
+                            <input type="text" name="name" id="itemName" placeholder="(e.g. T-shirt)" class="form-control">
+                            <br><br>
+                            <label for="itemName">Item Quantity:</label><br>    
+                            <input type="number" name="quantity" id="itemQuantity" placeholder="(e.g. 100)" class="form-control">
+                            <br><br>
+                            <label for="itemDesc">Description:</label><br> 
+                            <textarea name="desc" id="itemDesc" placeholder="Enter item description here..." class="form-control"></textarea>
+                            <br><br>
+                            <label for="itemStatus">Status:</label><br> 
+                            <select name="status" id="itemStatus" class="form-control">
+                                <option value="pending">pending</option>
+                                <option value="confirmed">confirmed</option>
+                            </select>
+                            <br><br>
+                            Image:<br> 
+                            <input type="file" name="fileToUpload" id="fileToUpload" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" name="addItem">Add Item</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- editItemModal -->
+        
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</html>
