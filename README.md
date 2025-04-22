@@ -17,3 +17,8 @@ capstone v3.5 : - created Technical Assistant dashboard (copy paste focal person
                 - CRUD Function working (inventory)
 
 capstone v3.5.2 - created captcha and anti bruteforce
+
+capstone v4.2 - added logs
+              - some minor fixes
+              - updated gad_portal inventory
+              - IMPORTANT!! updated gad_portal.sql (import first!);
