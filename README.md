@@ -4,6 +4,8 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4
 
 <h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download ⬇</h3>
 
+
+
 capstone v1.0 : login + signup page
 
 capstone v1.1 : database created
@@ -29,7 +31,7 @@ capstone v4   - added employee tbl to database and adding employees to the syste
 capstone v4.2<br>- added logs<br>
               - some minor fixes<br>
               - updated gad_portal inventory<br>
-              - <b>IMPORTANT!! updated gad_portal.sql (import first!);</b><br>
+              - <b>‼ updated gad_portal.sql (import first!);</b><br>
               - created search function
 
 capstone v4.9<br>- filtering fixed<br>
