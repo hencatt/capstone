@@ -1,3 +1,5 @@
+LATEST VER: capstone v4.9
+
 capstone v1.0 : login + signup page
 
 capstone v1.1 : database created
@@ -24,3 +26,8 @@ capstone v4.2 - added logs
               - some minor fixes
               - updated gad_portal inventory
               - IMPORTANT!! updated gad_portal.sql (import first!);
+              - created search function
+
+capstone v4.9 - filtering fixed
+              - RECOMMEND!! minor changes database (import first);
+              - minor changes design (specifically filter rows of both TA and Focal)
