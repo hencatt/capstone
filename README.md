@@ -16,7 +16,7 @@ capstone v2(12-04-2025) : created logout sessions
 capstone v2(12-05-2025 : add account function
 
 captone v3  : - created focal person dashboard;
-              - IMPORTANT!! updated gad_portal.sql (import first!);
+              - ❗❗❗ updated gad_portal.sql (import first!);
               - added inventory table;
               - added add item function;
 
@@ -31,7 +31,7 @@ capstone v4   - added employee tbl to database and adding employees to the syste
 capstone v4.2<br>- added logs<br>
               - some minor fixes<br>
               - updated gad_portal inventory<br>
-              - <b>‼ updated gad_portal.sql (import first!);</b><br>
+              - <b>❗❗❗ updated gad_portal.sql (import first!);</b><br>
               - created search function
 
 capstone v4.9<br>- filtering fixed<br>
