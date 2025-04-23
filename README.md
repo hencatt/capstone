@@ -2,7 +2,7 @@
 LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v4.9
 </h1>
 
-capstone v1.0 : login + signup page
+capstone v1.0 : login + signup page<
 
 capstone v1.1 : database created
 
@@ -30,6 +30,6 @@ capstone v4.2 - added logs
               - <b>IMPORTANT!! updated gad_portal.sql (import first!);</b>
               - created search function
 
-capstone v4.9 - filtering fixed
+capstone v4.9 - filtering fixed<br>
               - <b>RECOMMEND!! minor changes database (import first);</b>
               - minor changes design (specifically filter rows of both TA and Focal)
