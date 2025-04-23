@@ -18,6 +18,8 @@ capstone v3.5 : - created Technical Assistant dashboard (copy paste focal person
 
 capstone v3.5.2 - created captcha and anti bruteforce
 
+capstone v4   - added employee tbl to database and adding employees to the system
+
 capstone v4.2 - added logs
               - some minor fixes
               - updated gad_portal inventory
