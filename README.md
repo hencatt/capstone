@@ -6,6 +6,21 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4
 
 <a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip"><img src="https://a.espncdn.com/i/headshots/nba/players/full/1966.png">
 
+
+<table>
+  <tbody>
+    <td>L</td>
+    <td>E</td>
+    <td>B</td>
+    <td>R</td>
+    <td>O</td>
+    <td>N</td>
+    <td></td>
+    <td>J</td>
+    
+  </tbody>
+</table>
+
 capstone v1.0 : login + signup page
 
 capstone v1.1 : database created
@@ -34,6 +49,9 @@ capstone v4.2<br>- added logs<br>
               - <b>❗❗❗ updated gad_portal.sql (import first!);</b><br>
               - created search function
 
-capstone v4.9<br>- filtering fixed<br>
-              - <b>❗ minor changes database (import first);</b><br>
-              - minor changes design (specifically filter rows of both TA and Focal)
+<h5>capstone v4.9</h5>
+<ol>
+  <li>filtering fixed</li>
+  <li>❗ minor changes database (import first)</li>
+  <li>minor changes design (specifically filter rows of both TA and Focal)</li>
+</ol>
