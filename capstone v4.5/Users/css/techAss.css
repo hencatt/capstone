@@ -1,0 +1,134 @@
+body{
+    font-family: "Poppins", sans-serif;
+}
+.sidebar{
+    color: #F5F5F5;
+    background-color: #00ADF1;
+    height: 100vh;
+}
+
+.sidebarOptions{
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+}
+
+.topLeft{
+    margin-left: 1rem;
+}
+
+.sidebarOptions li{
+    list-style-type: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.3rem;
+}
+
+.sidebarOptions .categoryItem{
+    padding-left: 2rem;
+    color: #F5F5F5;
+    text-decoration: none;
+}
+
+.category{
+    font-size: 0.8rem;
+}
+
+#active{
+    font-weight: bold;
+}
+
+.logo{
+    width: 40px;
+    aspect-ratio: 1/1;
+}
+
+.neustLogo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainContent{
+    padding-left: 3rem;
+}
+
+span{
+    vertical-align: middle;
+}
+
+.sidebar span{
+    font-size: .9rem;
+}
+
+.mainContent span a{
+    text-decoration: none;
+    color: red;
+}
+
+.itemText{
+    color: #00ADF1;
+}
+
+tbody td{
+    vertical-align: middle;
+}
+
+.logout{
+    margin-left: 1rem;
+}
+
+span:hover{
+    cursor: pointer;
+}
+
+.currentUserName{
+    margin-left: 1rem;
+}
+
+.tblCenter{
+    text-align: center;
+}
+
+/* dropdown hover */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* The button or text that triggers the dropdown */
+.dropdown-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Dropdown links */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change link color on hover */
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show the dropdown content when hovering over the dropdown container */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+/* dropdown hover */
