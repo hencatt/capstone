@@ -2,9 +2,11 @@
 LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v4.9
 </h1>
 
-capstone v1.0 : login + signup page
+<h6>capstone v1.0<h6>
+: - login + signup page
 
-capstone v1.1 : database created
+<h6>capstone v1.1<h6>
+: - database created
 
 
 capstone v2   :created an admin dashboard, added accounts_tbl to database
