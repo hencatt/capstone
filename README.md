@@ -33,5 +33,5 @@ capstone v4.2<br>- added logs<br>
               - created search function
 
 capstone v4.9<br>- filtering fixed<br>
-              - <b>RECOMMEND!! minor changes database (import first);</b><br>
+              - <b>❗ minor changes database (import first);</b><br>
               - minor changes design (specifically filter rows of both TA and Focal)
