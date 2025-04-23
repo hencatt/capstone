@@ -4,7 +4,7 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4
 
 <h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download ⬇</h3>
 
-
+<a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip"><img src="https://a.espncdn.com/i/headshots/nba/players/full/1966.png">
 
 capstone v1.0 : login + signup page
 
