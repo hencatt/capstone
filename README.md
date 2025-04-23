@@ -24,12 +24,12 @@ capstone v3.5.2 - created captcha and anti bruteforce
 
 capstone v4   - added employee tbl to database and adding employees to the system
 
-capstone v4.2 - added logs
-              - some minor fixes
-              - updated gad_portal inventory
-              - <b>IMPORTANT!! updated gad_portal.sql (import first!);</b>
+capstone v4.2 - added logs<br>
+              - some minor fixes<br>
+              - updated gad_portal inventory<br>
+              - <b>IMPORTANT!! updated gad_portal.sql (import first!);</b><br>
               - created search function
 
 capstone v4.9 - filtering fixed<br>
-              - <b>RECOMMEND!! minor changes database (import first);</b>
+              - <b>RECOMMEND!! minor changes database (import first);</b><br>
               - minor changes design (specifically filter rows of both TA and Focal)
