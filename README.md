@@ -2,25 +2,13 @@
 LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v4.9  🌟🧢💎
 </h1>
 
-<h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download ⬇</h3>
+<h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download Latest Ver ⬇</h3> or <a href="https://cdn-cf-east.streamable.com/video/mp4/mxzvy5.mp4?Expires=1745706854646&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=ENNETP45Sq9EzSqjdvR5n5svPa7IyckA480emQaH7suCCxvV1JUSdV2ZjoZdt6vE7ct~kIafAV~ajYnY-u5L3BvTvzNriR-WOfpC1p~z6A8~L7yT4z5D~EtunVDZtGe-Q-wsjzkRYCmWJAaW8O3f9vCQpLnsTV2wwsYV7NWEZ1ZcxW4lcBhM2YShSPw2odPkRDbANbCLmiyjUl~HFU3yrlqRGdIhURhLp8e6wijAmoetzCCBhRVwu67E3qXDJ3640TGP04-El-o1dfhI~lFSNZQiKpBJsEzZtq5lJE1HioTksMFlGcm0jj0cpPQAlwbUJweavg5rq7dVBx-iT2uvcQ__">Download a video</a>
 
 <table><tbody><td>👑</td><td>👑</td><td>B</td><td>👑</td><td>R</td><td>👑</td><td>O</td><td>👑</td><td>N</td><td>👑</td><td>Y</td><td>👑</td><td>👑</td></tbody></table>
 
 <a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip"><img src="https://a.espncdn.com/i/headshots/nba/players/full/1966.png" style="width:100%;">
 
-
-<table>
-  <tbody>
-    <td>L</td>
-    <td>E</td>
-    <td>B</td>
-    <td>R</td>
-    <td>O</td>
-    <td>N</td>
-    <td>👑</td>
-    <td>J</td>
-  </tbody>
-</table>
+<table><tbody><td>L</td><td>E</td><td>B</td><td>R</td><td>O</td><td>N</td><td>👑</td><td>J</td></tbody></table>
 
 <h5>capstone v4.9</h5>
 <ol>
