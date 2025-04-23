@@ -27,9 +27,9 @@ capstone v4   - added employee tbl to database and adding employees to the syste
 capstone v4.2 - added logs
               - some minor fixes
               - updated gad_portal inventory
-              - IMPORTANT!! updated gad_portal.sql (import first!);
+              - <b>IMPORTANT!! updated gad_portal.sql (import first!);</b>
               - created search function
 
 capstone v4.9 - filtering fixed
-              - <b>RECOMMEND!! minor changes database (import first);
+              - <b>RECOMMEND!! minor changes database (import first);</b>
               - minor changes design (specifically filter rows of both TA and Focal)
