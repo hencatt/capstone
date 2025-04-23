@@ -2,7 +2,7 @@
 LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v4.9
 </h1>
 
-<h4><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download ⬇</h4>
+<h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download ⬇</h3>
 
 capstone v1.0 : login + signup page
 
