@@ -1,4 +1,4 @@
-LATEST VER: capstone v4.9
+LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v4.9</a
 
 capstone v1.0 : login + signup page
 
