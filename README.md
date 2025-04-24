@@ -14,6 +14,12 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4
 
 capstone v5 - added tables for gender and sizes
 
+<h5>capstone v5.5</h5>
+<ol>
+  <li>Added Modiying Account Page, together with its functions</li>
+  <li>Fixed Table and Columns in TA.PHP</li>
+</ol>
+
 <h5>capstone v4.9</h5>
 <ol>
   <li>filtering fixed</li>
