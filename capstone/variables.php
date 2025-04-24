@@ -3,7 +3,7 @@
     $neustLogo = "assets/neust_logo-1-1799093319.png";
 
     // lagay design/picture dito
-    $sidePicture = ""; 
+    $sidePicture = "assets/GAD.jpg"; 
 
     $backButton = '
     <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 72 72" id="emoji"><script xmlns=""/><script xmlns=""/><script xmlns="" id="GUARDIO_SENSOR_CONF">{"click":true}</script>

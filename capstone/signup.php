@@ -1,3 +1,34 @@
+<?php
+include 'gad_portal.php';
+include 'variables.php';
+
+    if (isset($_POST['reg'])) {
+        $firstname = trim($_POST['fname']);
+        $lastname = trim($_POST['lname']);
+        $email = trim($_POST['email']);
+        $password = trim($_POST['pass']);
+        $confirm_password = trim($_POST['cfpass']);
+
+        if (empty($firstname) || empty($lastname) || empty($email) || empty($password) || empty($confirm_password)) {
+            echo "<script>alert('Please fill in all fields.')</script>";
+        } elseif ($password !== $confirm_password) {
+            echo "<script>alert('Passwords do not match.')</script>";
+        } else {
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+            $sql = "INSERT INTO accounts_tbl (fname, lname, email, pass) VALUES ('$firstname', '$lastname', '$email', '$hashed')";
+            $query = mysqli_query($con, $sql);
+
+            if ($query) {
+                echo "<script>alert('Account Created!')</script>";
+            } else {
+                echo "<script>alert('Unable to register: " . mysqli_error($con) . "')</script>";
+            }
+        }
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,26 +62,32 @@
         
         <div class="mainContent">
             <div class="leftSide">
-                <form action="" class="row">
+                <form action="" method="POST" class="row">
                     <div class="col-md-6">
                         <label for="inputFname" class="form-label"><b>First Name</b></label>
-                        <input type="text" class="form-control" id="inputFname" placeholder="First Name">
+                        <input type="text" class="form-control" name="fname" id="inputFname" placeholder="First Name">
                     </div>
                     <div class="col-md-6">
                         <label for="inputLname" class="form-label"><b>Last Name</b></label>
-                        <input type="text" class="form-control" id="inputLname" placeholder="Last Name">
+                        <input type="text" class="form-control" name="lname" id="inputLname" placeholder="Last Name">
                     </div>
                     <div class="col-md-12">
                         <label for="inputEmail" class="form-label"><b>Email</b></label>
-                        <input type="email" class="form-control" id="inputEmail" placeholder="name@gmail.com">
+                        <input type="email" class="form-control" name="email" id="inputEmail" placeholder="name@gmail.com">
                     </div>
                     <div class="col-md-12">
                         <label for="inputPassword" class="form-label"><b>Password</b></label>
-                        <input type="password" class="form-control" id="inputPassword" placeholder="********">
+                        <input type="password" class="form-control" name="pass" id="inputPassword" placeholder="********">
                     </div>
                     <div class="col-md-12">
                         <label for="inputConfirmPassword" class="form-label"><b>Confirm Password</b></label>
-                        <input type="password" class="form-control" id="inputConfirmPassword" placeholder="********">
+                        <input type="password" class="form-control" name="cfpass" id="inputConfirmPassword" placeholder="********">
+                    </div>
+                    <div class="row lowerPart">
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-primary" value="Create Account" name="reg">
+                            <p class="createAcc">Already have an account? <a href="index.php"><b>Log in</b></a></p>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -58,19 +95,12 @@
                 <!-- insert pic here -->
                 <div class="rightSide">
                     <div class="col-md-12 images">
-                            <h1>(images/video)</h1>
-                            <img src="" alt="">
-                    </div>
-                </div>
-        </div>
-                <div class="row lowerPart">
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-warning btn-md btn-block"><b>Create Account</b></button>
-                        <p class="createAcc">Already have an account? <a href="index.php"><b>Log in</b></a></p>
+                        <img src= <?php echo "$sidePicture" ?> alt="sidepic">
                     </div>
                 </div>
         </div>
     </div>
+    
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

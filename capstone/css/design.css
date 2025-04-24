@@ -43,6 +43,11 @@ html, body{
     width: 50vw;
 }
 
+.images img{
+    width: 95%;
+    height: auto;
+}
+
 .leftSide label{
     margin-top: 1em;
 }
@@ -52,9 +57,12 @@ html, body{
     margin-top: .5em;
 }
 
+.lowerPart{
+    margin-top: 2rem;
+}
+
 .createAcc{
     margin-top: 1rem;
-    text-align: center;
 }
 
 .btn-block{
