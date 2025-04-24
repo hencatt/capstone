@@ -1,8 +1,8 @@
 <h1>
 LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4.9">capstone v5.5  🌟🧢💎
 </h1>
-
-<h2>gad_portal Import Required? : <b>NO</b></h2>
+<!-- change nalng kung kelangan ba import db or no ❌❌ = no, ✅✅ = yes-->
+<h2>gad_portal Import Required? : <b>❌❌</b></h2>
 
 <h3><a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip">⬇ Download Latest Ver ⬇</h3> or <a href="https://cdn-cf-east.streamable.com/video/mp4/mxzvy5.mp4?Expires=1745706854646&Key-Pair-Id=APKAIEYUVEN4EVB2OKEQ&Signature=ENNETP45Sq9EzSqjdvR5n5svPa7IyckA480emQaH7suCCxvV1JUSdV2ZjoZdt6vE7ct~kIafAV~ajYnY-u5L3BvTvzNriR-WOfpC1p~z6A8~L7yT4z5D~EtunVDZtGe-Q-wsjzkRYCmWJAaW8O3f9vCQpLnsTV2wwsYV7NWEZ1ZcxW4lcBhM2YShSPw2odPkRDbANbCLmiyjUl~HFU3yrlqRGdIhURhLp8e6wijAmoetzCCBhRVwu67E3qXDJ3640TGP04-El-o1dfhI~lFSNZQiKpBJsEzZtq5lJE1HioTksMFlGcm0jj0cpPQAlwbUJweavg5rq7dVBx-iT2uvcQ__">Download a video</a>
 
