@@ -12,13 +12,13 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v4
 
 <table><tbody><td>L</td><td>E</td><td>B</td><td>R</td><td>O</td><td>N</td><td>👑</td><td>J</td></tbody></table>
 
-capstone v5 - added tables for gender and sizes
-
 <h5>capstone v5.5</h5>
 <ol>
   <li>Added Modiying Account Page, together with its functions</li>
   <li>Fixed Table and Columns in TA.PHP</li>
 </ol>
+
+capstone v5 - added tables for gender and sizes
 
 <h5>capstone v4.9</h5>
 <ol>
