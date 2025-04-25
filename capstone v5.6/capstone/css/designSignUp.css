@@ -1,0 +1,69 @@
+html, body{
+    font-family: 'Poppins';
+}
+
+.container{
+    margin-top: 1rem;
+}
+
+.headerNEUST{
+    display: flex;
+}
+
+.images{
+    display: flex;
+    justify-content: center;
+}
+
+.headerNEUST h5{
+    align-self: center;
+    padding-left: 1em;
+}
+
+.headerNEUST img{
+    height: 100px;
+    width: 100px;
+    aspect-ratio: 1/1;
+}
+
+.contents{
+    margin-top: 3em;
+}
+
+.mainContent{
+    display: flex;
+}
+
+.leftSide{
+    margin-top: 2rem;
+    width: 50vw;
+}
+
+.rightSide{
+    width: 50vw;
+}
+
+.images img{
+    width: 95%;
+    height: auto;
+}
+
+.leftSide label{
+    margin-top: 1em;
+}
+
+.forgotPW{
+    text-align: right;
+    margin-top: .5em;
+}
+
+.lowerPart{
+    margin-top: 2rem;
+}
+
+.createAcc{
+    margin-top: 1rem;
+}
+
+
+
