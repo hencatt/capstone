@@ -1,5 +1,5 @@
 <h1>
-LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v5.5">capstone v5.5  🌟🧢💎
+LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v5.5">capstone v5.6  🌟🧢💎
 </h1>
 <!-- change nalng kung kelangan ba import db or no ❌❌ = no, ✅✅ = yes-->
 <h2>gad_portal Import Required? : <b>❌❌</b></h2>
@@ -11,6 +11,11 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v5
 <a href="https://github.com/hencatt/capstone/archive/refs/heads/main.zip"><img src="https://a.espncdn.com/i/headshots/nba/players/full/1966.png" style="width:100%;">
 
 <table><tbody><td>L</td><td>E</td><td>B</td><td>R</td><td>O</td><td>N</td><td>👑</td><td>J</td></tbody></table>
+
+<h5>capstone v5.6</h5>
+<ol>
+  <li>separated focal based on their campus and dept</li>
+</ol>
 
 <h5>capstone v5.5</h5>
 <ol>
