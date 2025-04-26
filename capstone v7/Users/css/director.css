@@ -1,0 +1,497 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+} 
+
+.layout {
+    display: flex; 
+    height: 100%;
+}
+
+/* Left Sidebar */
+.left-side {
+    width: 20%; /* Sidebar takes 20% of the screen width */
+    background-color: #00ADF1; 
+    color: #fff; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    height: 100%; 
+    position: relative; 
+    overflow: hidden; 
+}
+.sidebar{
+    color: #F5F5F5;
+    background-color: #00ADF1;
+    height: 150vh;
+    position: sticky;
+    display: block;
+}
+
+.sidebarOptions{
+    margin-top: 1rem;
+    margin-left: 1.5rem;
+}
+
+
+.sidebarOptions li{
+    list-style-type: none;
+    padding-bottom: 0.5rem;
+    padding-top: 0.3rem;
+}
+
+.sidebarOptions .categoryItem{
+    padding-left: 2rem;
+    color: #F5F5F5;
+    text-decoration: none;
+}
+
+.category{
+    font-size: 0.8rem;
+}
+
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .menu  {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar .menu label {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+    color: #fff;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.sidebarOptions li:hover {
+    background-color: #183fa1;
+}
+
+.sidebarOptions li{
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+    font-style: normal;
+    
+}
+
+/* Right Content Area */
+.right-side {
+    width: 80%;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    height: 100vh; 
+    padding: 2rem;
+}
+
+/* Header Section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Bar */
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid #555
+    
+}
+
+.search-icon {
+    font-size: 1.5rem;
+    color: #555;
+    margin-right: 0.5rem;
+}
+
+.search-bar {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    background: transparent;
+}
+
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    color: #555;
+    cursor: pointer;
+}
+
+/* external css for icons doesn't work for some reason */
+.logout-container a {
+    text-decoration: none;
+    color: black;
+}
+
+.logout-container ion-icon {
+    color: black;
+    font-size: 1.5rem;
+    transition: 0.3s ease;
+    cursor: pointer;
+
+}
+.logout-container ion-icon:hover {
+    color: cyan; /* Change color on hover */
+}
+
+
+
+
+
+/* 
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+} */
+
+.content h1{
+    font-size: 2rem;
+    margin-top: 3rem;
+}
+
+.card-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    height: auto; 
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding-bottom: 1rem; 
+    scroll-behavior: smooth; 
+  
+}
+
+.card-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.card-container::-webkit-scrollbar-thumb {
+    background-color: #ccc; 
+    border-radius: 4px; 
+}
+
+.card-container::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa; 
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    width: 15vw;
+    min-width: 10vw; 
+    flex-shrink: 0; 
+    transition: transform 0.3s ease;
+    height: auto;
+}
+
+.dashboard-content{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.add-account-container {
+    display: flex;
+    justify-content: flex-end; 
+    margin-top: 2rem;
+}
+
+.add-account-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #28a745; 
+    color: #fff; 
+    border: none;
+    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    gap: 0.5rem; 
+}
+
+.add-account-btn:hover {
+    background-color: #218838; 
+}
+
+.add-icon {
+    font-size: 1.2rem; 
+    color: #fff; 
+}
+
+.users-table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 2rem; 
+    background-color: #fff;
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    height: auto; 
+    max-height: 300px; 
+    overflow-y: hidden; 
+}
+
+.user-table h1 {
+    font-size: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem; 
+}
+.users-table thead, .users-table td {
+    padding: 1rem;
+    text-align: left; 
+    /* border-bottom: 1px solid #ddd;  */
+    font-size: 1rem; 
+    color: #333; 
+}
+
+.users-table thead {
+    position: sticky; /* Keep the header fixed while scrolling */
+    top: 0;
+    background-color: #f8f9fa; 
+    z-index: 1;
+}
+
+.users-table tr:last-child td {
+    border-bottom: none; 
+}
+
+.users-table tr:hover td {
+    background-color: #f1f1f1; 
+}
+
+.view-all-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.view-all-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background-color: #0056b3;
+}
+
+.edit-icon {
+    cursor: pointer; /* Make the icon look clickable */
+    color: #007bff; /* Blue color for the icon */
+    font-size: 1.5rem; /* Adjust icon size */
+    transition: color 0.3s ease; /* Smooth hover effect */
+    z-index: 1;
+    position: relative;
+}
+
+.edit-icon:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
+
+.deactivate-icon {
+    cursor: pointer; /* Make the icon look clickable */
+    color: #dc3545; /* Red color for the icon */
+    font-size: 1.5rem; /* Adjust icon size */
+    transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+.deactivate-icon:hover {
+    color: #c82333; /* Darker red on hover */
+}
+
+
+
+/* Modal container */
+.modals {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content */
+.modal_add_account {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px; 
+    max-width: 90%;
+}
+
+
+.modal_add_account .modal_title h2 {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+.form_add_account {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form_add_account input,
+.form_add_account select {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form_add_account input:focus,.form_add_account select:focus {
+    border-color: #007bff; 
+}
+
+.form_add_account input::placeholder {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.buttons button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.buttons button[type="submit"] {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.buttons button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+.buttons .add_btn_close {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.buttons .add_btn_close:hover {
+    background-color: #c82333;
+}
+
+.modal_view_all {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%; 
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto; 
+}
+
+.modal_edit_account {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    max-width: 90%;
+}
+
+.modal_edit_account .modal_title h2 {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+.form_edit_account {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form_edit_account input,
+.form_edit_account select {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form_edit_account input:focus,
+.form_edit_account select:focus {
+    border-color: #007bff;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
