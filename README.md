@@ -1,5 +1,5 @@
 <h1>
-LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v5.5">capstone v7  🌟🧢💎
+LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v7">capstone v7  🌟🧢💎
 </h1>
 <!-- change nalng kung kelangan ba import db or no ❌❌ = no, ✅✅ = yes-->
 <h2>gad_portal Import Required? : <b>❌❌</b></h2>
