@@ -12,7 +12,7 @@ LATEST VER: <a href="https://github.com/hencatt/capstone/tree/main/capstone%20v7
 
 <table><tbody><td>L</td><td>E</td><td>B</td><td>R</td><td>O</td><td>N</td><td>👑</td><td>J</td></tbody></table>
 
-<h5>capstone v7</h5>
+<h5>capstone v8</h5>
 <ol>
   <li>yes</li>
 </ol>
