@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Fundamentals Quiz</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .options div {
+            margin: 10px 0;
+            padding: 12px;
+            background-color: #e8f4fc;
+            border: 1px solid #bde0fe;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .options div:hover {
+            background-color: #cfe2ff;
+        }
+        .options div.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            font-weight: bold;
+        }
+        .options div.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            font-weight: bold;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #restart {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        #restart:hover {
+            background-color: #1a252f;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Variables and Data Types Quiz</h1>
+        <p>Tap or click on the correct answer for each question.</p>
+
+        <div id="quiz"></div>
+        <div class="score" id="score">Score: 0/20</div>
+        <button id="restart" onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <script>
+        // Quiz data: Questions, Options, Correct Answer Index, Feedback
+        const quizData = [
+            {
+                question: "1. What is the primary purpose of using variables in programming?",
+                options: [
+                    "To make the code run faster",
+                    "To store and manipulate data that can change",
+                    "To connect to the internet",
+                    "To add colors to the program"
+                ],
+                answer: 1,
+                feedback: "Correct! Variables are containers for storing data values that can be used and changed throughout a program."
+            },
+            {
+                question: "2. In the code <code>N = 5</code>, what is <code>N</code>?",
+                options: [
+                    "A data type",
+                    "An operator",
+                    "A variable (identifier)",
+                    "A keyword"
+                ],
+                answer: 2,
+                feedback: "Correct! <code>N</code> is the name, or identifier, of the variable."
+            },
+            {
+                question: "3. Which of the following is an example of an Integer (int) data type?",
+                options: [
+                    `"Hello"`,
+                    `5.10`,
+                    `'A'`,
+                    `100`
+                ],
+                answer: 3,
+                feedback: "Correct! 100 is a whole number with no decimal point, making it an integer."
+            },
+            {
+                question: "4. The main difference between a <code>float</code> and a <code>double</code> is:",
+                options: [
+                    "<code>float</code> is for whole numbers, <code>double</code> is for decimals",
+                    "<code>float</code> has less precision (fewer digits) than <code>double</code>",
+                    "<code>double</code> can only store two numbers",
+                    "<code>float</code> is used for text, <code>double</code> is used for numbers"
+                ],
+                answer: 1,
+                feedback: "Correct! A float typically has about 6-7 decimal digits of precision, while a double has about 15."
+            },
+            {
+                question: "5. Which data type is used to represent a single letter, symbol, or number as text?",
+                options: [
+                    "Integer",
+                    "String",
+                    "Boolean",
+                    "Character (char)"
+                ],
+                answer: 3,
+                feedback: "Correct! The char data type is used for a single character."
+            },
+            {
+                question: `6. What is the value and data type of <code>name</code> in this code: <code>name = "Emily Buzmion"</code>?`,
+                options: [
+                    "Value: Emily, Type: Character",
+                    `Value: "Emily Buzmion", Type: String`,
+                    "Value: name, Type: Variable",
+                    "Value: Emily Buzmion, Type: Integer"
+                ],
+                answer: 1,
+                feedback: "Correct! The value is the text inside the quotes, which is a String data type."
+            },
+            {
+                question: "7. A Boolean data type can only have which of the following values?",
+                options: [
+                    `1 or 2`,
+                    `Yes or No`,
+                    `True or False`,
+                    `On or Off`
+                ],
+                answer: 2,
+                feedback: "Correct! Boolean logic is built on the values True and False."
+            },
+            {
+                question: '8. What is a "magic number" in programming?',
+                options: [
+                    "A number that is divisible by 7",
+                    "A hard-coded value that appears without explanation",
+                    "The first number assigned to a variable",
+                    "A random number generated by the computer"
+                ],
+                answer: 1,
+                feedback: "Correct! Magic numbers make code difficult to understand and maintain. Using a named variable is better."
+            },
+            {
+                question: "9. The term 'identifier' refers to a variable's:",
+                options: [
+                    "Data type",
+                    "Memory address",
+                    "Name",
+                    "Value"
+                ],
+                answer: 2,
+                feedback: "Correct! The identifier is the name you give to a variable, function, or other element in code."
+            },
+            {
+                question: "10. Which of these is a valid example of a Floating-Point number?",
+                options: [
+                    `3.14`,
+                    `-42`,
+                    `True`,
+                    `'C'`
+                ],
+                answer: 0,
+                feedback: "Correct! 3.14 is a number with a decimal point, making it a floating-point number."
+            },
+            {
+                question: "11. (True/False) A variable's value can change while a program is running.",
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! This is one of the main reasons we use variables."
+            },
+            {
+                question: "12. (True/False) Using variables with meaningful names can make code easier to understand and modify.",
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! Readable code is maintainable code."
+            },
+            {
+                question: `13. (True/False) The value <code>'10'</code> (in single quotes) is an example of an Integer data type.`,
+                options: ["True", "False"],
+                answer: 1,
+                feedback: "Correct! This is a trick. <code>'10'</code> is a Character or String, not an Integer, because it's enclosed in quotes."
+            },
+            {
+                question: `14. (True/False) The statement <code>is_valid = True</code> is declaring a variable of Boolean data type.`,
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! The value <code>True</code> is a Boolean literal."
+            },
+            {
+                question: "15. (True/False) A String is a sequence of characters.",
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! A string is essentially a list of characters put together."
+            },
+            {
+                question: "16. (True/False) The main goal of a variable is to connect to a database.",
+                options: ["True", "False"],
+                answer: 1,
+                feedback: "Correct! The main goal of a variable is to store data in memory for use in a program."
+            },
+            {
+                question: "17. (True/False) <code>5.0</code> is a Float, while <code>5</code> is an Integer.",
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! The decimal point makes 5.0 a floating-point number."
+            },
+            {
+                question: "18. (True/False) A variable's data type (e.g., int, string) determines what kind of value it can hold.",
+                options: ["True", "False"],
+                answer: 0,
+                feedback: "Correct! The data type defines the nature of the data (e.g., number, text, true/false)."
+            },
+            {
+                question: `19. (True/False) <code>"100"</code> and <code>100</code> are the same data type.`,
+                options: ["True", "False"],
+                answer: 1,
+                feedback: "Correct! <code>\"100\"</code> is a String (text), while <code>100</code> is an Integer (number)."
+            },
+            {
+                question: "20. (True/False) In most languages, you must tell the computer the data type of a variable when you create it.",
+                options: ["True (for some languages like C++/Java)", "False (for some languages like Python)"],
+                answer: 0,
+                feedback: "Correct! This is a great trick question. It's True for statically-typed languages (C++, Java, C#) and False for dynamically-typed languages (Python, JavaScript)."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const quizContainer = document.getElementById('quiz');
+        const scoreDisplay = document.getElementById('score');
+
+        // Function to load the quiz questions and options
+        function loadQuiz() {
+            const currentQuizData = quizData[currentQuestion];
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+
+            // Add the question text
+            questionDiv.innerHTML = `<p>${currentQuizData.question}</p>`;
+
+            // Create options div
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+
+            // Add each option as a clickable div
+            currentQuizData.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.innerHTML = option;
+                optionElement.addEventListener('click', () => selectOption(index, optionElement, optionsDiv, currentQuizData));
+                optionsDiv.appendChild(optionElement);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+
+            // Create feedback div
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.classList.add('feedback');
+            feedbackDiv.id = `feedback-${currentQuestion}`;
+            questionDiv.appendChild(feedbackDiv);
+
+            quizContainer.appendChild(questionDiv);
+        }
+
+        // Function to handle option selection
+        function selectOption(selectedIndex, selectedElement, optionsDiv, quizItem) {
+            // Disable all options after one is selected to prevent re-answering
+            const allOptions = optionsDiv.querySelectorAll('div');
+            allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+
+            const correctIndex = quizItem.answer;
+            const feedbackElement = document.getElementById(`feedback-${currentQuestion}`);
+
+            // Check if the selected answer is correct
+            if (selectedIndex === correctIndex) {
+                selectedElement.classList.add('correct');
+                feedbackElement.innerHTML = `<span style="color: #155724;">${quizItem.feedback}</span>`;
+                score++;
+                scoreDisplay.innerText = `Score: ${score}/20`;
+            } else {
+                selectedElement.classList.add('incorrect');
+                // Also show the correct answer
+                allOptions[correctIndex].classList.add('correct');
+                feedbackElement.innerHTML = `<span style="color: #721c24;">${quizItem.feedback}</span>`;
+            }
+
+            // Move to the next question after a short delay
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < quizData.length) {
+                    loadQuiz();
+                    // Scroll to the next question
+                    window.scrollTo(0, document.body.scrollHeight);
+                } else {
+                    // Quiz is finished
+                    quizContainer.innerHTML += `<h2>Quiz Complete!</h2><p>Your final score is: ${score}/20</p>`;
+                    if(score >= 17) {
+                        quizContainer.innerHTML += `<p>🎉 Excellent job! You have a strong grasp of the fundamentals.</p>`;
+                    } else if (score >= 12) {
+                        quizContainer.innerHTML += `<p>👍 Good effort! Review your notes and try again.</p>`;
+                    } else {
+                        quizContainer.innerHTML += `<p>📚 Keep studying! You'll get it with a bit more practice.</p>`;
+                    }
+                }
+            }, 1500); // 1.5 second delay
+        }
+
+        // Function to restart the quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            quizContainer.innerHTML = '';
+            scoreDisplay.innerText = 'Score: 0/20';
+            loadQuiz();
+        }
+
+        // Start the quiz when the page loads
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>
