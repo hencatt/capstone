@@ -44,26 +44,30 @@ doubleCheck($currentPosition);
                         <h6>List of all Researches</h6>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <table class="table">
-                            <thead>
-                                <tr style="text-align: center;">
-                                    <td>Research Title</td>
-                                    <td>Author/s</td>
-                                    <td>Date Created (YYYY-MM-DD)</td>
-                                    <td>Status</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>GAD Portal</td>
-                                    <td>Ivan Kyle, Henreich, Jayson, Ashley</td>
-                                    <td>2025-01-12</td>
-                                    <td>Approved</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="row mt-3 flex flex-col gap-3">
+                    <div class="col"
+                        style="background-color: white;
+                    padding: 10px;
+                    border-radius: 10px;
+                    ">
+                        <div class="row flex flex-row text-center">
+                            <div class="col ">
+                                <b><label>Research Title</label></b>
+                            </div>
+                            <div class="col"><b><label>Description</label></b></div>
+                            <div class="col-2"><b><label>Date Submitted</label></b></div>
+                            <div class="col-2"><b><label>Status</label></b></div>
+                            <div class="col-2"></div>
+                        </div>
+                        <div class="row mt-3 flex flex-row align-items-center">
+                            <div class="col text-center">
+                                <label>##Title Here</label>
+                            </div>
+                            <div class="col"><label>Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, odit.</label></div>
+                            <div class="col-2 text-center"><label>12/12/2026</label></div>
+                            <div class="col-2 text-center"><label>##Status Here</label></div>
+                            <div class="col-2 text-center" style="color: #5f8cecff"><label>View More</label></div>
+                        </div>
                     </div>
                 </div>
             </div>

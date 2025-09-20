@@ -86,7 +86,7 @@ if ($stmt->execute()) {
                     <?php if ($eventCategory === "Research Event") {
                         echo <<<EOD
                             <div class="col d-flex align-items-center justify-content-start" style="color: white;">
-                                <h6 style="background-color: #fd89e2ff; padding:10px; border-radius: 10px;">##presentationDateHere</h6>
+                                <h6 style="background-color: #ef7dd5ff; padding:10px; border-radius: 10px;"><b>Presentation on:</b> <i>$presentationMonth - $presentationDay - $presentationYear<i></h6>
                             </div>
                         EOD;
                     } else {
@@ -106,17 +106,41 @@ if ($stmt->execute()) {
                         <p><?= $eventDesc ?></p>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <div class="row mt-3 gap-5">
                     <?php if ($eventCategory === "Research Event") {
                         echo <<<EOD
-                        <div class="col">
-                            ##DATES HERE
+                        <div class="col flex flex-col text-center" style= "
+                        background-color: white;
+                        width: max-content;
+                        height: max-content;
+                        border-radius: 10px;
+                        padding: 10px;
+                        "
+                        >
+                            <h6>Proposal Date</h6>
+                            <label>$eventProposalMonth - $eventProposalDay - $eventProposalYear</label>
                         </div>
-                        <div class="col">
-                            ##DATES HERE
+                        <div class="col flex flex-col text-center" style= "
+                        background-color: white;
+                        width: max-content;
+                        height: max-content;
+                        border-radius: 10px;
+                        padding: 10px;
+                        "
+                        >
+                            <h6>Acceptance Date</h6>
+                            <label>$acceptanceMonth - $acceptanceDay - $acceptanceYear</label>
                         </div>
-                        <div class="col">
-                            ##DATES HERE
+                        <div class="col flex flex-col text-center" style= "
+                        background-color: white;
+                        width: max-content;
+                        height: max-content;
+                        border-radius: 10px;
+                        padding: 10px;
+                        "
+                        >
+                            <h6>Presentation Date</h6>
+                            <label>$presentationMonth - $presentationDay - $presentationYear</label>
                         </div>
                         EOD;
                     }

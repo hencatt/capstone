@@ -52,7 +52,21 @@ $currentCampus = $user['campus'];
                 </div>
                 <div class="row mt-5">
                     <div class="col d-flex justify-content-center align-items-center summaryOverview">
-                        <h5>##ONGOING RESEARCH</h5>
+                        <h5><?php 
+                        $date = date("Y-m-d");
+                        $con = con();
+                        $sql = "SELECT announceTitle, announceDate, category, presentationDate
+                        FROM announcement_tbl
+                        WHERE announceDate > ? AND category = ? AND presentationDate > ?
+                        ";
+                        $category = "Research Event";
+                        $stmt = $con->prepare($sql);
+                        $stmt->bind_param("sss", $date, $category, $date);
+                        $stmt->execute();
+                        $result = $stmt->get_result()->fetch_assoc();
+                        $ongoingEvent = $result['announceTitle'];
+                        echo $ongoingEvent;
+                        ?></h5>
                     </div>
                 </div>
                 <div class="row gap-3 mt-3">
