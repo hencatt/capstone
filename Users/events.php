@@ -109,42 +109,12 @@ if (isset($_POST["deleteBtn"])) {
                                 event
                             </span></h1>
                     </div>
-                    <div class="col d-flex align-items-center justify-content-end">
-                        <?php
-                        $currentDate = date("Y-m-d");
-                        $currentDay = date("d");
-                        $sql = "SELECT 
-                            announceTitle, 
-                            announceDate, 
-                            DAY(announceDate) AS day 
-                        FROM announcement_tbl 
-                        WHERE announceDate > '$currentDate' 
-                        ORDER BY ABS(DATEDIFF(announceDate, '$currentDate')) 
-                        LIMIT 1
-                    ";
-
-                        $result = $con->query($sql);
-                        if ($result && $result->num_rows > 0) {
-                            $row = $result->fetch_assoc();
-                            $closestEventDate = htmlspecialchars($row["announceDate"]);
-                            $closestEventTitle = htmlspecialchars($row["announceTitle"]);
-                            $eventDay = (int)$row["day"];
-
-                            // Calculate remaining days
-                            $remainingDays = $eventDay - (int)$currentDay;
-
-                            // Output
-                            echo "<label class='fst-italic fw-light' style='background-color: white; padding: 10px; border-radius: 10px; width: max-content;'>($closestEventTitle starts after $remainingDays day(s))</label>";
-                        } else {
-                            echo "<label class='fst-italic fw-light' style='background-color: white; padding: 10px; border-radius: 10px; width: max-content;>(No upcoming events.)</label>";
-                        }
-                        ?>
-                    </div>
                     <div class="col-auto d-flex align-items-center justify-content-end gap-2">
                         <select name="inputCategory" id="inputCategory" class="form-select" style="width: 200px;">
                             <option value="all_category" default>All Category</option>
-                            <option value="holiday">Holiday</option>
-                            <option value="event">Event Category</option>
+                            <option value="Holiday">Holiday</option>
+                            <option value="Event">Event</option>
+                            <option value="Research Event">Research</option>
                         </select>
                         <button class="btn btn-primary" id="createAnnouncementBtn" name="createAnnouncementBtn"><a href="announcement.php" style="text-decoration: none; color:white;">Create Announcement</a></button>
                         <button class="btn btn-outline-secondary" id="editAnnouncementBtn" name="editAnnouncementBtn">Edit</button>

@@ -1,5 +1,7 @@
 <?php
 require_once '../../phpFunctions/gad_portal.php';
+session_start();
+
 ?>
 
 <table class="table table-sm table-striped">
@@ -12,7 +14,10 @@ require_once '../../phpFunctions/gad_portal.php';
             <th>Image</th>
             <th>Status</th>
             <th>Category</th>
-            <th>Edit</th>
+            <?php if ($_SESSION['user_position'] === "Technical Assistant") {
+                echo '<th>Edit</th>';
+            }
+            ?>
         </tr>
     </thead>
     <tbody>
@@ -43,24 +48,29 @@ require_once '../../phpFunctions/gad_portal.php';
                         "
                         >' .
 
-                    '<div class="row">
-                    <div class="col d-flex justify-content-center align-items-center gap-2">
-                    <button data-bs-toggle="modal" class="btn btn-outline-success" data-bs-target="#editItem' . htmlspecialchars($row['id']) . '">
-                                    <span class="material-symbols-outlined">edit</span>
-                                    </button>
-                                    '
-                    .
+                    '
+                    '; ?><?php
+                            if ($_SESSION['user_position'] === "Technical Assistant") {
+                                echo '
+                    <div class="row" id="editItem">
+                        <div class="col d-flex justify-content-center align-items-center gap-2">
+                            <button data-bs-toggle="modal" class="btn btn-outline-success" data-bs-target="#editItem' . htmlspecialchars($row['id']) . '">
+                                            <span class="material-symbols-outlined">edit</span>
+                                            </button>
+                                            ';
+                                echo
+                                '<button data-bs-toggle="modal" class="btn btn-outline-danger" data-bs-target="#deleteItem' . htmlspecialchars($row['id']) . '">
+                                            <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                            </div>
+                                            </div>
+                                            ' .
 
-                    '<button data-bs-toggle="modal" class="btn btn-outline-danger" data-bs-target="#deleteItem' . htmlspecialchars($row['id']) . '">
-                    <span class="material-symbols-outlined">delete</span>
-                    </button>
-                    </div>
-                    </div>
-                    ' .
-
-                    '</td>';
-                echo '</tr>';
-
+                                    '</td>';
+                                echo '</tr>';
+                            }
+                            ?>
+<?php
 
                 // EDIT MODAL
                 echo '
@@ -170,7 +180,7 @@ require_once '../../phpFunctions/gad_portal.php';
             echo "0 results";
         }
         $con->close();
-        ?>
+?>
 
     </tbody>
 </table>
