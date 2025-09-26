@@ -21,7 +21,6 @@ function sendUserCredentials($email, $username, $pass) {
         $mail->Password   = 'ruie nobb sqoh fnfa'; // 16-char App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
-        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
 
         $mail->setFrom('samaniegoivankyle@gmail.com', 'NEUST GAD Portal');
         $mail->addAddress($email);
