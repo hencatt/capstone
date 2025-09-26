@@ -1,5 +1,6 @@
 <?php
 require_once 'includes.php';
+require_once '../phpFunctions/email.php';
 
 session_start();
 
@@ -19,9 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lname = $_POST['lname'];
         $email = $_POST['email'];
         $username = $_POST['username'];
-        $password = password_hash($_POST['pass'], PASSWORD_DEFAULT);
+        $plainPassword = $_POST['pass'];
+        $password = password_hash($plainPassword, PASSWORD_DEFAULT);
         $position = $_POST['pos'];
         $department = $_POST['dept'];
+        $campus = $_POST['campus'];
 
         $conn = new mysqli('localhost', 'root', '', 'gad_portal');
 
@@ -37,11 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<script>alert('Error: The email address is already in use.');</script>";
         } else {
             // Insert the new account
-            $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, date_created, is_active) 
-                        VALUES ('$fname', '$lname', '$email', '$username', '$password', '$position' , '$department', NOW(), 1)";
+            $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, campus, date_created, is_active) 
+                        VALUES ('$fname', '$lname', '$email', '$username', '$password', '$position' , '$department', '$campus', NOW(), 1)";
 
             if ($conn->query($sql)) {
                 echo "<script>alert('Account Created!');</script>";
+
+                // Send credentials email to the new user
+                sendUserCredentials($email, $username, $plainPassword);
             } else {
                 echo "<script>alert('Error: " . $conn->error . "');</script>";
             }
@@ -359,6 +365,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="IOLL">IOLL</option>
                             <option value="CON">CON</option>
                             <option value="GS">GS</option>
+                        </select>
+                        <select name="campus" id="campus" required>
+                            <option value="" disabled selected>Select Campus</option>
+                            <option value="Sumacab">Sumacab</option>
+                            <option value="GT">Gen. Tinio</option>
+                            <option value="San Isidro">San Isidro</option>
+                            <option value="Gabaldon">Gabaldon</option>
+                            <option value="Atate">Atate</option>
+                            <option value="Fort Magsaysay">Fort Magsaysay</option>
                         </select>
                         <div class="buttons">
                             <button type="submit">Add</button>
