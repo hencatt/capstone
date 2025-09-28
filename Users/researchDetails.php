@@ -10,8 +10,23 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-// getID ng research first!!
+if (isset($_GET['id'])) {
+    $currentResearch = $_GET['id'];
+    $currentResearch = (int) $currentResearch;
+}
 
+$con = con();
+$sql = "SELECT * FROM research_tbl WHERE id = ?";
+$stmt = $con->prepare($sql);
+$stmt->bind_param("i", $currentResearch);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $researchTitle = htmlspecialchars($row['research_title']);
+    $researchDescription = htmlspecialchars($row['description']);
+    $researchAuthors = htmlspecialchars($row['co_author']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,26 +47,29 @@ $currentCampus = $user['campus'];
         <!-- Main Contents -->
 
         <div class="col-10 mt-3 mainContent">
-            <?php topbar($currentUser, $currentPosition, "researchDetails") ?>
+            <?php topbar($currentUser, $currentPosition, "researchDetails", $researchTitle) ?>
 
             <div id="contents">
                 <div class="row mt-5">
                     <div class="col d-flex flex-row gap-3">
-                        <h1>ReserachTitle</h1>
+
+                        <h1><?= $researchTitle; ?></h1>
+                        <!-- TODO DATE SUBMITTED -->
                         <figcaption class="blockquote-footer align-self-end">##date submitted here</figcaption>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
                     <div class="col">
-                        <p>##Description</p>
+                        <p><?= $researchDescription ?></p>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col">
-                        <h5>##actualComments</h5>
+                <div class="row mt-3 gap-5">
+                    <div class="col" style="background-color: white; padding: 10px; border-radius: 10px;">
+                        <h5><i>Comments</i></h5>
                     </div>
-                    <div class="col">
-                        <h5>###Authors</h5>
+                    <div class="col-3" style="background-color: white; padding: 10px; border-radius: 10px;">
+                        <h5>Authors</h5>
+                        <?= $researchAuthors ?> 
                     </div>
                 </div>
             </div>

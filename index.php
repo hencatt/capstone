@@ -79,6 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     case "RET Chair":
                         header("Location: /capstone/Users/retChair.php");
                         break;
+                    case "Panel":
+                        header("Location: /capstone/Users/panel.php");
+                        break;
                     default:
                         echo "Invalid Position";
                         break;
