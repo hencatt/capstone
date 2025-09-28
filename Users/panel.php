@@ -88,18 +88,6 @@ $currentLname = $user['lname'];
                                 }
                                 ?>
 
-                                <!-- DUMMY -->
-                                <tr>
-                                    <td style="text-align: center; vertical-align: middle;">GAD Portal</td>
-                                    <td style="text-align: center; vertical-align: middle;">Ashley, Ivan, Jayson,
-                                        Henreich</td>
-                                    <td style="text-align: center; vertical-align: middle;">01/02/25</td>
-                                    <td class="d-flex justify-content-center align-items-center gap-2">
-                                        <button class="btn btn-outline-success">Approve</button>
-                                        <button class="btn btn-outline-danger">Reject</button>
-                                    </td>
-                                </tr>
-
                             </tbody>
                         </table>
                     </div>
