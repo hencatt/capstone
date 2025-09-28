@@ -445,10 +445,12 @@ if (isset($_POST["deleteBtn"])) {
             console.log(currentPos);
             if (currentPos !== "Director") {
                 if (currentPos !== "Technical Assistant") {
-                    announceBtn.hide();
-                    editBtn.hide();
-                }
-            }
+                    if (currentPos !== "RET Chair") {
+                        announceBtn.hide();
+                        editBtn.hide();
+                    };
+                };
+            };
 
             toggleEdit();
         });

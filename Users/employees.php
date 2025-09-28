@@ -1,6 +1,6 @@
 <?php
 require_once 'includes.php';
-require_once '../phpFunctions/email.php';
+// require_once '../phpFunctions/email.php';
 
 session_start();
 
