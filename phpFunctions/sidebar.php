@@ -151,6 +151,10 @@ function topbar($user, $role, $location, $pageTitle = null)
             $category = "General";
             $locationLabel = "Inventory";
             break;
+        case "approval":
+            $category = "General";
+            $locationLabel = "Approval";
+            break;
         default:
             $category = "";
             $locationLabel = "";
@@ -232,6 +236,7 @@ function sidebar($active, $role)
     $researchViewStyle = "";
     $announcementStyle = "";
     $viewLogsStyle = "";
+    $approvalOption = "";
 
     $destination = "#";
 
@@ -250,6 +255,10 @@ function sidebar($active, $role)
             break;
         case "events":
             $eventsOption = "active";
+            $eventStyle = $sidebarHighlight;
+            break;
+        case "approval":
+            $approvalOption = "active";
             $eventStyle = $sidebarHighlight;
             break;
         case "research";
@@ -377,6 +386,13 @@ function sidebar($active, $role)
                             </li></a>
         ',
 
+        "approval" => '
+        <a href="#" class="categoryItem" id="' . $approvalOption . '">
+            <li><span class="material-symbols-outlined">check_circle</span>
+            Approval
+            </li></a>
+        ',
+
         "logout" => '
         <a href="../logout.php?logout=true" class="categoryItem" id="' . $logoutOption . '"><li>
                             <span class="material-symbols-outlined">logout</span>
@@ -388,6 +404,7 @@ function sidebar($active, $role)
         </div>
             </div>
         ',
+
 
         "category.home" => '
         <label class="category">Home</label>
@@ -430,6 +447,17 @@ function sidebar($active, $role)
         echo $sidebar['announcement'];
         echo $sidebar['events'];
         // echo $sidebar['researchView'];
+        echo $sidebar['category.settings'];
+        echo $sidebar['logout'];
+        echo $sidebar['wrapperBottom'];
+    }
+
+    // PANEL
+    if ($role === "Panel") {
+        echo $sidebar['logo'];
+        echo $sidebar['wrapperTop'];
+        echo $sidebar['category.general'];
+        echo $sidebar['approval'];
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
