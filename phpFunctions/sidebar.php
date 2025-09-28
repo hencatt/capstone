@@ -387,7 +387,7 @@ function sidebar($active, $role)
         ',
 
         "approval" => '
-        <a href="#" class="categoryItem" id="' . $approvalOption . '">
+        <a href="researchApproval.php" class="categoryItem" id="' . $approvalOption . '">
             <li><span class="material-symbols-outlined">check_circle</span>
             Approval
             </li></a>

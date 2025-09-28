@@ -77,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: /capstone/Users/researchView.php");
                         break;
                     case "RET Chair":
-                        header("Location: /capstone/Users/retChair.php");
+                        header("Location: /capstone/Users/events.php");
                         break;
                     case "Panel":
-                        header("Location: /capstone/Users/panel.php");
+                        header("Location: /capstone/Users/researchApproval.php");
                         break;
                     default:
                         echo "Invalid Position";
