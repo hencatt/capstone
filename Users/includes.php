@@ -8,4 +8,4 @@ require_once '../phpFunctions/checkUser.php';
 require_once '../phpFunctions/sidebar.php';
 include_once '../phpFunctions/fakeLoading.php';
 require_once '../phpFunctions/crud.php';
-include_once '../phpFunctions/email.php';
+// include_once '../phpFunctions/email.php';

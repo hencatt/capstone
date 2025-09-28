@@ -425,11 +425,11 @@ function sidebar($active, $role)
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
         echo $sidebar['category.home'];
-        echo $sidebar['dashboard'];
-        echo $sidebar['category.general'];
+        // echo $sidebar['dashboard'];
+        // echo $sidebar['category.general'];
         echo $sidebar['announcement'];
         echo $sidebar['events'];
-        echo $sidebar['researchView'];
+        // echo $sidebar['researchView'];
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];

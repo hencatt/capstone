@@ -6,9 +6,9 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 include_once 'includes.php';
 
-require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
-require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/Exception.php';
-require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
+require_once __DIR__ . '/../vendor/phpmailer/PHPMailer.php';
+require_once __DIR__ . '/../vendor/phpmailer/Exception.php';
+require_once __DIR__ . '/../vendor/phpmailer/SMTP.php';
 
 function sendUserCredentials($email, $username, $pass) {
     $mail = new PHPMailer(true);
