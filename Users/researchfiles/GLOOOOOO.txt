@@ -1,0 +1,403 @@
+Understanding Models of Ethical Decision-Making in Technology. 
+Illustrate the theories using three (3) example scenarios or plots for better explanation.
+
+
+basic ethical theories and their application in IT
+
+1. utilitarianism 
+
+action done even if in dishonest mean, as long as it benefits more people its good?
+make use example is robin hood, in other point of view of ethics what robinhood doing is bad/immoral
+but in point of view of utilitarianism it  is good cause what robinhood doing benefits  more people 
+
+
+
+
+2. deontology 
+from the word deon, meaning duty, deontology is about the theory that the morality of human act is rightness or wrongness
+depends if it fullfill a duty or not rather than on virtue or its consequences
+
+example is a doctor, the doctor findout that the patient has an stage 4 cancer, the doctor needs to tell the patient about it 
+even  the knows that the patient have heart problems.
+
+if an action is right then we have the duty to do it
+if the action is wrong then we have the duty to act accordingly
+
+
+action maybe right or wrong regardless of the consequences/ its a person duty to do this action 
+
+3. virtue ethics
+
+if we choose the virtue ethics a rule in our life it is quest to live a life of a moral character,
+this character base approach assumes that we acquire virtue through practice
+for example by practicing being honest, brave, just, genorous and so on to develop an virtues or moral character
+according to aristotle people are likely to make the right choice if faced by challenges if they hone their virtues habits
+
+4. rights based ethics -  
+basically it emphasizes every human being has rights, according to this base ethics people has this simply because they are human beings, and this rights set boundaries
+on how others indviduals/organization should treat a person
+
+key ideas na research about rights based ethics
+1, the moment you are born meron kana neto like right to life, freedom, privacy, and property 
+2. if someone has right it is our duty to respect it
+3. it should apply to everyone regardless of race, gender and status
+4. Sometimes rights clash (e.g., freedom of expression vs. right to not be defamed). In such cases, ethical reasoning is needed to balance or prioritize rights.
+-----------------------------------------------------------------------------------------------------------------------------------
+
+5. justice’s and fairness
+this model focuses in traeting people fair and equitably making sure benefits and 
+burdens are distributed in a just way. It emphasizes impartiality, equality, and respect for rules or standards.
+
+fair distribution of resources, opportunities and benefits
+fair processes and decisiong making, transparent and consistent
+fair punishment of wrongdoing, punishment should be propotional and consistent
+fair compensation for harm or loss caused by others
+
+Prevents discrimination and bias.
+Promotes trust in organizations, leaders, and institutions.
+Ensures people feel respected and valued by being treated equally.
+
+
+6. social contract - abide certain rules/ laws for the benefit of the cooperative society
+The social contract model is based on the idea that people live together in society under a set of mutual agreements or rules—written or unwritten—that make cooperation, peace, and fairness possible.
+
+In ethics, it means decisions should respect the implicit “agreement” we all have to treat each other in ways that allow everyone to live securely and fairly.
+
+mutual agreement
+legitimacy
+fair treatment 	
+shared responsibility 
+
+
+
+topic 1
+
+narrator
+In the fast-paced world of Information Technology, decisions are not just about codes and systems—they’re also about ethics. Every click, 
+every line of code, every policy affects people’s lives. Today papakita ng aming group sa pamamagitan nang Role play ang mga ibat ibang klase ng Models of Ethical Decision-Making: nandito si per1 and per2
+lets imagine na silang dalawa ay mga ganap ng It professional at pinag uusapan nila kung ano ba ang best na Model of Ethical Decision Making na pwede nilang gamitin sa industry
+ 
+person1: per1, you know, we handle so much data and we have power over those data as an IT persons, but i've been thinking when tough situation come 
+like data leaks , hacking , or privacy issue how do we know what is right? can we do what is right? 
+
+person2: good question per2, you know, there are different ethical models that can help us, each of those can help , but which one can really help us, or work best as IT
+
+person1: how about this, lets compare each of those and then we figure out what is best?
+
+person2: I like that Idea, lets do that.
+
+person1: alright then, First is utilitarianism, it works likeeeee
+(
+ scenario 1
+	manager: our server is down, we need to fix it quickly, the legal way will take atleast 3 days, but thousand user who rely on our sysem cannot access until then
+	sceneAct1: If I use an unlicensed software patch I found online, the system will be restored in one hour. Customers will be happy, business will continue… but technically, it’s against company policy. 
+	sceneAct2: That’s risky you’d be breaking the rules.
+	sceneAct1: Yes, but think about it, one small violation helps thousands of users. Isn’t helping the majority the right choice?	
+)
+person1: and that is Utilitarianism—choosing the action that benefits the greatest number, even if the method may not be fully right.
+person2: soo, basically aslong as it benefits many its okay to take action even tho its not right?
+person1: ya,
+person2: i cant completely agree with this Model, lets explore more, what about the deontology model?
+person1: what about it?
+person2: deontology is like this
+(
+scenario2:
+	dev1: dev2, please don’t report the security flaw you found in our system. If management knows, I might lose my job.
+	dev3: dev2, maybe just ignore it. No one will know, and it will save dev1 reputation.
+	dev2: I can’t ignore it. It’s my duty to report vulnerabilities and protect users. Rules are rules—whether the outcome is good or bad.
+	dev1: So you’ll report it, even if it hurts me?
+	dev2L: Yes. Doing the right thing means following duty, not bending rules for convenience.
+)
+
+person2: This is Deontology—ethics based on duty and principle, not on consequences.
+it is about the theory that the morality of human act is rightness or wrongness
+depends if it fullfill a duty or not rather than on virtue or its consequences
+if an action is right then we have the duty to do it
+if the action is wrong then we have the duty to act accordingly
+
+person1: I see, tho is it really ok to do that, in the prev scenario, if dev2 let dev1 fix the flaw he found in the system, then problem solve, dev1 can keep his job,
+project continue and everyone is happy
+
+person2: that's the problem about the deontology Model it only focus on duty and ignores the real-life consequences. Rules don’t always cover every human situation.
+
+person1: okay then lets proceed onto the next model, the virtue ethics model
+person2: okay, what about it?
+person1: lets imagine this "developer", who grew up as an honest, brave, just,  generous, and always help people out, what kind of developer you think he will be?
+person2: he will be a great person or a developer, and I think he will always choose to do the right thing
+person1: Exactly, thats how virtue ethics work, people who practice those kind of characteristics, when faced with a situation it was said that they are more likely to choose to do what is right
+person2: I see, but to be honest I didnt grew up that way, does that mean I cant apply that model?
+person1: same, being a noble person is hard isnt? but we can always try to be one right?
+person2: easy to be said that done, anyway lets talk about this next model, the rights based ethics model
+(
+	mngr: We have all this customer data—names, emails, even browsing history. Let’s use it for targeted ads. It’ll increase profits fast!
+	dev1: That sounds smart. Everyone else is doing it anyway.
+	dev2: Hold on. Customers have the right to privacy. Just because we can use their data doesn’t mean we should.
+	mngr: But think of the profit!
+	dev2: Respecting rights is non-negotiable. If we violate their privacy, we disrespect their dignity as individuals. In IT, protecting user rights comes first—even before profit.
+)
+
+person2: In Rights-Based Ethics—decisions must respect fundamental human rights, like privacy, freedom, and fairness.
+the moment you are born  you have rights to life, freedom, privacy, and property 
+if someone has right it is our duty to respect it it should apply to everyone regardless of race, gender and status
+
+person1: its seems this is the best model!
+person2: but, It does have some flaws
+
+(
+	mngr: I respect your stand on user privacy, but what if rights collide?
+	dev2: what do you mean?
+	mngr: Take this example: a user posted false information about our company online. They say it’s their freedom of expression. But it damages our reputation, and we also have the right not to be defamed.
+	dev2: Hmm… you’re right. Both rights are valid, but they contradict each other.
+)
+person2: Rights-Based Ethics doesn’t always tell us which right should come first. That’s the flaw—it can be hard to balance clashing rights.
+person1: I see, then lets proceed to next model
+(
+	mngr: We just got 5 new high-end laptops, but we have 10 employees. I’ll give them all to the senior staff.
+	seniors: Lucky for us seniors!
+	mabait na senior: Wait, that’s not fair. The juniors also need laptops to do heavy programming and testing. If resources are limited, they should be distributed fairly, not just by rank. 
+	mngr: You’re right. Justice means equal opportunity. I’ll assign laptops based on workload and project needs, not just position.
+)
+person1: This is Justice and Fairness Ethics—ensuring resources, opportunities, and decisions are distributed fairly and without bias.
+person2: hmmm looks like this does not have any flaws
+person1: does it?
+(
+	mngr: I thought I was being fair by assigning laptops based on workload, but now I see another issue.
+	senior na mabaet: What happened?
+	mngr: Two employees have lighter tasks but still share one laptop, while another has a heavy project and keeps a laptop full-time. Now the others feel left out, saying it’s unfair they don’t get equal access.
+	senior na mabaet: So even when we try to be fair, people still argue about what fairness really means—equal treatment or based on need.
+)
+person1: This shows the flaw of Justice and Fairness ethics: fairness is hard to define, and what seems fair to one group may feel unfair to another.
+person2: and I thought that model is flawless, anyway lets proceed to another model
+	
+(
+	mngr: Some employees have been streaming movies during work hours. It’s slowing down our network.
+	dev1: What’s the problem? I only watch a little.
+	dev2: Sam, when we joined this company, we all agreed to follow the IT policy—using the internet for work purposes. That’s part of our responsibility.
+	mngr: Exactly. These rules exist so everyone can work efficiently. If one person breaks them, it hurts the whole team.
+	dev2: The social contract is clear—we all benefit from a stable, secure system only if everyone respects the agreed rules.
+)
+
+person2: This is Social Contract Ethics—we abide by shared rules and agreements to ensure cooperation, fairness, and security for all.
+person1: now this seems the best model right?
+person2: yup but the problem about that model is that it assumes mutual agreement, but in practice, people often follow rules out of obligation, not choice.
+(
+	mngr: Starting today, all employee activities on company computers will be monitored—emails, browsing, even keystrokes. This ensures productivity and security.
+	dev1: Well, I guess that’s the rule. We’re part of this company, so we have to accept it.
+	dev2: But wait—that’s not fair! I never truly agreed to have my privacy invaded. Just because I work here doesn’t mean I gave full consent.
+	mngr: It’s company policy. Everyone has to follow.
+)
+person2: See? That’s the flaw of this so-called “social contract.” It assumes we all freely agreed, but in reality, those employee was forced to accept rules or risk losing their jobs.
+
+person1: Wow we went through so many ethical models—utilitarianism, deontology, virtue ethics, rights-based ethics, justice and fairness, and even the social contract.
+person2: Yeah, and each one had its strengths. Utilitarianism helps maximize benefits, deontology makes us follow duty, virtue ethics shapes good character, rights-based ethics protects individuals, justice ensures fairness, and social contract keeps society in order.
+person1: But we also saw the flaws. No single model is perfect—utilitarianism might ignore honesty, deontology can be too rigid, virtue ethics depends on practice, rights can clash, fairness is sometimes hard to balance, and social contracts can break when people stop cooperating.
+person2: Exactly. In the IT field, where our decisions affect data, privacy, and even people’s lives, we can’t rely on just one model.
+person1: So maybe the best way is to use these models together. A good IT professional considers consequences, duties, character, rights, fairness, and social trust before making decisions.
+
+Narrator: That’s the real takeaway—ethics in technology isn’t about choosing one best model. It’s about understanding them all, then applying the right balance depending on the situation.
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+topic 2
+o	State and examine (3) ethical and legal implications of cybercrimes.
+
+
+
+3 tao lang need
+
+person1:
+
+Good day everyone Today, our group will discuss an important topic in IT and society the ethical and legal implications of cybercrime in the Philippines.
+Now, when we say ethical implication, we mean the moral or social harm caused by a cybercrime. These are the wrong actions that violate values like honesty, fairness, or respect for privacy.
+On the other hand, legal implication means the consequences under the law, especially under RA 10175, the Cybercrime Prevention Act of 2012. This law identifies different cybercrimes and sets punishments like imprisonment and fines.
+To understand this better, we’ll go through three real-life examples.
+
+person2:
+
+Our first example is the Rappler / Maria Ressa cyber libel case.
+In 2020, Rappler CEO Maria Ressa and reporter Reynaldo Santos Jr. were found guilty of cyber libel. This stemmed from a 2012 article that accused a businessman of illegal activities. 
+Even though the article was published before the law, the court ruled that the online updates counted as republishing, so RA 10175 applied.
+
+
+person3:
+So, what is the ethical implication of this case?
+
+person2:
+Ethically, it raises the issue of fairness and truth. Publishing unverified or damaging claims misleads readers and harms reputations. 
+It also breaches integrity in journalism. The public loses trust when media outlets publish questionable or false information.
+
+person3: 
+So here, the ethical wrong is spreading harmful or unverified claims, while the legal consequence is the punishment under RA 10175.
+
+person1:
+Let’s move on to the second example, which is more recent. In February 2025, authorities raided a condominium in Pasay City. 
+Inside, they found more than 400 suspects from different countries running online scams. These included fake investments, romance scams, and even illegal online gaming.
+
+person3:
+That sounds serious. What are the ethical issues here?
+
+person1:
+Ethically, the main problem is deception and exploitation. These scammers trick people into believing lies so they can steal money. They often target vulnerable victims, 
+like people in financial need or those who don’t fully understand digital scams. It’s a violation of honesty and responsibility.
+
+person3:
+And how does the law address this?
+
+person1:
+Legally, these scams fall under Sec. 4(b)(2) computer-related fraud and Sec. 4(b)(3) identity theft in RA 10175. The suspects face imprisonment,
+ fines starting from ₱200,000, and confiscation of their computers and devices. The National Bureau of Investigation and the Philippine National Police Cybercrime Group handle these cases.
+
+person3:
+So in short: the ethical wrong is taking advantage of trust, and the legal response is punishment under RA 10175.
+
+person2:
+ Now, our last example will be explained by Person3.
+
+person3:
+ Thank you. The third case involves cyber identity theft, also called “hijack profile” scams.
+In recent years, the PNP Cybercrime Group reported a rise in cases where hackers break into someone’s social media account. 
+They then impersonate the account owner, messaging their friends or family, sometimes asking for money or spreading false information. 
+
+person2:
+ What is the ethical issue here?
+
+person3:
+ The ethical implication is a violation of trust and privacy. Imagine having your account taken over—it’s not just embarrassing, 
+but it can also damage relationships. It’s dishonest and harms both the victim and the people tricked by the impersonation.
+
+person1:
+ And the legal side?
+
+person3: 
+Legally, this violates several sections of RA 10175:
+
+Sec. 4(a)(1) Illegal Access – entering an account without permission.
+
+Sec. 4(b)(2) Computer-related Fraud – using the account to trick others.
+
+Sec. 4(b)(3) Identity Theft – pretending to be someone else online.
+
+The penalties include 6 to 12 years in prison and fines of ₱200,000 or more, depending on the damage caused.
+
+person1:
+To wrap up, let’s summarize.
+
+person2:
+First, in the Rappler case, the ethical issue was truth and fairness in journalism, while the legal side was cyber libel under Sec. 4(c)(4).
+
+person3:
+Second, in the Pasay cybercrime hub, the ethical issue was deception and exploitation, while the legal side was fraud and identity theft under Sec. 4(b)(2)-(3).
+
+person1:
+And third, in identity theft scams, the ethical issue was privacy and trust, while the legal side involved illegal access, fraud, and identity theft under RA 10175.
+
+person2:
+These examples show that every ethical wrongdoing in cybercrime has a matching legal consequence under the Cybercrime Prevention Act.
+
+person3:
+That’s why as IT professionals and digital citizens, we need to respect both ethics and the law. What we do online has real effects on people’s lives.
+
+
+narrator:
+that concludes our presentation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

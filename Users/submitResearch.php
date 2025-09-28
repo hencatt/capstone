@@ -10,6 +10,8 @@ $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
+$currentFname = $user['fname'];
+$currentLname = $user['lname'];
 
 
 if ($currentPosition === "Director") {

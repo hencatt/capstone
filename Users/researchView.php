@@ -9,7 +9,8 @@ $user = getUser();
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
-$currentCampus = $user['campus'];
+$currentFname = $user['fname'];
+$currentLname = $user['lname'];
 
 
 doubleCheck($currentPosition);
@@ -45,34 +46,59 @@ doubleCheck($currentPosition);
                     </div>
                 </div>
                 <div class="row mt-3 flex flex-col gap-3">
-                    <div class="col"
-                        style="background-color: white;
+                    <div class="col" style="background-color: white;
                     padding: 10px;
                     border-radius: 10px;
                     ">
-                        <div class="row flex flex-row text-center">
-                            <div class="col ">
-                                <b><label>Research Title</label></b>
-                            </div>
-                            <div class="col"><b><label>Description</label></b></div>
-                            <div class="col-2"><b><label>Date Submitted</label></b></div>
-                            <div class="col-2"><b><label>Status</label></b></div>
-                            <div class="col-2"></div>
-                        </div>
-                        <div class="row mt-3 flex flex-row align-items-center">
-                            <div class="col text-center">
-                                <label>##Title Here</label>
-                            </div>
-                            <div class="col"><label>Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, odit.</label></div>
-                            <div class="col-2 text-center"><label>12/12/2026</label></div>
-                            <div class="col-2 text-center"><label>##Status Here</label></div>
-                            <div class="col-2 text-center" style="color: #5f8cecff"><label>View More</label></div>
-                        </div>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Research Title</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                // TODO DATE SUBMITTED NEEDS FIX
+                                $con = con();
+                                $sql = "SELECT * FROM research_tbl WHERE author = ?";
+                                $stmt = $con->prepare($sql);
+                                $stmt->bind_param("s", $currentUser);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo '
+                                        <tr>
+                                        
+                                        <td>' . htmlspecialchars($row['research_title']) . '</td>
+                                        <td>' . htmlspecialchars($row['date_started']) . '</td>
+                                        <td>' . htmlspecialchars($row['status']) . '</td>
+                                        <td><a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '" style="color: #5f8cecff;">View More</a></td>
+                                        
+                                        </tr>'
+                                        ;
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script defer>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentUser = <?php echo json_encode($currentUser); ?>;
+            console.log(currentUser);
+        });
+    </script>
 </body>
 
 </html>

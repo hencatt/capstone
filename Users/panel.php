@@ -10,6 +10,8 @@ $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
+$currentFname = $user['fname'];
+$currentLname = $user['lname'];
 
 
 ?>
@@ -44,22 +46,66 @@ $currentCampus = $user['campus'];
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, eius?
                     </div>
                 </div>
-
                 <div class="row mt-4">
-                    <div class="col">
-                        <label>##TITLE</label>
+
+                    <div class="table-responsive" style="background-color: white;
+                    padding: 10px;
+                    border-radius: 10px;
+                    ">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center; vertical-align: middle;">Title</th>
+                                    <th style="text-align: center; vertical-align: middle;">Authors</th>
+                                    <th style="text-align: center; vertical-align: middle;">Date</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- LOOP HERE -->
+                                <?php
+                                $con = con();
+                                $sql = "SELECT * FROM research_tbl";
+                                $result = $con->query($sql);
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo '
+                                                <tr>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    ' . htmlspecialchars($row['research_title']) . '</td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    ' . htmlspecialchars($row['author']) . ', ' .
+                                            htmlspecialchars($row['co_author']) . '</td>
+                                                <td style="text-align: center; vertical-align: middle;">
+                                                    ' . htmlspecialchars($row['date_started']) . '</td>
+                                                <td class="d-flex justify-content-center align-items-center gap-2">
+                                                    <button class="btn btn-outline-success">Approve</button>
+                                                    <button class="btn btn-outline-danger">Reject</button>
+                                                </td>
+                                                </tr>
+                                                ';
+                                    }
+                                }
+                                ?>
+
+                                <!-- DUMMY -->
+                                <tr>
+                                    <td style="text-align: center; vertical-align: middle;">GAD Portal</td>
+                                    <td style="text-align: center; vertical-align: middle;">Ashley, Ivan, Jayson,
+                                        Henreich</td>
+                                    <td style="text-align: center; vertical-align: middle;">01/02/25</td>
+                                    <td class="d-flex justify-content-center align-items-center gap-2">
+                                        <button class="btn btn-outline-success">Approve</button>
+                                        <button class="btn btn-outline-danger">Reject</button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col">
-                        <label>##AUTHOR</label>
-                    </div>
-                    <div class="col">
-                        <label>##DATE</label>
-                    </div>
-                    <div class="col">
-                        <label>##BUTTONS</label>
-                    </div>
+
                 </div>
-                
+
             </div>
         </div>
     </div>
