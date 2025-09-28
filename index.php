@@ -116,10 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEUST GAD Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https:/     /fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https:/     /fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="variables.php" type="php">
 </head>
 
@@ -128,10 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body {
             font-family: "Poppins", sans-serif;
             margin: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #FF6F91, #6A5ACD);
-            background-attachment: fixed;
-            background-size: cover;
+            background-color: white;
         }
 
         @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
@@ -196,60 +196,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div> -->
 
         <div class="wrapperMain">
-            <div class="row" style="
-                overflow-y: hidden; 
-                filter: drop-shadow(1px 8px 10px); border-radius: 10px;
-                background: linear-gradient(135deg, #FFA9C1, #9C8CFF);
-                width: 1000px;
-                transform: translate(9.5rem, 2rem);
-                position:fixed;
-                ">
 
-                <div class="col">
-
-                    <div class="row d-flex justify-content-center align-items-center mainContent">
-                        <div class="col" style="text-align: center;">
-                            <img src="/capstone/assets/recreateSVG.svg" alt=""
-                                style="
-                            width: 400px;
-                            ">
-                        </div>
-                        <div class="col-6 d-flex flex-column justify-content-center" style="background-color: white; padding:100px; border-radius:10px">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="wrapper">
-                                        <svg>
-                                            <text x="50%" y="50%" dy=".35em" text-anchor="middle">
-                                                GAD Portal
-                                            </text>
-                                        </svg>
+            <div style="
+           position:fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-65%, -55%);
+            ">
+                <div class="row" style="
+                    overflow-y: hidden;
+                    filter: drop-shadow(1px 8px 10px); border-radius: 10px;
+                    background: linear-gradient(135deg, #FFA9C1, #9C8CFF);
+                    width: 1000px;
+                    transform: translate(9.5rem, 2rem);
+                    ">
+                    <div class="col">
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <div class="col" style="text-align: center;">
+                                <img src="/capstone/assets/recreateSVG.svg" alt="" style="
+                                width: 400px;
+                                ">
+                            </div>
+                            <div class="col-6 d-flex flex-column justify-content-center"
+                                style="background-color: white; padding:100px; border-radius:10px">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="wrapper">
+                                            <svg>
+                                                <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+                                                    GAD Portal
+                                                </text>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
+                                <form action="" method="POST">
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <label for="inputEmail" class="form-label"><b>Email or Username</b></label>
+                                            <input type="text" class="form-control" id="inputEmail" name="email"
+                                                placeholder="Enter Email or Username">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <label for="inputPassword" class="form-label"><b>Password</b></label>
+                                            <input type="password" class="form-control" name="pass" id="inputPassword"
+                                                placeholder="Password">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-5">
+                                        <div class="col d-flex flex-column gap-3">
+                                            <div class="g-recaptcha"
+                                                data-sitekey="6Ldtlh8rAAAAAM6CbfFcO66F4VsODtgXiws_p-Gp"></div>
+                                            <input type="submit" name="login" value="Login" class="btn btn-primary">
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                           <form action="" method="POST">
-                                        <div class="row mt-3">
-                                            <div class="col">
-                                                <label for="inputEmail" class="form-label"><b>Email or Username</b></label>
-                                                <input type="text" class="form-control" id="inputEmail" name="email" placeholder="Enter Email or Username">
-                                            </div>
-                                        </div>
-                                        <div class="row mt-3">
-                                            <div class="col">
-                                                <label for="inputPassword" class="form-label"><b>Password</b></label>
-                                                <input type="password" class="form-control" name="pass" id="inputPassword" placeholder="Password">
-                                            </div>
-                                        </div>
-                                        <div class="row mt-5">
-                                            <div class="col d-flex flex-column gap-3">
-                                                <div class="g-recaptcha" data-sitekey="6Ldtlh8rAAAAAM6CbfFcO66F4VsODtgXiws_p-Gp"></div>
-                                                <input type="submit" name="login" value="Login" class="btn btn-primary">
-                                            </div>
-                                        </div>
-                                    </form>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </body>
