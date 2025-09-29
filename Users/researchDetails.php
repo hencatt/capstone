@@ -26,6 +26,7 @@ if ($result->num_rows > 0) {
     $researchTitle = htmlspecialchars($row['research_title']);
     $researchDescription = htmlspecialchars($row['description']);
     $researchAuthors = htmlspecialchars($row['co_author']);
+    $mainAuthor = htmlspecialchars($row['author']);
 }
 ?>
 
@@ -69,7 +70,7 @@ if ($result->num_rows > 0) {
                     </div>
                     <div class="col-3" style="background-color: white; padding: 10px; border-radius: 10px;">
                         <h5>Authors</h5>
-                        <?= $researchAuthors ?> 
+                        <?= $mainAuthor . ' ' . $researchAuthors; ?> 
                     </div>
                 </div>
             </div>
