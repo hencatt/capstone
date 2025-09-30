@@ -26,9 +26,9 @@ if (isset($_POST['submitResearch'])) {
     $title = trim($_POST['researchTitle']);
     $dateStarted = $_POST['dateStarted'];
     $dateComplete = $_POST['dateComplete'];
-    $dateSubmitted = $_POST['inputDateNow'];
+    $dateSubmitted = ($_POST['inputDateNow']);
     $agenda = $_POST['researchAgenda'];
-    $sdg = $_POST['researchSdg'];
+    $sdg = $_POST['researchSDG'];
     // $status = $_POST['researchStatus'];
     $description = trim($_POST['researchDescription']);
 
@@ -132,7 +132,7 @@ if (isset($_POST['submitResearch'])) {
                                 <div class="col">
                                     <label for="inputDateNow" class="form-label">Date</label>
                                     <input type="date" class="form-control" id="inputDateNow" name="inputDateNow"
-                                        value=<?= date("Y-m-d") ?> disabled required>
+                                        value=<?= date("Y-m-d") ?> readonly required>
                                 </div>
                             </div>
                             <div class="row mt-5">

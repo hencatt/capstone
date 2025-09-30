@@ -94,20 +94,48 @@ if (isset($_POST['comment_send'])) {
                         <button class="btn btn-outline-primary">View PDF</button>
                     </div>
                 </div>
-                <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
-                    <div class="col">
+                <div class="row mt-3">
+                    <div class="col-7" style="background-color: white; padding: 10px; border-radius: 10px;">
                         <p><?= $researchDescription ?></p>
                     </div>
+
+                    <div class="col vertical-align: middle;">
+
+                        <div class="row">
+                            <div class="col" style="text-align: center;"><i>NEUST Research Agenda</i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="text-align: center;"><b><?= $agenda ?></b>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="col vertical-align: middle;">
+
+                        <div class="row">
+                            <div class="col" style="text-align: center;"><i>Sustainable Development Goals</i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="text-align: center;"><b><?= $sdg ?></b>
+                            </div>
+                        </div>
+
+                    </div>
+               
+
                 </div>
                 <div class="row mt-3 gap-5">
-                    <div class="col gap-3" style="background-color: white; padding: 20px; border-radius: 10px;">
+                    <div class="col gap-3" style="background-color: white; padding: 25px; border-radius: 10px;">
                         <h5><i>Comments</i></h5>
 
                         <?php if ($currentPosition === "Panel") {
                             echo '
                             <form method="POST">
                             <div class="row d-flex align-items-center">
-                            <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center">
+                            <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center" style="margin-left: 1.3rem">
                             <input type="text" name="comments" id="comments" placeholder="Enter comment here..."
                                         class="form-control">
                                         <button class="btn btn-outline-primary" id="comment_send"
@@ -138,20 +166,27 @@ if (isset($_POST['comment_send'])) {
 
                                 while ($row = $result->fetch_assoc()) {
                                     echo '
-                                <div class="row mt-3 d-flex flex-row">
-                                    <div style="width:max-content;">
-                                        <h5>' . htmlspecialchars($row['commentor_name']) . '</h5>
-                                    </div>
-                                    <div class="col">
-                                        <i class="blockquote-footer">' . htmlspecialchars($row['comment_datetime']) . '</i>
-                                    </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col">
-                                        <label for="">' . htmlspecialchars($row['comment']) . '</label>
+                                <div style="border: solid 1px black; margin-top: 1.3rem; padding:20px; border-radius: 10px">
+                                    <div class="row mt-3 d-flex flex-row">
+                                        <div class="d-flex flex-row" style="width:max-content;">
+                                         <span class="material-symbols-outlined">
+                                                    person
+                                                    </span>
+                                            <h5 style="margin-left: 1rem">' . htmlspecialchars($row['commentor_name']) . '</h5>
+                                        </div>
+                                        <div class="col">
+                                            <i class="blockquote-footer">' . htmlspecialchars($row['comment_datetime']) . '</i>
+                                        </div>
                                     </div>
-                                </div>';
+                                    <div class="row mt-1">
+                                        <div class="col">
+                                            <label for="">' . htmlspecialchars($row['comment']) . '</label>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                ';
                                 }
                                 ?>
 
@@ -160,9 +195,26 @@ if (isset($_POST['comment_send'])) {
                         </div>
                     </div>
 
-                    <div class="col-3" style="background-color: white; padding: 20px; border-radius: 10px;">
+                    <div class="col-3 d-flex flex-column"
+                        style="background-color: white; padding: 25px; border-radius: 10px;">
                         <h5>Authors</h5>
-                        <?= $mainAuthor . ' ' . $researchAuthors; ?>
+                        <div class="row">
+                            <div class="col d-flex flex-column justify-content-center">
+                                <ul>
+                                    <?php
+                                    echo "<li class='mt-4' style='list-style-type: none'> <span class='material-symbols-outlined'>
+                                                person
+                                                </span><span style='margin-left: 1rem'>" . htmlspecialchars($mainAuthor) . "</span></li>";
+                                    $researchAuthorsArray = explode(", ", $researchAuthors);
+                                    foreach ($researchAuthorsArray as $coAuth) {
+                                        echo "<li class='mt-3' style='list-style-type: none'> <span class='material-symbols-outlined'>
+                                                    person
+                                                    </span><span style='margin-left: 1rem'>" . htmlspecialchars($coAuth) . "</span></li>";
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
