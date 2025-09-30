@@ -10,6 +10,8 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
+$currentResearch = "";
+$previousPage = "";
 if (isset($_GET['id'])) {
     $currentResearch = $_GET['id'];
     $currentResearch = (int) $currentResearch;
@@ -36,7 +38,17 @@ if ($result->num_rows > 0) {
     $sdg = htmlspecialchars($row['research_sdg']);
 }
 
-if(isset($_POST['comment_send'])){
+if (isset($_POST['comment_send'])) {
+    $currentDate = date('Y-m-d H:i:s');
+    $comment = htmlspecialchars($_POST['comments']);
+    $con = con();
+    $sql = "INSERT INTO comments_tbl (comment, commentor_name, comment_datetime, research_id) VALUES (?, ?, ?, ?)";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("sssi", $comment, $currentUser, $currentDate, $currentResearch);
+    if ($stmt->execute()) {
+        echo "<script>alert('Comment Posted!')</script>";
+    }
+    ;
 
 }
 
@@ -71,16 +83,16 @@ if(isset($_POST['comment_send'])){
                         <!-- TODO DATE SUBMITTED -->
                         <figcaption class="blockquote-footer align-self-end"><?= $researchDateSubmitted; ?></figcaption>
                     </div>
-                    <?php
-                    if ($currentPosition === "Panel") {
-                        echo '
                     <div class="col d-flex justify-content-end gap-3">
+                        <?php
+                        if ($currentPosition === "Panel") {
+                            echo '
                         <button class="btn btn-success">Approve</button>
                         <button class="btn btn-danger">Reject</button>
+                        ';
+                        } ?>
                         <button class="btn btn-outline-primary">View PDF</button>
                     </div>
-                        ';
-                    } ?>
                 </div>
                 <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
                     <div class="col">
@@ -91,36 +103,58 @@ if(isset($_POST['comment_send'])){
                     <div class="col gap-3" style="background-color: white; padding: 20px; border-radius: 10px;">
                         <h5><i>Comments</i></h5>
 
-
-                        <div class="row d-flex align-items-center">
+                        <?php if ($currentPosition === "Panel") {
+                            echo '
+                            <form method="POST">
+                            <div class="row d-flex align-items-center">
                             <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center">
-                                <input type="text" name="comments" id="comments" placeholder="Enter comment here..."
-                                    class="form-control">
-                                <form action="POST">
-                                    <button class="btn btn-outline-primary" id="comment_send"
-                                        name="comment_send">send</button>
-                                </form>
-                            </div>
-                        </div>
+                            <input type="text" name="comments" id="comments" placeholder="Enter comment here..."
+                                        class="form-control">
+                                        <button class="btn btn-outline-primary" id="comment_send"
+                                            name="comment_send">send</button>
+                                            </div>
+                                            </div>
+                                            </form>
+                            ';
+                        }
+                        ?>
+
 
                         <div class="row " style="padding: 20px; border-radius: 10px;">
                             <div class="col">
 
                                 <!-- loop comments here -->
-                                <div class="row mt-3 d-flex flex-row gap-1">
+                                <?php
+                                $con = con();
+                                $sql = "SELECT c.comment_id, c.commentor_name, c.comment, c.comment_datetime
+                                        FROM comments_tbl c
+                                        JOIN research_tbl r ON c.research_id = r.id
+                                        WHERE r.id = ?";
+
+                                $stmt = $con->prepare($sql);
+                                $stmt->bind_param("i", $currentResearch);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+
+                                while ($row = $result->fetch_assoc()) {
+                                    echo '
+                                <div class="row mt-3 d-flex flex-row">
                                     <div style="width:max-content;">
-                                        <h5>Pane Smith</h5>
+                                        <h5>' . htmlspecialchars($row['commentor_name']) . '</h5>
                                     </div>
                                     <div class="col">
-                                        <i class="blockquote-footer">##dateHere</i>
+                                        <i class="blockquote-footer">' . htmlspecialchars($row['comment_datetime']) . '</i>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col">
-                                        <label for="">a comment here</label>
+                                        <label for="">' . htmlspecialchars($row['comment']) . '</label>
                                     </div>
-                                </div>
+                                </div>';
+                                }
+                                ?>
+
 
                             </div>
                         </div>
