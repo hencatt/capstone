@@ -78,16 +78,14 @@ $currentLname = $user['lname'];
                                             htmlspecialchars($row['co_author']) . '</td>
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     ' . htmlspecialchars($row['date_started']) . '</td>
-                                                <td class="d-flex justify-content-center align-items-center gap-2">
-                                                    <button class="btn btn-outline-success">Approve</button>
-                                                    <button class="btn btn-outline-danger">Reject</button>
-                                                </td>
+                                                    <td style="vertical-align: middle;">
+                                                    <a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=Approval" style="color: #5f8cecff;">
+                                                    View</a></td>
                                                 </tr>
                                                 ';
                                     }
                                 }
                                 ?>
-
                             </tbody>
                         </table>
                     </div>

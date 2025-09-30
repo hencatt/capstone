@@ -26,7 +26,10 @@ if (isset($_POST['submitResearch'])) {
     $title = trim($_POST['researchTitle']);
     $dateStarted = $_POST['dateStarted'];
     $dateComplete = $_POST['dateComplete'];
-    $status = $_POST['researchStatus'];
+    $dateSubmitted = ($_POST['inputDateNow']);
+    $agenda = $_POST['researchAgenda'];
+    $sdg = $_POST['researchSDG'];
+    // $status = $_POST['researchStatus'];
     $description = trim($_POST['researchDescription']);
 
     // Handle file upload
@@ -45,12 +48,13 @@ if (isset($_POST['submitResearch'])) {
             $coauthors[] = $coauthor['fname'] . " " . $coauthor['mname'] . (empty($coauthor['lname']) ? "" : " " . $coauthor['lname']);
         }
     }
+
     $coauthorStr = implode(", ", $coauthors);
 
     if (move_uploaded_file($fileTmp, $targetFile)) {
         // Insert research info with author and co-author(s)
-        $stmt = $con->prepare("INSERT INTO research_tbl (research_title, date_started, date_completed, status, file, description, author, co_author) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssss", $title, $dateStarted, $dateComplete, $status, $targetFile, $description, $author, $coauthorStr);
+        $stmt = $con->prepare("INSERT INTO research_tbl (research_title, date_started, date_completed, file, description, author, co_author, date_submitted, research_agenda, research_sdg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $coauthorStr, $dateSubmitted, $agenda, $sdg);
         $stmt->execute();
         $stmt->close();
 
@@ -109,7 +113,8 @@ if (isset($_POST['submitResearch'])) {
                 <div class="row mt-5">
                     <h1>Research</h1>
                     <div class="col">
-                        <p>Upload your New Research. After uploading the file, your research will be reviewed by the admin.</p>
+                        <p>Upload your New Research. After uploading the file, your research will be reviewed by the
+                            admin.</p>
                     </div>
                 </div>
                 <!-- Research Submission Form -->
@@ -119,10 +124,39 @@ if (isset($_POST['submitResearch'])) {
                             <div class="row mt-3">
                                 <div class="col">
                                     <label for="inputResearchTitle" class="form-label">Research Title</label>
-                                    <input type="text" class="form-control" id="inputResearchTitle" name="researchTitle" placeholder="Enter title here..." required>
+                                    <input type="text" class="form-control" id="inputResearchTitle" name="researchTitle"
+                                        placeholder="Enter title here..." required>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <label for="inputDateNow" class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="inputDateNow" name="inputDateNow"
+                                        value=<?= date("Y-m-d") ?> readonly required>
                                 </div>
                             </div>
                             <div class="row mt-5">
+                                <div class="col">
+                                    <label for="">Author</label>
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Last Name</th>
+                                                <th>First Name</th>
+                                                <th>Middle Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><?php echo $currentLname; ?></td>
+                                                <td><?php echo $currentFname; ?></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col">
                                     <div class="d-flex justify-content-between align-items-center relative">
                                         <label for="">Co-Authors</label>
@@ -146,30 +180,37 @@ if (isset($_POST['submitResearch'])) {
                             </div>
 
                             <!-- Co-Authors Modal -->
-                            <div class="modal fade" id="coauthorModal" tabindex="-1" aria-labelledby="coauthorModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="coauthorModal" tabindex="-1"
+                                aria-labelledby="coauthorModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="coauthorModalLabel">Add Co-Author</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="mb-3">
                                                 <label for="coauthor_lastname" class="form-label">Last Name</label>
-                                                <input type="text" class="form-control" id="coauthor_lastname" name="coauthor_lastname" placeholder="Last Name">
+                                                <input type="text" class="form-control" id="coauthor_lastname"
+                                                    name="coauthor_lastname" placeholder="Last Name">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="coauthor_firstname" class="form-label">First Name</label>
-                                                <input type="text" class="form-control" id="coauthor_firstname" name="coauthor_firstname" placeholder="First Name">
+                                                <input type="text" class="form-control" id="coauthor_firstname"
+                                                    name="coauthor_firstname" placeholder="First Name">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="coauthor_middlename" class="form-label">Middle Name</label>
-                                                <input type="text" class="form-control" id="coauthor_middlename" name="coauthor_middlename" placeholder="Middle Name">
+                                                <input type="text" class="form-control" id="coauthor_middlename"
+                                                    name="coauthor_middlename" placeholder="Middle Name">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary" id="addCoauthorsBtn">Add</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary"
+                                                id="addCoauthorsBtn">Add</button>
                                         </div>
                                     </div>
                                 </div>
@@ -196,22 +237,26 @@ if (isset($_POST['submitResearch'])) {
                             <div class="row mt-4">
                                 <div class="col">
                                     <label for="inputEmail" class="form-label">Email</label>
-                                    <input type="text" name="inputEmail" id="inputEmail" class="form-control" required placeholder="Enter your email...">
+                                    <input type="text" name="inputEmail" id="inputEmail" class="form-control" required
+                                        placeholder="Enter your email...">
                                     <!-- note -->
                                     <br>
-                                    <figcaption class="blockquote-footer d-flex align-items-end">(Note: Only primary author required)</figcaption>
+                                    <figcaption class="blockquote-footer d-flex align-items-end">(Note: Only primary
+                                        author required)</figcaption>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <label for="dateStarted" class="form-label">Date Started</label>
-                                    <input type="date" name="dateStarted" id="dateStarted" class="form-control" required>
+                                    <input type="date" name="dateStarted" id="dateStarted" class="form-control"
+                                        required>
                                 </div>
                             </div>
                             <div class="row mt-3">
                                 <div class="col">
                                     <label for="dateComplete" class="form-label">Date Completed</label>
-                                    <input type="date" name="dateComplete" id="dateComplete" class="form-control" required>
+                                    <input type="date" name="dateComplete" id="dateComplete" class="form-control"
+                                        required>
                                 </div>
                             </div>
                             <div class="row mt-5 mb-5">
@@ -228,23 +273,71 @@ if (isset($_POST['submitResearch'])) {
                             <div class="row mt-3">
                                 <div class="col">
                                     <label for="researchUpload" class="form-label">Upload File</label>
-                                    <input type="file" name="researchUpload" id="researchUpload" class="form-control" required>
+                                    <input type="file" name="researchUpload" id="researchUpload" class="form-control"
+                                        required>
                                 </div>
                             </div>
+
                             <div class="row mt-3">
                                 <div class="col">
-                                    <label for="researchDescription" class="form-label">Research Description/Abstract</label>
-                                    <textarea name="researchDescription" id="researchDescription" class="form-control" style="height: 400px;" required></textarea>
+                                    <label for="researchAgenda" class="form-label">NEUST Research Agenda</label>
+                                    <select name="researchAgenda" id="researchAgenda" class="form-select">
+                                        <option value="" selected disabled>Select Research Agenda</option>
+                                        <option value="ICT">Information and Communication Technology
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
+
                             <div class="row mt-3">
                                 <div class="col">
-                                    <!-- EXTRA HERE -->
+                                    <label for="researchSDG" class="form-label">Sustainable Development Goals</label>
+                                    <select name="researchSDG" id="researchSDG" class="form-select">
+                                        <option value="" selected disabled>Select SDG</option>
+                                        <option value="No Poverty">
+                                            SDG 1 - No Poverty</option>
+                                        <option value="Zero Hunger">
+                                            SDG 2 - Zero Hunger</option>
+                                        <option value="Good Health and Well Being">
+                                            SDG 3 - Good Health and Well Being</option>
+                                        <option value="Quality Education">
+                                            SDG 4 - Quality Education</option>
+                                        <option value="Gender Equality">
+                                            SDG 5 - Gender Equality</option>
+                                        <option value="Clean Water and Sanitization">
+                                            SDG 6 - Clean Water and Sanitization</option>
+                                        <option value="Affordable and Clean Energy">
+                                            SDG 7 - Affordable and Clean Energy</option>
+                                        <option value="Decent Work and Economic Growth">
+                                            SDG 8 - Decent Work and Economic Growth</option>
+                                        <option value="Industry, Innovation and Infrastructure">
+                                            SDG 9 - Industry, Innovation and Infrastructure</option>
+                                        <option value="Reduced Inequalities">
+                                            SDG 10 - Reduced Inequalities</option>
+                                        <option value="Sustainable Cities and Communities">
+                                            SDG 11 - Sustainable Cities and Communities</option>
+                                        <option value="Responsible Consumption">
+                                            SDG 12 - Responsible Consumption</option>
+                                        <option value="Climate Action">
+                                            SDG 13 - Climate Action</option>
+                                        <option value="Life Below Water">
+                                            SDG 14 - Life Below Water</option>
+                                        <option value="Life on Land">
+                                            SDG 15 - Life on Land</option>
+                                        <option value="Peace, Justice and Strong Institution">
+                                            SDG 16 - Peace, Justice and Strong Institution</option>
+                                        <option value="Partnerships and Goals">
+                                            SDG 17 - Partnerships and Goals</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="row mt-3">
+
+                            <div class="row mt-5">
                                 <div class="col">
-                                    <!-- ANOTHER EXTRA -->
+                                    <label for="researchDescription" class="form-label">Research
+                                        Description/Abstract</label>
+                                    <textarea name="researchDescription" id="researchDescription" class="form-control"
+                                        style="height: 400px;" required></textarea>
                                 </div>
                             </div>
                             <div class="row mt-5 mb-3">
@@ -262,12 +355,12 @@ if (isset($_POST['submitResearch'])) {
     <script>
         let coauthors = []; // global array
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             const coAuthButton = $('#coAuthorBtn');
             $('#coAuthorsModal').hide();
 
             // Make updateCoauthorsList globally accessible
-            window.updateCoauthorsList = function() {
+            window.updateCoauthorsList = function () {
                 const tbody = document.querySelector('#coauthorsTable tbody');
                 tbody.innerHTML = '';
                 coauthors.forEach((c, idx) => {
@@ -281,15 +374,15 @@ if (isset($_POST['submitResearch'])) {
                 });
             };
 
-            window.removeCoauthor = function(idx) {
+            window.removeCoauthor = function (idx) {
                 coauthors.splice(idx, 1);
                 updateCoauthorsList();
             }
 
             // Load modal content
-            $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function() {
+            $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function () {
                 // Delegate click event to dynamically added employee rows
-                $('#coAuthorsModal').on('click', '.employeeRow', function() {
+                $('#coAuthorsModal').on('click', '.employeeRow', function () {
                     const fname = $(this).data('fname');
                     const mname = $(this).data('mname');
                     const lname = $(this).data('lname');
@@ -308,21 +401,21 @@ if (isset($_POST['submitResearch'])) {
                 });
 
                 // Close modal button inside loaded content
-                $('#closeCoAuthorModal').on('click', function() {
+                $('#closeCoAuthorModal').on('click', function () {
                     $('#coAuthorsModal').hide();
                     coAuthButton.text("Add Co-Authors");
                 });
             });
 
             // Toggle modal
-            coAuthButton.on("click", function() {
+            coAuthButton.on("click", function () {
                 $('#coAuthorsModal').toggle();
                 const isVisible = $('#coAuthorsModal').is(":visible");
                 coAuthButton.text(isVisible ? ">>>" : "Add Co-Authors");
             });
 
             // Click outside to close
-            $('body').on("click", function(e) {
+            $('body').on("click", function (e) {
                 if (!$(e.target).closest('#coAuthorsModal, #coAuthorBtn').length && $('#coAuthorsModal').is(':visible')) {
                     $('#coAuthorsModal').hide();
                     coAuthButton.text("Add Co-Authors");

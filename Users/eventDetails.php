@@ -11,6 +11,7 @@ $currentCampus = $user['campus'];
 
 checkUser($_SESSION['user_id'], $_SESSION['user_username']);
 
+$previousPage = $_GET['prev'];
 $eventId = $_GET['id'];
 $con = con();
 $sql = "SELECT id, 
@@ -77,7 +78,7 @@ if ($stmt->execute()) {
 
         <!-- MAIN CONTENTS -->
         <div class="col-10 mt-lg-3 mainContent">
-            <?php echo topbar("$currentUser", $currentPosition, "eventDetails", $eventTitle) ?>
+            <?php echo topbar("$currentUser", $currentPosition, "eventDetails", $eventTitle, $previousPage) ?>
             <div id="contents">
                 <div class="row mt-5">
                     <div class="col">
@@ -98,8 +99,7 @@ if ($stmt->execute()) {
                     ?>
                 </div>
                 <div class="row mt-3">
-                    <div class="col"
-                        style="background-color: white;
+                    <div class="col" style="background-color: white;
                     padding: 10px 15px;
                     border-radius: 10px;
                     ">

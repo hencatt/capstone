@@ -80,7 +80,7 @@ switch ($explodeClosestDate[1]) {
 $formattedClosestDate = $explodeClosestDate[1] . ". " . $explodeClosestDate[2] . ", " . $explodeClosestDate[0];
 $formattedCurrentDate = $explodeCurrentDate[1] . ". " . $explodeCurrentDate[2] . ", " . $explodeCurrentDate[0];
 
-function topbar($user, $role, $location, $pageTitle = null)
+function topbar($user, $role, $location, $pageTitle = null, $previousTitle = null)
 {
     if ($GLOBALS['closestEventDate'] < $GLOBALS['date']) {
         $eventStatus = "<label>No upcoming events</label>";
@@ -93,7 +93,7 @@ function topbar($user, $role, $location, $pageTitle = null)
     $backgroundColor = "white";
 
     echo
-    <<<EOD
+        <<<EOD
         
         <div class="row gap-5" id="topBar">
                     <div class="col-6 d-flex flex-row align-items-center">
@@ -160,22 +160,31 @@ function topbar($user, $role, $location, $pageTitle = null)
             $locationLabel = "";
             break;
     }
+
+    $backResearchDetails = "";
+
+    if ($previousTitle === "Approval") {
+        $backResearchDetails = "researchApproval.php";
+    } else if ($previousTitle === "View Researches") {
+        $backResearchDetails = "researchView.php";
+    }
+
     if ($location === "eventDetails" && !is_null($pageTitle)) {
         echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="events.php" 
         style="cursor: pointer;"
         onmouseover="this.style.textDecoration=`underline`"
-        onmouseout="this.style.textDecoration=`none`">Events</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
+        onmouseout="this.style.textDecoration=`none`">' . $previousTitle . '</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     } else if ($location === "researchDetails" && !is_null($pageTitle)) {
-        echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="researchView.php" 
+        echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="' . $backResearchDetails . '" 
         style="cursor: pointer;"
         onmouseover="this.style.textDecoration=`underline`"
-        onmouseout="this.style.textDecoration=`none`">View Researches</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
+        onmouseout="this.style.textDecoration=`none`">' . $previousTitle . '</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     } else {
         echo '<label>' . $category . ' ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     }
 
     echo
-    <<<EOD
+        <<<EOD
                     </div>
                     <div class="col-1 d-flex flex-row align-items-center justify-content-center"
                     style="
@@ -284,7 +293,8 @@ function sidebar($active, $role)
         case "viewLogs":
             $viewLogsOption = "active";
             $viewLogsStyle = $sidebarHighlight;
-    };
+    }
+    ;
 
     if ($role === "Director") {
         $destination = "director.php";
@@ -494,4 +504,5 @@ function sidebar($active, $role)
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
     }
-};
+}
+;

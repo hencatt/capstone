@@ -266,7 +266,7 @@ if (isset($_POST["deleteBtn"])) {
                                                 </div>
                                                 <div class='col-2 d-flex justify-content-center align-items-center'>
                                                             <div id='viewMore" . $j . "'>
-                                                                <h6><a href='eventDetails.php?id=" . $announceId . "' style='color: #5f8cecff;'>View More</a></h6>
+                                                                <h6><a href='eventDetails.php?id=" . $announceId . "&prev=Events' style='color: #5f8cecff;'>View More</a></h6>
                                                             </div>
                                                             <div id='" . $editDeleteId . "' style='display:none;'>
                                                             <button class='btn btn-outline-success editBtn btn-sm' data-target='editModal" . $j . "'><span class='material-symbols-outlined'>edit</span></button>

@@ -121,8 +121,25 @@ $tables = [
       `date_completed` date NOT NULL,
       `file` longblob NOT NULL,
       `description` varchar(500) NOT NULL,
-      `status` enum('Completed','Approved','Pending','Rejected') NOT NULL,
+      `status` enum('Approved','Pending','Rejected') NOT NULL DEFAULT 'Pending',
+      `date_submitted` date DEFAULT NULL,
+      `research_agenda` varchar(100) DEFAULT NULL,
+      `research_sdg` varchar(100) DEFAULT NULL,
       PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    ",
+
+    "comments_tbl" => "
+    CREATE TABLE IF NOT EXISTS `comments_tbl` (
+      `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+      `research_id` int(11) NOT NULL,
+      `comment` text NOT NULL,
+      `commentor_name` varchar(100) NOT NULL,
+      `comment_datetime` datetime NOT NULL,
+      PRIMARY KEY (`comment_id`),
+      CONSTRAINT `fk_research`
+        FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`)
+        ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     "
 ];
