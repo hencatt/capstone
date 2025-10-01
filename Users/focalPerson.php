@@ -119,7 +119,9 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                                         <div class="col">
                                             <h1>Employee</h1>
                                         </div>
-                                        <div class="col d-flex justify-content-end align-items-center gap-2">
+                                        <div class="col d-flex justify-content-end align-items-center gap-3">
+                                            <a href="./employees.php"><button class="btn btn-outline-primary">View
+                                                    More</button></a>
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#add_emp_modal">
                                                 Add Employee
@@ -131,7 +133,8 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                                     <div class="col">
                                         <!-- FILTER ROW -->
                                         <div class="row">
-                                            <div class="col d-flex align-items-center justify-content-end gap-3" id="filters">
+                                            <div class="col d-flex align-items-center justify-content-end gap-3"
+                                                id="filters">
                                             </div>
                                         </div>
                                         <div class="row mt-2" id="filterButtons">
@@ -177,9 +180,12 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                         </div>
                     </div>
                     <div class="row tableOverview">
-                        <div class="col-lg-9">
+                        <div class="col">
                             <!-- inventory overview -->
                             <h1>Inventory</h1>
+                        </div>
+                        <div class="col d-flex justify-content-end">
+                            <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
                         </div>
 
                         <!-- <div class="col d-flex align-items-center justify-content-end">
@@ -188,15 +194,12 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                                             <span class="material-symbols-outlined">add</span>
                                         </button>
                                     </div> -->
-                        
-                                    <div class="row d-flex justify-content-end">
-                            <div class="col-2" id="inventoryFilters">
-                                <!-- Filters Here -->
-                            </div>
-                        </div>
+
+
+
                         <div class="row mt-3 tableOverview">
                             <div style="max-height: 200px; overflow-y: auto;">
-                                <div class="col" id="inventoryTable" >
+                                <div class="col" id="inventoryTable">
                                 </div>
                             </div>
                         </div>
@@ -301,8 +304,8 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                         <!-- Employee Table -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control"
-                                placeholder="Enter Email" required>
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="contact_no" class="form-label">Contact No</label>
@@ -324,8 +327,7 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" name="add_employee" class="btn btn-primary">Add
                                 Employee</button>
                         </div>
@@ -414,15 +416,15 @@ createEmployeeFocalPerson("add_employee", $currentUser);
 
 <!-- SEARCH FUNCTION FOR EMPLOYEE SEARCH FUNCTION -->
 <script>
-    $(document).ready(function() {
-        $("#searchEmployeeInput").keyup(function() {
+    $(document).ready(function () {
+        $("#searchEmployeeInput").keyup(function () {
             var employeeName = $(this).val();
 
             console.log("Searching for: " + employeeName);
 
             $.post("../searchFunction.php", {
                 employeeSearch: employeeName
-            }, function(data, status) {
+            }, function (data, status) {
                 $("#employeeTableBody").parent().html(data);
             })
         });
@@ -431,14 +433,14 @@ createEmployeeFocalPerson("add_employee", $currentUser);
 
 <!-- SAVE FILTER FUNCTION -->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         const position = <?= json_encode($currentPosition) ?>;
         const campus = <?= json_encode($currentCampus) ?>;
         const dept = <?= json_encode($currentDepartment) ?>;
         $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
         $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
-        $('#filters').load("reusableHTML/filters.php", function() {
-            $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
+        $('#filters').load("reusableHTML/filters.php", function () {
+            $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
                 $('#department').prop('disabled', true);
                 $('#campus').prop('disabled', true);
                 filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");

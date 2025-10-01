@@ -99,11 +99,16 @@ deleteItemInventory("deleteItem", $currentUser);
                                 <div class="col">
                                     <h1>Employee</h1>
                                 </div>
+                                <div class="col d-flex justify-content-end">
+                                    <a href="./employees.php"><button class="btn btn-outline-primary">View
+                                            More</button></a>
+                                </div>
                             </div>
                             <!-- SEARCH BARS, FILTERS ETC ROWS -->
                             <!-- FILTER ROW -->
                             <div class="row">
-                                <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
+                                <div class="col d-flex flex-row justify-content-end align-items-center gap-3"
+                                    id="filters">
                                 </div>
                             </div>
                             <div class="row mt-2" id="filterButtons">
@@ -151,18 +156,16 @@ deleteItemInventory("deleteItem", $currentUser);
                     </div>
                 </div>
                 <div class="row tableOverview">
-                    <div class="col-lg-9">
+                    <div class="col">
                         <!-- inventory overview -->
                         <h1>Inventory</h1>
                     </div>
-                    <div class="col d-flex align-items-center justify-content-end">
+                    <div class="col d-flex align-items-center gap-3 justify-content-end">
+                        <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addItem">Add
                             Item</button>
                     </div>
-                    <div class="row d-flex justify-content-end">
-                        <div class="col-2" id="inventoryFilters">
-                        </div>
-                    </div>
+
                     <div class="row mt-5 table-responsive">
                         <div style="max-height: 200px; overflow-y: auto;">
                             <div class="col" id="inventoryTable">
@@ -190,8 +193,8 @@ deleteItemInventory("deleteItem", $currentUser);
                 <div class="modal-body">
                     <form action="" method="POST" enctype="multipart/form-data">
                         <label for="itemName">Item Name:</label><br>
-                        <input type="text" name="name" id="itemName" placeholder="(e.g. T-shirt)"
-                            class="form-control" required>
+                        <input type="text" name="name" id="itemName" placeholder="(e.g. T-shirt)" class="form-control"
+                            required>
                         <br><br>
                         <label for="itemName">Item Quantity:</label><br>
                         <input type="number" name="quantity" id="itemQuantity" placeholder="(e.g. 100)"
@@ -249,7 +252,6 @@ deleteItemInventory("deleteItem", $currentUser);
             </div>
         </div>
     </div>
-    </div>
 
     <!-- editItemModal -->
 
@@ -259,15 +261,15 @@ deleteItemInventory("deleteItem", $currentUser);
 
     <!-- SEARCH FUNCTION FOR EMPLOYEE SEARCH FUNCTION -->
     <script>
-        $(document).ready(function() {
-            $("#searchEmployeeInput").keyup(function() {
+        $(document).ready(function () {
+            $("#searchEmployeeInput").keyup(function () {
                 var employeeName = $(this).val();
 
                 console.log("Searching for: " + employeeName);
 
                 $.post("../searchFunction.php", {
                     employeeSearch: employeeName
-                }, function(data, status) {
+                }, function (data, status) {
                     $("#employeeTableBody").html(data);
                 })
             });
@@ -301,14 +303,14 @@ EOD;
 
     <!-- SAVE FILTER FUNCTION -->
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
             $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
-            $('#filters').load("./reusableHTML/filters.php", function() {
-                $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
+            $('#filters').load("./reusableHTML/filters.php", function () {
+                $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
                     filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
                     resetFilterFunction(position);

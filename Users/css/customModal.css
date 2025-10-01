@@ -65,7 +65,7 @@
 
 
 /* PERSONAL INFO */
-.modal {
+.modalInfo {
     position: fixed;
     top: 0;
     left: 0;
@@ -79,14 +79,14 @@
     transition: opacity 0.3s ease-in-out;
 }
 
-.modal.open {
+.modalInfo.open {
     opacity: 1;
     visibility: visible;
     display: flex;
 }
 
 
-.modal-content {
+.modalInfo-content {
     background: white;
     padding: 20px;
     border-radius: 10px;

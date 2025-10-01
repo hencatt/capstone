@@ -47,10 +47,15 @@ deleteItemInventory("deleteItem", $currentUser);
                         <h1>Inventory</h1>
                     </div>
                 </div>
+                <div class="row" id="inventoryButtonsRow">
+                    <div class="col d-flex justify-content-end" id="inventoryButtons">
+                        <!-- BUTTONS HERE -->
+                    </div>
+                </div>
                 <div class="row mt-4 d-flex justify-content-end">
                     <div class="col-2" id="inventoryFilters">
                         <!-- TODO CATEGORY FUNCTION -->
-                        
+
                     </div>
                 </div>
                 <div class="row mt-3 tableOverview">
@@ -71,8 +76,18 @@ deleteItemInventory("deleteItem", $currentUser);
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
+
+            const inventoryButtonRow = $("#inventoryButtonsRow");
+
             $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
+            if (position === "Technical Assistant") {
+                $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function(){
+                    $("#viewMoreBtn").hide();
+                });
+            }else{
+                inventoryButtonRow.hide();
+            }
         })
     </script>
 
