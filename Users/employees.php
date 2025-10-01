@@ -291,7 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h1>Employees</h1>
                     </div>
                 </div>
-                <?php if ($currentPosition === "Director") {
+                <?php if ($currentPosition === "Director" || $currentPosition === "Focal Person") {
                     echo ' 
                         <div class="row mt-3 d-flex justify-content-end">
                             <div class="col-2">
@@ -339,14 +339,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="username" placeholder="Username" required>
                         <input type="password" name="pass" placeholder="Password" required>
                         <select name="pos" id="position" required>
+                        ';
+            if ($currentPosition === "Director") {
+                echo '
                             <option value="Director">Director</option>
                             <option value="Technical Assistant">Technical Assistant</option>
                             <option value="Focal Person">Focal Person</option>
-                        </select>
+                            <option value="Panel">Panel</option>
+                            <option value="RET Chair">RET Chair</option>
+                        </select>';
+            } else {
+                echo '
+                            <option value="Researcher">Researcher</option>
+                        </select>';
+            }
 
+            echo '
                         <!-- department -->
-                        <select name="dept" id="department" required>
-                            <option value="" disabled selected>Select Department</option>
+                        <select name="dept" id="department" required>';
+
+
+            if ($currentPosition === "Director") {
+                echo '<option value="" disabled selected>Select Department</option>
                             <option value="CPADM">CPADM</option>
                             <option value="CMBT">CMBT - BA, HM</option>
                             <option value="CoArch">CoArch</option>
@@ -360,16 +374,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="CAS">CAS</option>
                             <option value="IOLL">IOLL</option>
                             <option value="CON">CON</option>
-                            <option value="GS">GS</option>
+                            <option value="GS">GS</option>';
+            } else {
+                echo '
+                <option value=' . $currentDepartment . ' selected>' . $currentDepartment . '</option>
+                ';
+            }
+
+            echo '
                         </select>
-                        <select name="campus" id="campus" required>
+                        <select name="campus" id="campus" required>';
+
+            if ($currentPosition === "Director") {
+                echo '
                             <option value="" disabled selected>Select Campus</option>
                             <option value="Sumacab">Sumacab</option>
                             <option value="GT">Gen. Tinio</option>
                             <option value="San Isidro">San Isidro</option>
                             <option value="Gabaldon">Gabaldon</option>
                             <option value="Atate">Atate</option>
-                            <option value="Fort Magsaysay">Fort Magsaysay</option>
+                            <option value="Fort Magsaysay">Fort Magsaysay</option>';
+            } else {
+                echo '
+                <option value=' . $currentCampus . '>' . $currentCampus . '</option>
+                ';
+            }
+
+            echo '
                         </select>
                         <div class="buttons">
                             <button type="submit">Add</button>
