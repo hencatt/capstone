@@ -181,12 +181,19 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                             <!-- inventory overview -->
                             <h1>Inventory</h1>
                         </div>
+
                         <!-- <div class="col d-flex align-items-center justify-content-end">
                                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addItem">Add
                                             Item
                                             <span class="material-symbols-outlined">add</span>
                                         </button>
                                     </div> -->
+                        
+                                    <div class="row d-flex justify-content-end">
+                            <div class="col-2" id="inventoryFilters">
+                                <!-- Filters Here -->
+                            </div>
+                        </div>
                         <div class="row mt-3 tableOverview">
                             <div style="max-height: 200px; overflow-y: auto;">
                                 <div class="col" id="inventoryTable" >
@@ -428,9 +435,10 @@ createEmployeeFocalPerson("add_employee", $currentUser);
         const position = <?= json_encode($currentPosition) ?>;
         const campus = <?= json_encode($currentCampus) ?>;
         const dept = <?= json_encode($currentDepartment) ?>;
-        $('#inventoryTable').load("reusableHTML/inventoryTable.php");
+        $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+        $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
         $('#filters').load("reusableHTML/filters.php", function() {
-            $('#filterButtons').load("reusableHTML/filtersButton.php", function() {
+            $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
                 $('#department').prop('disabled', true);
                 $('#campus').prop('disabled', true);
                 filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");

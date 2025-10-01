@@ -2,157 +2,143 @@
 <html lang="en">
 
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/customModal.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-    <style>
-        .notifications {
-            background-color: red;
-            width: 350px;
-            height: 350px;
-            border-radius: 10px;
-            padding: 1rem;
-            position: absolute;
-            left: 50%;
-            z-index: 10;
-            display: none;
-        }
-    </style>
-
-    <div class="modal" id="modal">
-
-        <div class="innerModal">
-            <div class="row">
-                <div class="col">
-                    <h1>Edit</h1>
-                </div>
-                <div class="col d-flex justify-content-end align-items-center">
-                    <button class="btn btn-outline-secondary" id="closeModal">X</button>
-                </div>
+    <div id="modal" style="padding:20px; border-radius:10px;">
+        <div class="row">
+            <div class="col">
+                <h4>Personal Info</h4>
             </div>
-            <form method="POST">
-                <div class="row mt-4">
-                    <div class="col">
-                        <label for="oldDate" class="form-label">Old Date:</label>
-                        <input type="date" name="oldDate" id="oldDate" class="form-control">
-                    </div>
-                    <div class="col-1 d-flex align-items-end justify-content-center">
-                        <h3>-></h3>
-                    </div>
-                    <div class="col">
-                        <label for="inputNewDate" class="form-label">New Date:</label>
-                        <input type="date" name="inputNewDate" id="inputNewDate" placeholder="Type Something" class="form-control">
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col">
-                        <label for="oldTitle" class="form-label">Old Title:</label>
-                        <input type="text" name="oldTitle" id="oldTitle" class="form-control">
-                    </div>
-                    <div class="col-1 d-flex align-items-end justify-content-center">
-                        <h3>-></h3>
-                    </div>
-                    <div class="col">
-                        <label for="inputNewTitle" class="form-label">New Title:</label>
-                        <input type="text" name="inputNewTitle" class="form-control" placeholder="Enter Title Here.">
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col">
-                        <label for="oldDescription">Old Description:</label>
-                        <textarea name="oldDescription" id="oldDescription" placeholder="Enter Text Here..." class="form-control" style="height: 150px;"></textarea>
-                    </div>
-                    <div class="col-1 d-flex align-items-center justify-content-center">
-                        <h3>-></h3>
+            <div class="col">
+                <span class="material-symbols-outlined">
+                    close
+                </span>
+            </div>
+        </div>
+        <form method="POST">
+            <div style="width: 80%;">
+                <hr>
+                <div class="row d-flex">
+
+                    <!-- GROUP 1 -->
+                    <div class="col-8">
+                        <!-- ADDRESS INFO -->
+                        <div class="row d-flex flex-column">
+                            <div class="col">
+
+                            </div>
+                            <div class="col">
+                                <label for="inputAddress" class="form-label">Street Address</label>
+                                <input type="text" name="inputAddress" id="inputAddress" placeholder="123 Main Street"
+                                    class="form-control" require>
+                            </div>
+                            <div class="col">
+                                <label for="inputCity" class="form-label">City</label>
+                                <input type="text" name="inputCity" id="inputCity" placeholder="Enter City"
+                                    class="form-control" require>
+                            </div>
+                            <div class="col">
+                                <label for="inputProvince" class="form-label">Province</label>
+                                <input type="text" name="inputProvince" id="inputProvince" placeholder="Enter Province"
+                                    class="form-control" require>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col">
-                        <label for="inputNewDescription" class="form-label">New Description:</label>
-                        <textarea name="inputNewDescription" id="inputNewDescription" placeholder="Enter Text Here..." class="form-control" style="height: 150px;"></textarea>
+                    <!-- GROUP 2 -->
+                    <div class="col-4">
+                        <!-- GENDER INFO -->
+                        <div class="row d-flex flex-column">
+                            <div class="col">
+                                <div class="row">
+                                    <div class="col">
+
+                                        <label for="inputGender" class="form-label">Select Gender</label>
+                                        <select name="inputGender" id="inputGender" class="form-select" require>
+                                            <option value="" disabled selected>Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="LGBTQIA+">LGBTQIA+</option>
+                                        </select>
+                                        <input type="text" id="otherGender" name="otherGender"
+                                            placeholder="Enter Gender" class="mt-3 form-control">
+                                    </div>
+                                </div>
+
+                                <!-- INCOME -->
+                                <div class="row mt-4">
+                                    <div class="col">
+
+                                        <label for="inputIncome">Select Income</label>
+                                        <select name="inputIncome" id="inputIncome" class="form-select" require>
+                                            <option value="" disabled selected>Select Income</option>
+                                            <option value="Below 10000">Below 10,000</option>
+                                            <option value="10,000 - 30,000">10,000 - 30,000</option>
+                                            <option value="40,000 - 50,000">40,000 - 50,000</option>
+                                            <option value="Above 50,000">Above 65,000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <hr>
+
+                <!-- ROW 2 -->
                 <div class="row mt-5">
-                    <div class="col d-flex justify-content-end align-items-center gap-2">
-                        <button class="btn btn-outline-secondary" id="closeModal">Close</button>
-                        <button class="btn btn-outline-success">Save Changes</button>
+                    <div class="col">
+
+                        <!-- GROUP 3 -->
+                        <div class="col">
+                            <!-- CHILD -->
+                            <div class="row">
+                                <div class="col">
+                                    <label>
+                                        Do you have any children or other individuals for whom you are the primary
+                                        caregiver?
+                                    </label>
+                                    <div class="mt-2 form-check">
+                                        <input type="radio" class="form-check-input" name="inputChildren"
+                                            id="inputChildrenYes" value="Yes">
+                                        <label for="inputChildren" class="form-check">Yes</label>
+                                        <input type="radio" class="form-check-input" name="inputChildren"
+                                            id="inputChildrenNo" value="No">
+                                        <label for="inputChildren" class="form-check">No</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="inputChildrenNum">Please indicate the number of children or dependents
+                                        under your care:</label>
+                                    <input type="number" class="form-control" name="inputChildrenNum"
+                                        style="width: 100px;" placeholder="1">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-10">
+                                    <label for="inputConcern" class="form-label"> (Optional) Are there any medical or
+                                        psychological
+                                        conditions affecting your child or dependent that may require special
+                                        attention?</label>
+                                    <input class="form-control" type="text" placeholder="Enter text here"
+                                        name="inputConcern" id="inputConcern">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
                     </div>
                 </div>
-        </div>
+            </div>
         </form>
-
     </div>
-
-    <div class="deleteModal" id="deleteModal1">
-        <div class="deleteInnerModal">
-            <div class="row">
-                <div class="col">
-                    <h1>Delete Item</h1>
-                    <hr>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h6>Are you sure you want to delete this item?</h6>
-                </div>
-            </div>
-            <form method="POST">
-                <div class="row">
-                    <div class="col d-flex align-items-center justify-content-end mt-5 gap-2">
-                        <button class="btn btn-outline-secondary cancelBtn">No</button>
-                        <button class="btn btn-danger destroyBtn">Delete</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-    </div>
-
-    <div style="display: flex; justify-content:center; align-items:center; height:500px;">
-        <button style="width: 100px; height: 100px; text-align:center; font-size:large" class="btn btn-primary deleteBtn" data-target="deleteModal1">click me</button>
-    </div>
-
-    <div style="display:flex; justify-content: center; align-items: center;">
-        <button id="notifyBtn">
-            <label for="">this is a notif</label>
-        </button>
-    </div>
-    <div class="notifications">
-        <p>Holiday on this and that</p><br>
-        <p>Holiday on this and that</p><br>
-    </div>
-    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nesciunt quis facilis aliquid est, laudantium dolores atque molestias consequuntur distinctio corporis, doloremque enim deserunt id recusandae laboriosam esse nihil omnis dolor?
-
-    <script>
-        $(document).ready(function() {
-            const notifButton = $("#notifyBtn");
-            const notifDiv = $(".notifications");
-
-            notifButton.click(function() {
-                notifDiv.toggle();
-            });
-        });
-
-
-        const deleteButton = document.querySelectorAll(".deleteBtn");
-        const deleteModal = document.querySelectorAll(".deleteModal");
-        const cancelButton = document.querySelectorAll(".cancelBtn");
-        const destroyButton = document.querySelectorAll(".destroyBtn");
-
-        deleteButton.forEach(btn => {
-            btn.addEventListener("click", function() {
-                const targetId = btn.getAttribute("data-target");
-                const modal = document.getElementById(targetId);
-                modal.classList.add("open");
-            });
-        });
-    </script>
 </body>
 
 </html>

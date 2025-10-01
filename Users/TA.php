@@ -159,6 +159,10 @@ deleteItemInventory("deleteItem", $currentUser);
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addItem">Add
                             Item</button>
                     </div>
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-2" id="inventoryFilters">
+                        </div>
+                    </div>
                     <div class="row mt-5 table-responsive">
                         <div style="max-height: 200px; overflow-y: auto;">
                             <div class="col" id="inventoryTable">
@@ -301,9 +305,10 @@ EOD;
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
-            $('#inventoryTable').load("reusableHTML/inventoryTable.php");
-            $('#filters').load("reusableHTML/filters.php", function() {
-                $('#filterButtons').load("reusableHTML/filtersButton.php", function() {
+            $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+            $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
+            $('#filters').load("./reusableHTML/filters.php", function() {
+                $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
                     filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
                     resetFilterFunction(position);

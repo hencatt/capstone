@@ -16,7 +16,7 @@
     justify-content: center;
 }
 
-.deleteModal{
+.deleteModal {
     background-color: rgba(255, 255, 255, 0.817);
     opacity: 0;
     position: fixed;
@@ -34,7 +34,7 @@
     justify-content: center;
 }
 
-.innerModal{
+.innerModal {
     background-color: rgb(255, 255, 255);
     border: solid black 1px;
     border-radius: 6px;
@@ -43,7 +43,7 @@
     height: auto;
 }
 
-.deleteInnerModal{
+.deleteInnerModal {
     background-color: rgb(255, 255, 255);
     border: black solid 1px;
     border-radius: 6px;
@@ -57,7 +57,37 @@
     z-index: 999;
 }
 
-.deleteModal.open{
+.deleteModal.open {
     opacity: 1;
     z-index: 999;
+}
+
+
+
+/* PERSONAL INFO */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.open {
+    opacity: 1;
+    visibility: visible;
+    display: flex;
+}
+
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
 }

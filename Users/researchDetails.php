@@ -172,10 +172,10 @@ if (isset($_POST['comment_send'])) {
                                 $stmt->bind_param("i", $currentResearch);
                                 $stmt->execute();
                                 $result = $stmt->get_result();
-
-                                while ($row = $result->fetch_assoc()) {
-                                    echo '
-
+                                $rows = mysqli_num_rows($result);
+                                if ($rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo '
                                 <div style="border: solid 1px gray; margin-top: 1.3rem; padding:20px; border-radius: 10px">
                                     <div class="row mt-3 d-flex flex-row">
                                         <div class="d-flex flex-row" style="width:max-content;">
@@ -197,6 +197,14 @@ if (isset($_POST['comment_send'])) {
                                     
                                 </div>
                                 ';
+                                    }
+                                }else{
+                                  echo  '<div class="row mt-1">
+                                        <div class="col" style="text-align:center; overflow-wrap: anywhere; white-space: normal;
+                                            display: -webkit-box;">
+                                            <i>No comments yet.</i>
+                                        </div>
+                                    </div>';
                                 }
                                 ?>
 
@@ -233,11 +241,19 @@ if (isset($_POST['comment_send'])) {
 
     <script>
         const commentArea = document.getElementById("comments");
+        const commentBtn = document.getElementById("comment_send")
 
         commentArea.addEventListener("input", function () {
             this.style.height = "auto";
             this.style.height = this.scrollHeight + "px";
-        })
+        });
+        
+        commentArea.addEventListener("keydown", (e) => {
+            if(e.key === "Enter" && !e.shiftKey){
+                e.preventDefault();
+                commentBtn.click();
+            }
+        });
     </script>
 
 </body>

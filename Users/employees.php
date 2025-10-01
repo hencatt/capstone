@@ -273,12 +273,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form_edit_account select:focus {
             border-color: #007bff;
         }
-
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-        }
     </style>
     <?= addDelay("employees", $currentUser, $currentPosition); ?>
 
@@ -299,11 +293,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <?php if ($currentPosition === "Director") {
                     echo ' 
-                        <div class="row mt-3 justify-content-end">
-                            <button id="add_account" class="btn btn-outline-success">
-                            Add Account
-                            <ion-icon name="add-outline" class="add-icon"></ion-icon>
-                            </button>
+                        <div class="row mt-3 d-flex justify-content-end">
+                            <div class="col-2">
+                                <button id="add_account" class="btn btn-outline-success">
+                                Add Account
+                                <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                                </button>
+                            </div>
                         </div>
                     ';
                 } ?>
@@ -380,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'
-            ?>
+                ?>
         </div>
     </div>
 
@@ -442,7 +438,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <script>
-        window.addEventListener("pageshow", function(event) {
+        window.addEventListener("pageshow", function (event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
@@ -496,15 +492,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
 
             // Load filters, table, buttons first
-            $('#filters').load("reusableHTML/filters.php", function() {
-                $('#showEmployeeTable').load("reusableHTML/employeeTable.php", function() {
-                    $('#filterButton').load("reusableHTML/filtersButton.php", function() {
+            $('#filters').load("./reusableHTML/filters.php", function () {
+                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
+                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
                         // Now everything exists → safe to run
                         filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                         resetFilterFunction(position);
@@ -566,12 +562,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (confirm('Are you sure you want to deactivate this user?')) {
                             fetch('../deactivate_user.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                    },
-                                    body: `id=${userId}`,
-                                })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: `id=${userId}`,
+                            })
                                 .then(response => response.text())
                                 .then(data => {
                                     alert(data);
