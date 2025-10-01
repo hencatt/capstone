@@ -5,10 +5,13 @@ session_start();
 
 checkUser($_SESSION['user_id'], $_SESSION['user_username']);
 $user = getUser();
+$currentUserId = $user['id'];
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
+
+$picture1 = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fresize.indiatvnews.com%2Fen%2Fresize%2Fnewbucket%2F1200_-%2F2023%2F07%2Fmo-17-1690797256.jpg&f=1&nofb=1&ipt=a808a83c91a26e736c764cd3bdc37693f671fbe596f2f0b54dfa48b53812923a";
 
 $currentResearch = "";
 $previousPage = "";
@@ -38,6 +41,50 @@ if ($result->num_rows > 0) {
     $sdg = htmlspecialchars($row['research_sdg']);
 }
 
+function checkVotes($researchID)
+{
+    $approve = "Approved";
+    $reject = "Rejected";
+    $pending = "Pending";
+
+    $con = con();
+
+    $sql = "SELECT 
+                SUM(vote = 'Approve') AS approve_count,
+                SUM(vote = 'Reject')  AS reject_count
+            FROM votes_tbl
+            WHERE research_id = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $researchID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    $approve_count = (int) $row['approve_count'];
+    $reject_count = (int) $row['reject_count'];
+    $total_votes = $approve_count + $reject_count;
+
+    if ($total_votes >= 3) {
+        if ($approve_count === 3) {
+            $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+            $stmt2 = $con->prepare($sql2);
+            $stmt2->bind_param("si", $approve, $researchID);
+            $stmt2->execute();
+        } else {
+            $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+            $stmt2 = $con->prepare($sql2);
+            $stmt2->bind_param("si", $reject, $researchID);
+            $stmt2->execute();
+        }
+    } else {
+        $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+        $stmt2 = $con->prepare($sql2);
+        $stmt2->bind_param("si", $pending, $researchID);
+        $stmt2->execute();
+    }
+}
+
+
 if (isset($_POST['comment_send'])) {
     $currentDate = date('Y-m-d H:i:s');
     $comment = htmlspecialchars($_POST['comments']);
@@ -49,10 +96,45 @@ if (isset($_POST['comment_send'])) {
         echo "<script>alert('Comment Posted!')</script>";
     }
     ;
-
 }
 
+if (isset($_POST['confirmBtnApprove'])) {
+    $vote = "Approve";
+    $voteName = $currentUser;
+    $currentDateTime = date('Y-m-d H:i:s');
 
+    $con = con();
+    $sql = "INSERT INTO votes_tbl (vote, voter_name, voter_datetime, research_id, panel_id) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
+    if ($stmt->execute()) {
+        echo "<script>alert('Voted!')</script>";
+    }
+    ;
+
+    checkVotes($currentResearch);
+
+}
+;
+
+if (isset($_POST['confirmBtnReject'])) {
+    $vote = "Reject";
+    $voteName = $currentUser;
+    $currentDateTime = date('Y-m-d H:i:s');
+
+    $con = con();
+    $sql = "INSERT INTO votes_tbl (vote, voter_name, voter_datetime, research_id, panel_id) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
+    if ($stmt->execute()) {
+        echo "<script>alert('Voted!')</script>";
+    }
+    ;
+
+    checkVotes($currentResearch);
+
+}
+;
 ?>
 
 <!DOCTYPE html>
@@ -84,12 +166,13 @@ if (isset($_POST['comment_send'])) {
                         <figcaption class="blockquote-footer align-self-end"><?= $researchDateSubmitted; ?></figcaption>
                     </div>
                     <div class="col d-flex justify-content-end gap-3">
+
                         <?php
                         if ($currentPosition === "Panel") {
                             echo '
-                        <button class="btn btn-success">Approve</button>
-                        <button class="btn btn-danger">Reject</button>
-                        ';
+                            <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
+                            <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
+                            ';
                         } ?>
                         <button class="btn btn-outline-primary">View PDF</button>
                     </div>
@@ -133,25 +216,25 @@ if (isset($_POST['comment_send'])) {
                         <h5><i>Comments</i></h5>
                         <?php if ($currentPosition === "Panel") {
                             echo '
-                            <form method="POST">
+                        <form method="POST">
                             <div class="row d-flex align-items-center">
-                            <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center" style="margin-left: 1.3rem">
-                            <textarea 
-                            style="
-                            overflow: hidden;
-                            box-sizing: border-box;
-                            resize: none;
-                            border: 1px solid gray;
-                            padding: 10px;
-                            border-radius: 10px;
-                            width: 100%;"
-                            rows="1" cols="50"  name="comments" id="comments" placeholder="Enter comment here..."
-                            ></textarea>
-                                        <button class="btn btn-outline-primary" id="comment_send"
-                                            name="comment_send">send</button>
-                                            </div>
-                                            </div>
-                                            </form>
+                                <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center" style="margin-left: 1.3rem">
+                                <textarea 
+                                style="
+                                overflow: hidden;
+                                box-sizing: border-box;
+                                resize: none;
+                                border: 1px solid gray;
+                                padding: 10px;
+                                border-radius: 10px;
+                                width: 100%;"
+                                rows="1" cols="50"  name="comments" id="comments" placeholder="Enter comment here..."
+                                ></textarea>
+                                <button class="btn btn-outline-primary" id="comment_send"
+                                    name="comment_send">send</button>
+                                </div>
+                            </div>
+                        </form>
                             ';
                         }
                         ?>
@@ -191,15 +274,15 @@ if (isset($_POST['comment_send'])) {
                                     <div class="row mt-1">
                                         <div class="col" style="overflow-wrap: anywhere; white-space: normal;
                                             display: -webkit-box;">
-                                            ' . htmlspecialchars($row['comment']) . '
+                                            ' . html_entity_decode($row['comment']) . '
                                         </div>
                                     </div>
                                     
                                 </div>
                                 ';
                                     }
-                                }else{
-                                  echo  '<div class="row mt-1">
+                                } else {
+                                    echo '<div class="row mt-1">
                                         <div class="col" style="text-align:center; overflow-wrap: anywhere; white-space: normal;
                                             display: -webkit-box;">
                                             <i>No comments yet.</i>
@@ -214,7 +297,7 @@ if (isset($_POST['comment_send'])) {
                     </div>
 
                     <div class="col-3 d-flex flex-column"
-                        style="background-color: white; padding: 25px; border-radius: 10px;">
+                        style="background-color: white; padding: 25px; border-radius: 10px; max-height:280px;">
                         <h5>Authors</h5>
                         <div class="row">
                             <div class="col d-flex flex-column justify-content-center">
@@ -239,21 +322,87 @@ if (isset($_POST['comment_send'])) {
         </div>
     </div>
 
-    <script>
-        const commentArea = document.getElementById("comments");
-        const commentBtn = document.getElementById("comment_send")
+    <!-- MODALS -->
+    <div class="modalConfirmation" style="padding:20px; border: gray 1px solid; border-radius:10px;">
+        <div class="modalConfirmation-content" style="width: 20%;">
+            <div class="row">
+                <div class="col">
+                    <h6>Are you sure you want to do this?</h6>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col gap-3 d-flex justify-content-end">
+                    <form method="POST">
+                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-success" name="confirmBtnApprove"
+                            id="confirmBtnApprove">Confirm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        commentArea.addEventListener("input", function () {
-            this.style.height = "auto";
-            this.style.height = this.scrollHeight + "px";
-        });
-        
-        commentArea.addEventListener("keydown", (e) => {
-            if(e.key === "Enter" && !e.shiftKey){
-                e.preventDefault();
-                commentBtn.click();
-            }
-        });
+    <div class="modalConfirmationReject" style="padding:20px; border: gray 1px solid; border-radius:10px;">
+        <div class="modalConfirmation-content" style="width: 20%;">
+            <div class="row">
+                <div class="col">
+                    <h6>Are you sure you want to do this?</h6>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col gap-3 d-flex justify-content-end">
+                    <form method="POST">
+                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-success" name="confirmBtnReject"
+                            id="confirmBtnApprove">Confirm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        (function () {
+            const commentArea = document.getElementById("comments");
+            const commentBtn = document.getElementById("comment_send");
+            const approveBtn = document.getElementById("approveBtn");
+            const rejectBtn = document.getElementById("rejectBtn");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const confirmModal = document.querySelectorAll(".modalConfirmation");
+            const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
+
+            commentArea.addEventListener("input", function () {
+                this.style.height = "auto";
+                this.style.height = this.scrollHeight + "px";
+            });
+
+            commentArea.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    commentBtn.click();
+                }
+            });
+
+            approveBtn.addEventListener("click", function () {
+                confirmModal.forEach((modal) => {
+                    modal.classList.add("open");
+                });
+            });
+
+            rejectBtn.addEventListener("click", function () {
+                confirmModalReject.forEach((modal) => {
+                    modal.classList.add("open");
+                });
+            });
+
+            cancelBtn.addEventListener("click", function () {
+                confirmModal.forEach((modal) => {
+                    modal.classList.remove("open");
+                });
+            });
+
+        })();
     </script>
 
 </body>

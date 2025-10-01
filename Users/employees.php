@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo "<script>alert('Account Created!');</script>";
 
                 // Send credentials email to the new user
-                sendUserCredentials($email, $username, $plainPassword);
+                // sendUserCredentials($email, $username, $plainPassword);
             } else {
                 echo "<script>alert('Error: " . $conn->error . "');</script>";
             }
