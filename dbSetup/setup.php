@@ -141,6 +141,22 @@ $tables = [
         FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`)
         ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    ",
+
+    "votes_tbl" => "
+      CREATE TABLE IF NOT EXISTS `votes_tbl` (
+      `vote_id` int(11) NOT NULL AUTO_INCREMENT,
+      `vote` ENUM('Approve','Reject') NOT NULL,
+      `voter_name` VARCHAR(45) NOT NULL,
+      `voter_datetime` DATETIME NOT NULL,
+      `research_id` INT(11) NOT NULL,
+      `panel_id` INT(11) NOT NULL,
+      PRIMARY KEY (`vote_id`),
+      KEY `fk_votes_research` (`research_id`),
+      KEY `fk_votes_panel` (`panel_id`),
+      CONSTRAINT `fk_votes_research` FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`) ON DELETE CASCADE,
+      CONSTRAINT `fk_votes_panel` FOREIGN KEY (`panel_id`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     "
 ];
 
