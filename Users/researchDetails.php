@@ -111,7 +111,7 @@ if (isset($_POST['comment_send'])) {
                         </div>
 
                     </div>
-                    
+
                     <div class="col vertical-align: middle;">
 
                         <div class="row">
@@ -124,20 +124,29 @@ if (isset($_POST['comment_send'])) {
                         </div>
 
                     </div>
-               
+
 
                 </div>
                 <div class="row mt-3 gap-5">
-                    <div class="col gap-3" style="background-color: white; padding: 25px; border-radius: 10px;">
+                    <div class="col gap-3 d-flex flex-column"
+                        style="background-color: white; padding: 25px; border-radius: 10px;">
                         <h5><i>Comments</i></h5>
-
                         <?php if ($currentPosition === "Panel") {
                             echo '
                             <form method="POST">
                             <div class="row d-flex align-items-center">
                             <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center" style="margin-left: 1.3rem">
-                            <input type="text" name="comments" id="comments" placeholder="Enter comment here..."
-                                        class="form-control">
+                            <textarea 
+                            style="
+                            overflow: hidden;
+                            box-sizing: border-box;
+                            resize: none;
+                            border: 1px solid gray;
+                            padding: 10px;
+                            border-radius: 10px;
+                            width: 100%;"
+                            rows="1" cols="50"  name="comments" id="comments" placeholder="Enter comment here..."
+                            ></textarea>
                                         <button class="btn btn-outline-primary" id="comment_send"
                                             name="comment_send">send</button>
                                             </div>
@@ -167,7 +176,7 @@ if (isset($_POST['comment_send'])) {
                                 while ($row = $result->fetch_assoc()) {
                                     echo '
 
-                                <div style="border: solid 1px black; margin-top: 1.3rem; padding:20px; border-radius: 10px">
+                                <div style="border: solid 1px gray; margin-top: 1.3rem; padding:20px; border-radius: 10px">
                                     <div class="row mt-3 d-flex flex-row">
                                         <div class="d-flex flex-row" style="width:max-content;">
                                          <span class="material-symbols-outlined">
@@ -180,8 +189,9 @@ if (isset($_POST['comment_send'])) {
                                         </div>
                                     </div>
                                     <div class="row mt-1">
-                                        <div class="col">
-                                            <label for="">' . htmlspecialchars($row['comment']) . '</label>
+                                        <div class="col" style="overflow-wrap: anywhere; white-space: normal;
+                                            display: -webkit-box;">
+                                            ' . htmlspecialchars($row['comment']) . '
                                         </div>
                                     </div>
                                     
@@ -220,6 +230,15 @@ if (isset($_POST['comment_send'])) {
             </div>
         </div>
     </div>
+
+    <script>
+        const commentArea = document.getElementById("comments");
+
+        commentArea.addEventListener("input", function () {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+        })
+    </script>
 
 </body>
 
