@@ -254,7 +254,7 @@ if (isset($_POST["saveBtn"])) {
 </div>
 
 <!-- MODAL -->
-<div id="personalModal" class="modalInfo">
+<div id="personalModal">
 </div>
 
 <script>
