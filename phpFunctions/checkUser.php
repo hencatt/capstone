@@ -51,11 +51,13 @@ function setUser()
 
 function getUser()
 {
+    $currentId = $_SESSION['user_id'];
     $result = setUser();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         return [
+            "id" => $currentId,
             "fname" => htmlspecialchars($row["fname"]),
             "lname" => htmlspecialchars($row["lname"]),
             "email" => htmlspecialchars($row["email"]),

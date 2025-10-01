@@ -1,8 +1,3 @@
-<?php
-require_once '../../phpFunctions/gad_portal.php';
-session_start();
-
-?>
 
 <table class="table table-sm table-striped">
     <thead>

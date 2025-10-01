@@ -60,7 +60,7 @@ deleteItemInventory("deleteItem", $currentUser);
                 </div>
                 <div class="row mt-3 tableOverview">
                     <div class="col" id="inventoryTable">
-
+                        <?php include("./reusableHTML/inventoryTable.php"); ?>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@ deleteItemInventory("deleteItem", $currentUser);
 
             const inventoryButtonRow = $("#inventoryButtonsRow");
 
-            $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+            // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
             if (position === "Technical Assistant") {
                 $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function(){
