@@ -25,7 +25,6 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
 
-
 // // Prevent browser caching
 // header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 // header("Pragma: no-cache");
@@ -169,6 +168,7 @@ deleteItemInventory("deleteItem", $currentUser);
                     <div class="row mt-5 table-responsive">
                         <div style="max-height: 200px; overflow-y: auto;">
                             <div class="col" id="inventoryTable">
+                                <?php include("./reusableHTML/inventoryTable.php"); ?>
                             </div>
                         </div>
                     </div>
@@ -307,7 +307,8 @@ EOD;
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
-            $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+
+            // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
             $('#filters').load("./reusableHTML/filters.php", function () {
                 $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {

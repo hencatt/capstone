@@ -200,6 +200,7 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                         <div class="row mt-3 tableOverview">
                             <div style="max-height: 200px; overflow-y: auto;">
                                 <div class="col" id="inventoryTable">
+                                    <?php include("./reusableHTML/inventoryTable.php"); ?>
                                 </div>
                             </div>
                         </div>
@@ -437,7 +438,8 @@ createEmployeeFocalPerson("add_employee", $currentUser);
         const position = <?= json_encode($currentPosition) ?>;
         const campus = <?= json_encode($currentCampus) ?>;
         const dept = <?= json_encode($currentDepartment) ?>;
-        $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+
+        // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
         $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
         $('#filters').load("reusableHTML/filters.php", function () {
             $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
