@@ -47,6 +47,12 @@ deleteItemInventory("deleteItem", $currentUser);
                         <h1>Inventory</h1>
                     </div>
                 </div>
+                <div class="row mt-4 d-flex justify-content-end">
+                    <div class="col-2" id="inventoryFilters">
+                        <!-- TODO CATEGORY FUNCTION -->
+                        
+                    </div>
+                </div>
                 <div class="row mt-3 tableOverview">
                     <div class="col" id="inventoryTable">
 
@@ -61,11 +67,12 @@ deleteItemInventory("deleteItem", $currentUser);
         crossorigin="anonymous"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
-            $('#inventoryTable').load("reusableHTML/inventoryTable.php");
+            $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+            $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
         })
     </script>
 

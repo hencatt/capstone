@@ -62,11 +62,16 @@ doubleCheck($currentPosition);
                             </thead>
                             <tbody>
                                 <?php
-                                // TODO DATE SUBMITTED NEEDS FIX
+
                                 $con = con();
-                                $sql = "SELECT * FROM research_tbl WHERE author = ?";
-                                $stmt = $con->prepare($sql);
-                                $stmt->bind_param("s", $currentUser);
+                                if ($currentPosition === "Researcher") {
+                                    $sql = "SELECT * FROM research_tbl WHERE author = ?";
+                                    $stmt = $con->prepare($sql);
+                                    $stmt->bind_param("s", $currentUser);
+                                }else{
+                                    $sql = "SELECT * FROM research_tbl";
+                                    $stmt = $con->prepare($sql);
+                                }
                                 $stmt->execute();
                                 $result = $stmt->get_result();
                                 if ($result->num_rows > 0) {
@@ -75,7 +80,7 @@ doubleCheck($currentPosition);
                                         <tr>
                                         
                                         <td>' . htmlspecialchars($row['research_title']) . '</td>
-                                        <td>' . htmlspecialchars($row['date_started']) . '</td>
+                                        <td>' . htmlspecialchars($row['date_submitted']) . '</td>
                                         <td>' . htmlspecialchars($row['status']) . '</td>
                                         <td><a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=View Researches" style="color: #5f8cecff;">View More</a></td>
                                         
@@ -83,6 +88,7 @@ doubleCheck($currentPosition);
                                         ;
                                     }
                                 }
+
                                 ?>
                             </tbody>
                         </table>

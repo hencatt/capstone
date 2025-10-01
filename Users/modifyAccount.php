@@ -147,17 +147,23 @@ if (isset($_POST["saveBtn"])) {
                     <!-- FORM ROW -->
                     <form method="POST" class="form-inline">
                         <div class="form-group row">
-                            <h5>User's Information</h5>
+                            <div class="col">
+                                <h5>User's Information</h5>
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <button type="button" name="personalInfoButton" id="personalInfoButton"
+                                    class="btn btn-outline-primary">Personal Info</button>
+                            </div>
                             <div class="row">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputFn" class="col-form-label col-sm-3">First Name:</label>
-                                    <input type="text" name="inputFn" id="inputFn" disabled placeholder="<?= $currentFname ?>"
-                                        class="form-control">
+                                    <input type="text" name="inputFn" id="inputFn" disabled
+                                        placeholder="<?= $currentFname ?>" class="form-control">
                                 </div>
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
                                     <label for="inputLn" class="col-form-label col-sm-3">Last Name:</label>
-                                    <input type="text" name="inputLn" id="inputLn" disabled placeholder="<?= $currentLname ?>"
-                                        class="form-control">
+                                    <input type="text" name="inputLn" id="inputLn" disabled
+                                        placeholder="<?= $currentLname ?>" class="form-control">
                                 </div>
                             </div>
                             <div class="row mt-2">
@@ -173,9 +179,9 @@ if (isset($_POST["saveBtn"])) {
                                 </div>
                             </div>
                             <div class="row mt-3">
-                                <div class="col d-flex align-items-center justify-content-between">
-                                    <button type="button" name="personalInfoButton" id="personalInfoButton" class="btn btn-outline-primary">Personal Info</button>
-                                    <button type="button" name="editBtn" id="editBtn" class="btn btn-outline-secondary">Edit
+                                <div class="col d-flex align-items-center justify-content-end">
+                                    <button type="button" name="editBtn" id="editBtn"
+                                        class="btn btn-outline-secondary">Edit
                                         <span class="material-symbols-outlined">
                                             edit
                                         </span></button>
@@ -189,14 +195,16 @@ if (isset($_POST["saveBtn"])) {
                             <div class="row mt-2">
                                 <div class="row">
                                     <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
-                                        <label for="inputOldPassword" class="col-sm-3 col-form-control">Old Password:</label>
+                                        <label for="inputOldPassword" class="col-sm-3 col-form-control">Old
+                                            Password:</label>
                                         <input type="password" name="inputOldPassword" id="inputOldPassword"
                                             placeholder="Enter Old Password" class="form-control" disabled>
                                     </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
-                                        <label for="inputNewPassword" class="col-form-label col-sm-3">New Password:</label>
+                                        <label for="inputNewPassword" class="col-form-label col-sm-3">New
+                                            Password:</label>
                                         <input type="password" name="inputNewPassword" id="inputNewPassword"
                                             placeholder="Enter New Password" class="form-control" disabled>
                                     </div>
@@ -228,9 +236,7 @@ if (isset($_POST["saveBtn"])) {
                         <div class="col text-center">
                             <img src="
                             https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F005%2F544%2F718%2Foriginal%2Fprofile-icon-design-free-vector.jpg&f=1&nofb=1&ipt=a3a03e1e1c2a147e5b78c95b25acf2b7a4edf938f68908367342f6caf5625631
-                            "
-                                alt="Profile Photo"
-                                style="
+                            " alt="Profile Photo" style="
                             width :150px;
                             height :150px;
                             border-radius :50%;
@@ -238,7 +244,7 @@ if (isset($_POST["saveBtn"])) {
                             ">
                         </div>
                     </div>
-                    <div class="row mt-lg-3 d-flex align-items-center text-center">
+                    <div class="row mt-3 d-flex align-items-center text-center">
                         <div class="col" style="text-decoration: underline;">Edit</div>
                     </div>
                 </div>
@@ -247,10 +253,81 @@ if (isset($_POST["saveBtn"])) {
     </div>
 </div>
 
-</body>
+<!-- MODAL -->
+<div id="personalModal" class="modalInfo">
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#personalModal').load("./reusableHTML/personalInfoModal.php", function () {
+
+            const personalBtn = document.getElementById("personalInfoButton");
+            const modal = document.getElementById("modal");
+            const closeBtn = modal.querySelector(".close-btn");
+            const cancelBtn = document.getElementById("cancelInfo");
+
+            const childrenNum = $("#inputChildrenNum");
+            const childConcern = $("#inputConcern");
+            const childrenNumCol = $("#childrenNumCol");
+            const childConcernCol = $("#childConcernCol");
+
+
+            personalBtn.addEventListener("click", () => {
+                console.log("open");
+                modal.classList.add("open");
+            });
+
+            closeBtn.addEventListener("click", () => {
+                console.log("close");
+                modal.classList.remove("open");
+            });
+
+            modal.addEventListener("click", e => {
+                if (e.target === modal) modal.classList.remove("open");
+            });
+
+            cancelBtn.addEventListener("click", e => {
+                modal.classList.remove("open");
+            })
+
+            // Gender toggle
+            const genderSelect = $("#inputGender");
+            const otherGender = $("#otherGender");
+            otherGender.hide();
+
+            function toggleChildOptions() {
+                const checkedChild = $('input[name="inputChildren"]:checked').val();
+                if (checkedChild === "No") {
+                    childrenNum.val("");
+                    childrenNumCol.hide();
+                    childConcern.val("");
+                    childConcernCol.hide();
+                } else {
+                    childrenNumCol.show();
+                    childConcernCol.show();
+                }
+            }
+
+
+            genderSelect.on("change", function () {
+                if ($(this).val() === "LGBTQIA+") {
+                    otherGender.show();
+                } else {
+                    otherGender.val("")
+                    otherGender.hide();
+                }
+            });
+
+            toggleChildOptions();
+            $('input[name="inputChildren"]').on('change', function () {
+                toggleChildOptions();
+            })
+        });
+    });
+</script>
 <!-- PANG TOGGLE NA BUTTON EDIT AND CANCEL -->
 <script>
-    $('#editBtn').click(function() {
+    $('#editBtn').click(function () {
         const isDisabled = $('#inputFn').prop('disabled');
 
         // Toggle disabled state for inputs
@@ -266,12 +343,15 @@ if (isset($_POST["saveBtn"])) {
         $('#editBtn').prop(isDisabled ? $('#saveBtn').show() : $('#saveBtn').hide());
     });
 </script>
-<!-- SCRAP KO MUNA TO PANG RELOAD SANA KASI HINDI NAG A-UPDATE YUNG PLACEHOLDERS SA FORM -->
+
 <script>
-    $('#saveBtn').click(function() {
+    $('#saveBtn').click(function () {
         location.reload();
     });
 </script>
 
+
+
+</body>
 
 </html>
