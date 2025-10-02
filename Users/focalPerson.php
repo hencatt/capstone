@@ -47,6 +47,82 @@ deleteItemInventory("deleteItem", $currentUser);
 
 // Add Employee Functionality
 createEmployeeFocalPerson("add_employee", $currentUser);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
+    $fname        = $_POST['inputFname'] ?? '';
+    $mname        = $_POST['inputMname'] ?? '';
+    $lname        = $_POST['inputLname'] ?? '';
+    $email        = $_POST['inputEmail'] ?? '';
+    $contact_no   = $_POST['inputContact'] ?? '';
+    $department   = $_POST['inputDepartment'] ?? '';
+    $campus       = $_POST['inputCampus'] ?? '';
+    $status       = 'Active';
+
+    $street   = $_POST['inputStAddress'] ?? '';
+    $city     = $_POST['inputCity'] ?? '';
+    $province = $_POST['inputProvince'] ?? '';
+    $address  = trim($street . ', ' . $city . ', ' . $province, ', ');
+
+    $birthdate      = $_POST['inputBirthdate'] ?? '';
+    $marital_status = $_POST['inputMaritalStatus'] ?? '';
+    $sex            = $_POST['inputSex'] ?? '';
+
+    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+') 
+                ? ($_POST['otherGender'] ?? '') 
+                : ($_POST['inputGender'] ?? '');
+
+    $size            = $_POST['inputSize'] ?? '';
+    $income          = $_POST['inputIncome'] ?? '';
+    $priority_status = $_POST['inputPriority'] ?? '';
+    $childrenNum     = isset($_POST['inputChildrenNum']) ? (int)$_POST['inputChildrenNum'] : 0;
+    $concern = !empty($_POST['inputConcern']) ? $_POST['inputConcern'] : 'N/A';
+
+    if (empty($email)) {
+        echo "<script>alert('❌ Email is required!');</script>";
+        exit();
+    }
+
+    // --- INSERT employee_tbl
+    $stmt_emp = $con->prepare("INSERT INTO employee_tbl 
+        (email, contact_no, department, campus, status) 
+        VALUES (?, ?, ?, ?, ?)");
+    $stmt_emp->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
+
+    if ($stmt_emp->execute()) {
+        $employee_id = $con->insert_id;
+
+        // --- INSERT employee_info
+        $stmt_info = $con->prepare("INSERT INTO employee_info 
+            (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_info->bind_param(
+            "sssssssssssiis", 
+            $fname,
+            $mname,
+            $lname,
+            $address,
+            $birthdate,
+            $marital_status,
+            $sex,
+            $gender,
+            $priority_status,
+            $size,
+            $income,
+            $employee_id,
+            $childrenNum,
+            $concern
+        );
+
+        if ($stmt_info->execute()) {
+            echo "<script>alert('✅ Employee added successfully!');</script>";
+        } else {
+            echo "<script>alert('❌ Insert employee_info failed: " . addslashes($stmt_info->error) . "');</script>";
+        }
+    } else {
+        echo "<script>alert('❌ Insert employee_tbl failed: " . addslashes($stmt_emp->error) . "');</script>";
+    }
+}
+    
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +131,7 @@ createEmployeeFocalPerson("add_employee", $currentUser);
 <head>
     <?= headerLinks($currentPosition) ?>
 </head>
+
 
 <body>
     <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
@@ -122,11 +199,10 @@ createEmployeeFocalPerson("add_employee", $currentUser);
                                         <div class="col d-flex justify-content-end align-items-center gap-3">
                                             <a href="./employees.php"><button class="btn btn-outline-primary">View
                                                     More</button></a>
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#add_emp_modal">
-                                                Add Employee
-                                                <span class="material-symbols-outlined">add</span>
-                                            </button>
+                                                    <button type="button" class="btn btn-success" id="addEmployeeBtn">
+                                                        Add Employee
+                                                        <span class="material-symbols-outlined">add</span>
+                                                    </button>
                                         </div>
                                     </div>
                                     <!-- SEARCH BARS, FILTERS ETC ROWS -->
@@ -213,130 +289,7 @@ createEmployeeFocalPerson("add_employee", $currentUser);
     </div>
 
     <!-- Add Employee Modal -->
-    <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
-
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="addEmployeeModalLabel">Add Employee</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" class="form_add_emp" novalidate>
-                        <!-- Employee Info -->
-                        <h5>Employee Information</h5>
-                        <div class="mb-3">
-                            <label for="fname" class="form-label">First Name</label>
-                            <input type="text" name="fname" id="fname" class="form-control"
-                                placeholder="Enter First Name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="m_initial" class="form-label">Middle Initial</label>
-                            <input type="text" name="m_initial" id="m_initial" class="form-control"
-                                placeholder="Enter Middle Initial">
-                        </div>
-                        <div class="mb-3">
-                            <label for="lname" class="form-label">Last Name</label>
-                            <input type="text" name="lname" id="lname" class="form-control"
-                                placeholder="Enter Last Name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <input type="text" name="address" id="address" class="form-control"
-                                placeholder="Enter Address" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="birthday" class="form-label">Date of Birth</label>
-                            <input type="date" name="birthday" id="birthday" class="form-control"
-                                pattern="\d{4}-\d{2}-\d{2}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="marital_status" class="form-label">Marital Status</label>
-                            <select name="marital_status" id="marital_status" class="form-select" required>
-                                <option value="" disabled selected>Select Marital Status</option>
-                                <option value="Single">Single</option>
-                                <option value="Married">Married</option>
-                                <option value="Widowed">Widowed</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sex" class="form-label">Sex</label>
-                            <select name="sex" id="sex" class="form-select" required>
-                                <option value="" disabled selected>Select Sex</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select name="gender" id="gender" class="form-select" required>
-                                <option value="" disabled selected>Select Sex</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="LGBTQIA+">LGBTQIA+</option>
-                                <option value="Others">Others</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="priority_status" class="form-label">Priority Status</label>
-                            <select name="priority_status" id="priority_status" class="form-select">
-                                <option value="" disabled selected>Select Priority Status</option>
-                                <option value="PWD">PWD</option>
-                                <option value="Senior Citizen">Senior Citizen</option>
-                                <option value="None">None</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="size" class="form-label">Shirt size</label>
-                            <select name="size" id="size" class="form-select">
-                                <option value="" disabled selected>Select Size</option>
-                                <option value="S">S</option>
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="2XL">2XL</option>
-                                <option value="3XL">3XL</option>
-                                <option value="4XL">4XL</option>
-
-                            </select>
-                        </div>
-
-                        <!-- Employee Table -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email"
-                                required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contact_no" class="form-label">Contact No</label>
-                            <input type="text" name="contact_no" id="contact_no" class="form-control"
-                                placeholder="Enter Contact Number" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="department" class="form-label">Department</label>
-                            <select name="department" id="department" class="form-select" required>
-                                <option value="" disabled>Select Department</option>
-                                <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?></option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="campus" class="form-label">Campus</label>
-                            <select name="campus" id="campus" class="form-select" required>
-                                <option value="" disabled>Select Campus</option>
-                                <option value="<?= $currentCampus ?>" selected><?= $currentCampus ?></option>
-                            </select>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" name="add_employee" class="btn btn-primary">Add
-                                Employee</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    
     <!-- addItemModal -->
     <!-- <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                     aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -411,6 +364,8 @@ createEmployeeFocalPerson("add_employee", $currentUser);
 
 
 </body>
+<?php require('./reusableHTML/personalInfoModal.php'); ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
     crossorigin="anonymous"></script>
@@ -452,6 +407,72 @@ createEmployeeFocalPerson("add_employee", $currentUser);
         })
 
     });
+
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal logic
+    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+    const modal = document.getElementById('modal');
+    const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
+
+    if (addEmployeeBtn && modal) {
+        addEmployeeBtn.addEventListener('click', function() {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+
+    closeBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        });
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // jQuery logic for gender and child options
+    $(function() {
+        const genderSelect = $("#inputGender");
+        const otherGender = $("#otherGender");
+
+        genderSelect.on("change", function () {
+            if ($(this).val() === "LGBTQIA+") {
+                otherGender.show().attr("required", true);
+            } else {
+                otherGender.hide().val("").removeAttr("required");
+            }
+        });
+
+        function toggleChildOptions() {
+            const checkedChild = $('input[name="inputChildren"]:checked').val();
+            if (checkedChild === "No") {
+                $("#childrenNum").val("");
+                $("#childrenNumCol").hide();
+                $("#childConcern").val("");
+                $("#childConcernCol").hide();
+            } else {
+                $("#childrenNumCol").show();
+                $("#childConcernCol").show();
+            }
+        }
+
+        toggleChildOptions();
+        $('input[name="inputChildren"]').on('change', function () {
+            toggleChildOptions();
+        });
+    });
+});
+</script>
+
+
+
 
 </html>

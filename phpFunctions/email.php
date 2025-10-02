@@ -1,14 +1,13 @@
 <?php
-//Import PHPMailer classes into the global namespace
-//These must be at the top of your script, not inside a function
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 include_once 'includes.php';
 
-require_once __DIR__ . '/../vendor/phpmailer/PHPMailer.php';
-require_once __DIR__ . '/../vendor/phpmailer/Exception.php';
-require_once __DIR__ . '/../vendor/phpmailer/SMTP.php';
+require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/Exception.php';
+require_once __DIR__ . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
 
 function sendUserCredentials($email, $username, $pass) {
     $mail = new PHPMailer(true);

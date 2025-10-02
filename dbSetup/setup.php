@@ -50,26 +50,6 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "employee_info" => "
-    CREATE TABLE IF NOT EXISTS `employee_info` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `fname` varchar(100) NOT NULL,
-      `m_initial` varchar(10) NOT NULL,
-      `lname` varchar(100) NOT NULL,
-      `address` varchar(100) NOT NULL,
-      `birthday` date NOT NULL,
-      `marital_status` varchar(100) NOT NULL,
-      `sex` enum('Male','Female') NOT NULL,
-      `gender` varchar(100) NOT NULL,
-      `priority_status` varchar(20) DEFAULT NULL,
-      `size` varchar(50) NOT NULL,
-      `employee_id` int(11) NULL,
-      PRIMARY KEY (`id`)
-      KEY `fk_employeeInfo_employeeTbl` (employee_id),
-      CONSTRAINT `fk_employeeInfo_employeeTbl` FOREIGN KEY (`employee_id`) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-    ",
-
     "employee_tbl" => "
     CREATE TABLE IF NOT EXISTS `employee_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -80,10 +60,32 @@ $tables = [
       `status` varchar(10) NOT NULL DEFAULT 'Active',
       `account_id` int(11) NULL,
       PRIMARY KEY (`id`)
-      KEY `fk_accountTbl_employeeTbl` (account_id),
-      CONSTRAINT `fk_accountTbl_employeeTbl` FOREIGN KEY (account_id) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
+    
+   "employee_info" => "
+    CREATE TABLE IF NOT EXISTS `employee_info` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `fname` varchar(100) NOT NULL,
+      `m_initial` varchar(10) NOT NULL,
+      `lname` varchar(100) NOT NULL,
+      `address` varchar(255) NOT NULL,
+      `birthday` date NOT NULL,
+      `marital_status` varchar(100) NOT NULL,
+      `sex` enum('Male','Female') NOT NULL,
+      `gender` varchar(100) NOT NULL,
+      `priority_status` varchar(20) DEFAULT NULL,
+      `size` varchar(50) NOT NULL,
+      `income` varchar(50) DEFAULT NULL,
+      `employee_id` int(11) NULL,
+      `children_num` INT DEFAULT NULL,
+      `concern` TEXT DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      KEY `fk_employeeInfo_employeeTbl` (`employee_id`),
+      CONSTRAINT `fk_employeeInfo_employeeTbl` FOREIGN KEY (`employee_id`) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    ",
+
 
     "inventory_tbl" => "
     CREATE TABLE IF NOT EXISTS `inventory_tbl` (
