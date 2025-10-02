@@ -11,8 +11,6 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-$picture1 = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fresize.indiatvnews.com%2Fen%2Fresize%2Fnewbucket%2F1200_-%2F2023%2F07%2Fmo-17-1690797256.jpg&f=1&nofb=1&ipt=a808a83c91a26e736c764cd3bdc37693f671fbe596f2f0b54dfa48b53812923a";
-
 $currentResearch = "";
 $previousPage = "";
 if (isset($_GET['id'])) {
@@ -32,6 +30,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
+    $researchId = htmlspecialchars($row['id']);
     $researchTitle = htmlspecialchars($row['research_title']);
     $researchDescription = htmlspecialchars($row['description']);
     $researchAuthors = htmlspecialchars($row['co_author']);
@@ -41,7 +40,13 @@ if ($result->num_rows > 0) {
     $sdg = htmlspecialchars($row['research_sdg']);
 }
 
-function checkVotes($researchID)
+function redirectPage($researchId)
+{
+    header("Location: researchDetails.php?id=" . $researchId);
+    exit;
+}
+
+function checkVotes($researchId)
 {
     $approve = "Approved";
     $reject = "Rejected";
@@ -55,7 +60,7 @@ function checkVotes($researchID)
             FROM votes_tbl
             WHERE research_id = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $researchID);
+    $stmt->bind_param("i", $researchId);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
@@ -68,18 +73,18 @@ function checkVotes($researchID)
         if ($approve_count === 3) {
             $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
             $stmt2 = $con->prepare($sql2);
-            $stmt2->bind_param("si", $approve, $researchID);
+            $stmt2->bind_param("si", $approve, $researchId);
             $stmt2->execute();
         } else {
             $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
             $stmt2 = $con->prepare($sql2);
-            $stmt2->bind_param("si", $reject, $researchID);
+            $stmt2->bind_param("si", $reject, $researchId);
             $stmt2->execute();
         }
     } else {
         $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
         $stmt2 = $con->prepare($sql2);
-        $stmt2->bind_param("si", $pending, $researchID);
+        $stmt2->bind_param("si", $pending, $researchId);
         $stmt2->execute();
     }
 }
@@ -96,6 +101,7 @@ if (isset($_POST['comment_send'])) {
         echo "<script>alert('Comment Posted!')</script>";
     }
     ;
+    redirectPage($currentResearch);
 }
 
 if (isset($_POST['confirmBtnApprove'])) {
@@ -113,6 +119,7 @@ if (isset($_POST['confirmBtnApprove'])) {
     ;
 
     checkVotes($currentResearch);
+    redirectPage($currentResearch);
 
 }
 ;
@@ -132,6 +139,7 @@ if (isset($_POST['confirmBtnReject'])) {
     ;
 
     checkVotes($currentResearch);
+    redirectPage($currentResearch);
 
 }
 ;
@@ -379,6 +387,7 @@ if (isset($_POST['confirmBtnReject'])) {
 
             commentArea.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
+                    s
                     e.preventDefault();
                     commentBtn.click();
                 }

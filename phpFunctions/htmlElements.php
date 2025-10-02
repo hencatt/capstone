@@ -33,9 +33,11 @@ function headerLinks($title)
         
         <!-- jQuery Link -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
+        <!-- sweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <script src="../scripts/script.js" defer></script>
         <script src="../scripts/functions.js"></script>
         <title>$title</title>
