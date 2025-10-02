@@ -14,22 +14,10 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-
-
-// TAGA LOCATE KUNG ANONG ROLE MAPUPUNTA/DASHBOARD
-if ($currentPosition === "Technical Assistant") {
-    $dashboard = "TA.php";
-    echo " <script>console.log('Going TA')</script>";
-} else if ($currentPosition === "Focal Person") {
-    $dashboard = "focalPerson.php";
-} else if ($currentPosition === "Director") {
-    $dashboard = "director.php";
-}
-
 // UPDATE BUTTON FUNCTION
 if (isset($_POST["saveBtn"])) {
-    $newFn = $_POST["inputFn"];
-    $newLn = $_POST["inputLn"];
+    // $newFn = $_POST["inputFn"];
+    // $newLn = $_POST["inputLn"];
     $newEmail = $_POST["inputEmail"];
     $newUsername = $_POST["inputUsername"];
     $oldPassword = $_POST["inputOldPassword"];
@@ -44,16 +32,16 @@ if (isset($_POST["saveBtn"])) {
     $params = [];
 
     // Optional fields
-    if (!empty($newFn)) {
-        $fields[] = "fname = ?";
-        $types .= "s";
-        $params[] = $newFn;
-    }
-    if (!empty($newLn)) {
-        $fields[] = "lname = ?";
-        $types .= "s";
-        $params[] = $newLn;
-    }
+    // if (!empty($newFn)) {
+    //     $fields[] = "fname = ?";
+    //     $types .= "s";
+    //     $params[] = $newFn;
+    // }
+    // if (!empty($newLn)) {
+    //     $fields[] = "lname = ?";
+    //     $types .= "s";
+    //     $params[] = $newLn;
+    // }
     if (!empty($newEmail)) {
         $fields[] = "email = ?";
         $types .= "s";
@@ -148,13 +136,16 @@ if (isset($_POST["saveBtn"])) {
                     <form method="POST" class="form-inline">
                         <div class="form-group row">
                             <div class="col">
-                                <h5>User's Information</h5>
+                                <h5>Account Information</h5>
                             </div>
-                            <div class="col d-flex justify-content-end">
+                            <div class="col d-flex justify-content-end gap-3">
                                 <button type="button" name="personalInfoButton" id="personalInfoButton"
-                                    class="btn btn-outline-primary">Personal Info</button>
+                                    class="btn btn-outline-primary">Edit Personal Info</button>
+                                <button type="button" name="editBtn" id="editBtn" class="btn btn-outline-secondary">Edit
+                                </button>
                             </div>
-                            <div class="row">
+
+                            <!-- <div class="row">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputFn" class="col-form-label col-sm-3">First Name:</label>
                                     <input type="text" name="inputFn" id="inputFn" disabled
@@ -165,7 +156,8 @@ if (isset($_POST["saveBtn"])) {
                                     <input type="text" name="inputLn" id="inputLn" disabled
                                         placeholder="<?= $currentLname ?>" class="form-control">
                                 </div>
-                            </div>
+                            </div> -->
+                            
                             <div class="row mt-2">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputUsername" class="col-form-label col-sm-3">Username:</label>
@@ -178,18 +170,9 @@ if (isset($_POST["saveBtn"])) {
                                         placeholder="<?= $currentEmail ?>" class="form-control">
                                 </div>
                             </div>
-                            <div class="row mt-3">
-                                <div class="col d-flex align-items-center justify-content-end">
-                                    <button type="button" name="editBtn" id="editBtn"
-                                        class="btn btn-outline-secondary">Edit
-                                        <span class="material-symbols-outlined">
-                                            edit
-                                        </span></button>
-                                </div>
-                            </div>
                             <!-- <div class="row mt-5" style="background-color: black; height:2px; width:100%">
                             </div> -->
-                            <div class="row mt-lg-5">
+                            <div class="row mt-5">
                                 <h5>Change Password</h5>
                             </div>
                             <div class="row mt-2">
@@ -254,12 +237,11 @@ if (isset($_POST["saveBtn"])) {
 </div>
 
 <!-- MODAL -->
-<div id="personalModal">
-</div>
+<?php require('./reusableHTML/personalInfoModal.php') ?>
 
 <script>
     $(document).ready(function () {
-        $('#personalModal').load("./reusableHTML/personalInfoModal.php", function () {
+        // $('#personalModal').load("./reusableHTML/personalInfoModal.php", function () {
 
             const personalBtn = document.getElementById("personalInfoButton");
             const modal = document.getElementById("modal");
@@ -322,20 +304,20 @@ if (isset($_POST["saveBtn"])) {
             $('input[name="inputChildren"]').on('change', function () {
                 toggleChildOptions();
             })
-        });
+        // });
     });
 </script>
 <!-- PANG TOGGLE NA BUTTON EDIT AND CANCEL -->
 <script>
     $('#editBtn').click(function () {
-        const isDisabled = $('#inputFn').prop('disabled');
+        const isDisabled = $('#inputEmail').prop('disabled');
 
         // Toggle disabled state for inputs
-        $('#saveBtn, #inputFn, #inputLn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
+        $('#saveBtn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
 
         // Optional: Clear values when switching back to disabled (like a reset)
         if (!isDisabled) {
-            $('#inputFn, #inputLn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
+            $('#inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
         }
 
         // Change button text to "Cancel" or "Edit"
