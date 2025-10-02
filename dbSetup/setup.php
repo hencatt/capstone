@@ -63,7 +63,10 @@ $tables = [
       `gender` varchar(100) NOT NULL,
       `priority_status` varchar(20) DEFAULT NULL,
       `size` varchar(50) NOT NULL,
+      `employee_id` int(11) NULL,
       PRIMARY KEY (`id`)
+      KEY `fk_employeeInfo_employeeTbl` (employee_id),
+      CONSTRAINT `fk_employeeInfo_employeeTbl` FOREIGN KEY (`employee_id`) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
@@ -75,7 +78,10 @@ $tables = [
       `department` varchar(100) NOT NULL,
       `campus` varchar(100) NOT NULL,
       `status` varchar(10) NOT NULL DEFAULT 'Active',
+      `account_id` int(11) NULL,
       PRIMARY KEY (`id`)
+      KEY `fk_accountTbl_employeeTbl` (account_id),
+      CONSTRAINT `fk_accountTbl_employeeTbl` FOREIGN KEY (account_id) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
