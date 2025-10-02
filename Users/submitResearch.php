@@ -58,11 +58,13 @@ if (isset($_POST['submitResearch'])) {
         $stmt->execute();
         $stmt->close();
 
+        alertSuccess("Uploaded", $title." Uploaded");
+
         insertLog($currentUser, "Submitted research: $title", date('Y-m-d H:i:s'));
         header("Location: submitResearch.php?success=1");
         exit;
     } else {
-        echo "<script>alert('File upload failed.');</script>";
+        alertError("Error", "Failed to upload research");
     }
 }
 ?>
@@ -351,6 +353,9 @@ if (isset($_POST['submitResearch'])) {
             </div>
         </div>
     </div>
+
+    <?php include('../phpFunctions/alerts.php'); ?>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let coauthors = []; // global array

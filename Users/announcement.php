@@ -128,7 +128,8 @@ createAnnouncements("announcementBtn", $currentUser);
     </div>
     </div>
 
-
+    <?php include('../phpFunctions/alerts.php'); ?>
+    
     <script>
         const currentPos = "<?php echo $currentPosition ?>";
         const announceTitle = $('#inputAnnouncementTitle');

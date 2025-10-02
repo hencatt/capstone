@@ -1,39 +1,19 @@
+<!-- sweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php
-function alertSuccess($title, $message)
-{
-    echo "
-    <script>
-        Swal.fire({
-            title: '" . addslashes($title) . "',
-            text: '" . addslashes($message) . "',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-        });
-    </script>
-    ";
-}
 
-function alertError($title, $message)
-{
-    echo "
-    <script>
-        Swal.fire({
-            title: '" . addslashes($title) . "',
-            text: '" . addslashes($message) . "',
-            icon: 'error',
-            confirmButtonText: 'Ok'
-        });
-    </script>
-    ";
-}
+if (isset($_SESSION['status']) && $_SESSION['status'] !== "") { ?>
 
-function alertJsonEncode($type, $title, $message){
-    header('Content-Type: application/json');
-    echo json_encode([
-        "title" => $title,
-        "message" => $message,
-        "type" => $type
-    ]);
-    exit;
+    <script>
+        console.log("swal ready");
+        Swal.fire({
+            title: '<?= $_SESSION['status'] ?>',
+            text: '<?= $_SESSION['status_message'] ?>',
+            icon: '<?= $_SESSION['status_icon'] ?>',
+            confirmButtonText: 'Okay'
+        })
+    </script>
+
+    <?php
+    unset($_SESSION['status']);
 }
-?>

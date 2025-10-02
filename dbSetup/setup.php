@@ -9,9 +9,9 @@ $sql = "CREATE DATABASE IF NOT EXISTS `$dbName`
         CHARACTER SET utf8mb4 
         COLLATE utf8mb4_general_ci";
 if ($con->query($sql)) {
-    echo "Database '$dbName' checked/created successfully.<br>";
+  echo "Database '$dbName' checked/created successfully.<br>";
 } else {
-    die("Error creating DB: " . $con->error);
+  die("Error creating DB: " . $con->error);
 }
 
 // select the database
@@ -19,7 +19,7 @@ $con->select_db($dbName);
 
 // 2. Tables with utf8mb4
 $tables = [
-    "accounts_tbl" => "
+  "accounts_tbl" => "
     CREATE TABLE IF NOT EXISTS `accounts_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `email` varchar(60) NOT NULL,
@@ -36,7 +36,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "announcement_tbl" => "
+  "announcement_tbl" => "
     CREATE TABLE IF NOT EXISTS `announcement_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `announceTitle` varchar(45) NOT NULL,
@@ -50,7 +50,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "employee_info" => "
+  "employee_info" => "
     CREATE TABLE IF NOT EXISTS `employee_info` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `fname` varchar(100) NOT NULL,
@@ -64,13 +64,13 @@ $tables = [
       `priority_status` varchar(20) DEFAULT NULL,
       `size` varchar(50) NOT NULL,
       `employee_id` int(11) NULL,
-      PRIMARY KEY (`id`)
-      KEY `fk_employeeInfo_employeeTbl` (employee_id),
+      PRIMARY KEY (`id`),
+      KEY `fk_employeeInfo_employeeTbl` (`employee_id`),
       CONSTRAINT `fk_employeeInfo_employeeTbl` FOREIGN KEY (`employee_id`) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "employee_tbl" => "
+  "employee_tbl" => "
     CREATE TABLE IF NOT EXISTS `employee_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `email` varchar(100) NOT NULL,
@@ -81,11 +81,11 @@ $tables = [
       `account_id` int(11) NULL,
       PRIMARY KEY (`id`)
       KEY `fk_accountTbl_employeeTbl` (account_id),
-      CONSTRAINT `fk_accountTbl_employeeTbl` FOREIGN KEY (account_id) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
+      CONSTRAINT `fk_accountTbl_employeeTbl` FOREIGN KEY (`account_id`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "inventory_tbl" => "
+  "inventory_tbl" => "
     CREATE TABLE IF NOT EXISTS `inventory_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `itemName` varchar(45) NOT NULL,
@@ -98,7 +98,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "login_attempts" => "
+  "login_attempts" => "
     CREATE TABLE IF NOT EXISTS `login_attempts` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `ip_add` varchar(45) NOT NULL,
@@ -107,7 +107,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "logs" => "
+  "logs" => "
     CREATE TABLE IF NOT EXISTS `logs` (
       `log_id` int(11) NOT NULL AUTO_INCREMENT,
       `username` varchar(45) NOT NULL,
@@ -117,7 +117,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "research_tbl" => "
+  "research_tbl" => "
     CREATE TABLE IF NOT EXISTS `research_tbl` (
       `id` int(11) NOT NULL AUTO_INCREMENT,
       `research_title` varchar(255) NOT NULL,
@@ -135,7 +135,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "comments_tbl" => "
+  "comments_tbl" => "
     CREATE TABLE IF NOT EXISTS `comments_tbl` (
       `comment_id` int(11) NOT NULL AUTO_INCREMENT,
       `research_id` int(11) NOT NULL,
@@ -149,7 +149,7 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "votes_tbl" => "
+  "votes_tbl" => "
       CREATE TABLE IF NOT EXISTS `votes_tbl` (
       `vote_id` int(11) NOT NULL AUTO_INCREMENT,
       `vote` ENUM('Approve','Reject') NOT NULL,
@@ -168,11 +168,11 @@ $tables = [
 
 // 3. Execute all
 foreach ($tables as $name => $query) {
-    if ($con->query($query)) {
-        echo "Table '$name' checked/created successfully.<br>";
-    } else {
-        echo "Error with $name: " . $con->error . "<br>";
-    }
+  if ($con->query($query)) {
+    echo "Table '$name' checked/created successfully.<br>";
+  } else {
+    echo "Error with $name: " . $con->error . "<br>";
+  }
 }
 
 $con->close();

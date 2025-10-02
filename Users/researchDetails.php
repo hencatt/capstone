@@ -98,7 +98,7 @@ if (isset($_POST['comment_send'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssi", $comment, $currentUser, $currentDate, $currentResearch);
     if ($stmt->execute()) {
-        echo "<script>alert('Comment Posted!')</script>";
+        alertSuccess("Success", "Your comment was posted");
     }
     ;
     redirectPage($currentResearch);
@@ -114,7 +114,7 @@ if (isset($_POST['confirmBtnApprove'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
-        echo "<script>alert('Voted!')</script>";
+        alertSuccess("Voted", "You approved " . $researchTitle);
     }
     ;
 
@@ -134,7 +134,7 @@ if (isset($_POST['confirmBtnReject'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
-        echo "<script>alert('Voted!')</script>";
+        alertSuccess("Voted", "You rejected " . $researchTitle);
     }
     ;
 
@@ -143,6 +143,7 @@ if (isset($_POST['confirmBtnReject'])) {
 
 }
 ;
+
 ?>
 
 <!DOCTYPE html>
@@ -156,6 +157,7 @@ if (isset($_POST['confirmBtnReject'])) {
     <?= addDelay("researchDetails", $currentUser, $currentPosition); ?>
 
     <!-- Left Sidebar -->
+
     <div class="row everything">
         <div class="col sidebar">
             <?php sidebar("researchDetails", $currentPosition) ?>
@@ -298,8 +300,6 @@ if (isset($_POST['confirmBtnReject'])) {
                                     </div>';
                                 }
                                 ?>
-
-
                             </div>
                         </div>
                     </div>
@@ -369,6 +369,7 @@ if (isset($_POST['confirmBtnReject'])) {
         </div>
     </div>
 
+    <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
         (function () {
@@ -387,7 +388,6 @@ if (isset($_POST['confirmBtnReject'])) {
 
             commentArea.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                    s
                     e.preventDefault();
                     commentBtn.click();
                 }
@@ -413,7 +413,6 @@ if (isset($_POST['confirmBtnReject'])) {
 
         })();
     </script>
-
 </body>
 
 </html>

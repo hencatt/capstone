@@ -71,6 +71,9 @@ deleteItemInventory("deleteItem", $currentUser);
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
         crossorigin="anonymous"></script>
 
+    <?php include('../phpFunctions/alerts.php'); ?>
+        
+
     <script>
         $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
