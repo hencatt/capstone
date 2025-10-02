@@ -9,5 +9,4 @@ require_once '../phpFunctions/sidebar.php';
 include_once '../phpFunctions/fakeLoading.php';
 require_once '../phpFunctions/crud.php';
 require_once '../phpFunctions/alerts.php';
-
 // include_once '../phpFunctions/email.php';

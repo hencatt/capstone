@@ -1,5 +1,5 @@
 .editModal {
-    background-color: rgba(255, 255, 255, 0.817);
+    background-color: rgba(26, 26, 26, 0.817);
     opacity: 0;
     position: fixed;
     top: 0;
@@ -17,7 +17,7 @@
 }
 
 .deleteModal {
-    background-color: rgba(255, 255, 255, 0.817);
+    background-color: rgba(12, 12, 12, 0.817);
     opacity: 0;
     position: fixed;
     top: 0;

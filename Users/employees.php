@@ -111,19 +111,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $conn->query($checkEmailQuery);
 
         if ($result->num_rows > 0) {
-            echo "<script>alert('Error: The email address is already in use.');</script>";
+            setSessionStatus("Error", "Email already exist", "error");
         } else {
             // Insert the new account
             $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, campus, date_created, is_active) 
                         VALUES ('$fname', '$lname', '$email', '$username', '$password', '$position' , '$department', '$campus', NOW(), 1)";
 
             if ($conn->query($sql)) {
-                echo "<script>alert('Account Created!');</script>";
+                alertSuccess("Done", "Account Created");
 
                 // Send credentials email to the new user
                 // sendUserCredentials($email, $username, $plainPassword);
             } else {
-                echo "<script>alert('Error: " . $conn->error . "');</script>";
+               alertError("Error", "Please try again");
             }
         }
 
@@ -143,9 +143,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("i", $userId);
 
         if ($stmt->execute()) {
-            echo "User deactivated successfully.";
+            alertSuccess("Activated", "User account is activated");
         } else {
-            echo "Error: " . $conn->error;
+            alertError("Error", "Please Try Again");
         }
 
         $stmt->close();
@@ -179,9 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($stmt->execute()) {
-            echo "<script>alert('Account updated successfully!');</script>";
+            alertSuccess("Updated", "Account updated successfully!");
         } else {
-            echo "<script>alert('Error updating account: " . $conn->error . "');</script>";
+           alertError("Error", "There has been an error updating account");
         }
 
         $stmt->close();
@@ -690,7 +690,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-
+    <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
         window.addEventListener("pageshow", function (event) {
