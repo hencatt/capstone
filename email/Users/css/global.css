@@ -1,0 +1,138 @@
+body {
+  /* background-image:
+        linear-gradient(to left, rgba(255, 255, 255, 0.521), rgba(255, 255, 255, 0)),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.637), rgba(255, 255, 255, 0.842)),
+        linear-gradient(to right, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0)),
+        linear-gradient(to top, rgba(255, 255, 255, 0.664), rgb(255, 255, 255)),
+        url("../../assets/recreate.png"),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.671), rgba(255, 0, 119, 0.486)),
+        linear-gradient(to top, rgba(255, 255, 255, 0.404), rgb(255, 255, 255)); */
+  background: #e6f2ff;
+
+  background-repeat: no-repeat;
+  background-position: 400% 50%;
+  background-size: cover;
+  font-family: "Poppins", sans-serif;
+}
+
+.itemText {
+  color: #00adf1;
+}
+
+::selection {
+  background-color: #db0fe2;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #db0fe2;
+  color: white;
+}
+
+::-webkit-selection {
+  background-color: #db0fe2;
+  color: white;
+}
+
+::-o-selection {
+  background-color: #db0fe2;
+  color: white;
+}
+
+.everything {
+  height: 150vh;
+}
+
+.mainContent {
+  margin-left: 15rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
+
+table thead tr td {
+  font-weight: bold;
+}
+
+table tbody tr:hover td {
+  background-color: rgba(222, 131, 171, 0.205);
+}
+
+.btn-primary:hover {
+  background-color: #fa18d0;
+  border: solid 1px #fa18d0;
+}
+
+#loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: #29d;
+  width: 0;
+  transition: width 0.3s ease;
+  z-index: 9999;
+}
+
+select:hover,
+option:hover {
+  cursor: pointer;
+}
+
+.tableOverview {
+  background-color: white;
+  padding: 25px 20px;
+  border-radius: 20px;
+}
+
+.relative{
+  position: relative
+}
+
+/* EVENTS */
+
+.eventRow {
+  background-color: white;
+  padding: 2%;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.eventRow:hover {
+  background-color: rgba(220, 220, 220, 0.806);
+}
+
+/* EVENTS (UP) */
+
+/* Overview Numbers */
+
+.summaryOverview {
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.custom-loader {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(farthest-side, #766df4 95%, #0000) 50% 1px/12px
+      12px no-repeat,
+    radial-gradient(farthest-side, #0000 calc(100% - 14px), #e4e4ed 0);
+  animation: s9 2s infinite linear;
+}
+@keyframes s9 {
+  to {
+    transform: rotate(1turn);
+  }
+}

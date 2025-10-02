@@ -1,0 +1,132 @@
+.sidebar span {
+  font-size: 0.9rem;
+}
+
+.sidebar {
+  border-radius: 0% 16px 16px 0%;
+  color: #f5f5f5;
+  background-color: #0a7afa;
+  position: fixed;
+  width: 249px;
+  top: 0;
+  height: 100vh;
+  overflow-y: a;
+}
+
+.sidebarHide {
+  border-radius: 0% 4% 4% 0%;
+  color: #f5f5f5;
+  background-color: #0a7afa;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  right: 100%;
+}
+
+.sidebarOption {
+  margin-top: 1rem;
+  margin-left: 1.5rem;
+}
+
+.sidebarOptions li {
+  list-style-type: none;
+  padding-bottom: 0.5rem;
+  padding-top: 0.3rem;
+}
+
+a.categoryItem:hover {
+  background-color: #73c7ff83;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.sidebarOptions .categoryItem {
+  padding-left: 2rem;
+  color: #f5f5f5;
+  text-decoration: none;
+}
+
+.category {
+  font-size: 0.8rem;
+}
+
+#active {
+  font-weight: bold;
+}
+
+.logo {
+  position: absolute;
+  opacity: 0.4;
+  width: 104px;
+  transform: translate(-60px, 11px);
+  z-index: -99;
+  rotate: -18deg;
+}
+
+.neustLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+span {
+  vertical-align: middle;
+}
+
+.sidebar span {
+  font-size: 0.9rem;
+}
+
+.mainContent span a {
+  text-decoration: none;
+  color: red;
+}
+
+span:hover {
+  cursor: pointer;
+}
+
+#notifyBtn {
+  background-color: white;
+  padding: 10%;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+#notifBtn:hover {
+  cursor: pointer;
+  background-color: #ddddddc6;
+}
+
+#profile {
+  background-color: white;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+#profile:hover {
+  cursor: pointer;
+  background-color: #ddddddc6;
+}
+
+div a {
+  text-decoration: none;
+  color: black;
+}
+
+.notifications {
+  background-color: rgb(255, 255, 255);
+  width: 350px;
+  height: 150px;
+  border-radius: 10px;
+  padding: 1rem 1.3rem;
+  position: absolute;
+  z-index: 10;
+  display: none;
+  filter: drop-shadow(8px 5px 5px gray);
+  transform: translateX(-21rem);
+}
+
+.wrapper{
+    position: relative;
+}
