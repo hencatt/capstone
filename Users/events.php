@@ -54,14 +54,14 @@ if (isset($_POST['editSaveBtn'])) {
 
         if ($stmt->execute()) {
             insertLog($currentUser, "Updated an Announcement", date('Y-m-d H:i:s'));
-            echo '<script>alert("Saved Changes")</script>';
+            alertSuccess("Success", "Saved Changes");
         } else {
             echo "Error: " . $stmt->error;
         }
 
         $stmt->close();
     } else {
-        echo "<script>alert('No changes to update.')</script>";
+        alertError("Error", "No data to change");
     }
 }
 
@@ -73,9 +73,9 @@ if (isset($_POST["deleteBtn"])) {
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
         insertLog($currentUser, "Deleted an announcement", date("Y-m-d H:i:s"));
-        echo "<script>alert('Delete Successful')</script>";
+        alertSuccess("Deleted", "Deleted Successfully");
     } else {
-        echo "Error" . $stmt->error;
+        alertError("Error", "Error deleting event");
     }
     $stmt->close();
 }
@@ -116,8 +116,11 @@ if (isset($_POST["deleteBtn"])) {
                             <option value="Event">Event</option>
                             <option value="Research Event">Research</option>
                         </select>
-                        <button class="btn btn-primary" id="createAnnouncementBtn" name="createAnnouncementBtn"><a href="announcement.php" style="text-decoration: none; color:white;">Create Announcement</a></button>
-                        <button class="btn btn-outline-secondary" id="editAnnouncementBtn" name="editAnnouncementBtn">Edit</button>
+                        <button class="btn btn-primary" id="createAnnouncementBtn" name="createAnnouncementBtn"><a
+                                href="announcement.php" style="text-decoration: none; color:white;">Create
+                                Announcement</a></button>
+                        <button class="btn btn-outline-secondary" id="editAnnouncementBtn"
+                            name="editAnnouncementBtn">Edit</button>
                         <input type="hidden" id="editBtnTrigger">
                     </div>
                 </div>
@@ -180,7 +183,7 @@ if (isset($_POST["deleteBtn"])) {
                                     $announceMonth = '';
                                     $totalNumberOfRows = $result->num_rows;
                                     $editDeleteId = "modifyBtn" . $j;
-                                    switch ((int)($row['month'])) {
+                                    switch ((int) ($row['month'])) {
                                         case 1:
                                             $announceMonth = 'January';
                                             break;
@@ -276,9 +279,9 @@ if (isset($_POST["deleteBtn"])) {
                                             </div>
 
                                         ";
-                        ?><?php
+                                    ?>            <?php
 
-                                    echo <<<EOD
+                                                echo <<<EOD
 
                                         <div class="editModal" id="editModal$j">
                                             <div class="innerModal">
@@ -389,8 +392,8 @@ if (isset($_POST["deleteBtn"])) {
                                         EOD;
 
 
-                                    $i = ($i + 1 > 6) ? 0 : $i + 1;
-                                    $j++;
+                                                $i = ($i + 1 > 6) ? 0 : $i + 1;
+                                                $j++;
                                 }
                             } else {
                                 echo <<<EOD
@@ -403,7 +406,7 @@ if (isset($_POST["deleteBtn"])) {
                                 EOD;
                             }
                         }
-                            ?>
+                        ?>
 
 
                     </div>
@@ -411,6 +414,9 @@ if (isset($_POST["deleteBtn"])) {
             </div>
         </div>
     </div>
+
+    <?php include('../phpFunctions/alerts.php'); ?>
+
 
     <script>
         const totalNumberOfBtn = "<?php echo $totalNumberOfRows ?>";
@@ -423,7 +429,7 @@ if (isset($_POST["deleteBtn"])) {
 
         function toggleEdit() {
 
-            editBtn.click(function() {
+            editBtn.click(function () {
 
                 for (let i = 0; i < totalNumberOfBtn; i++) {
                     var editDelete = "modifyBtn" + i;
@@ -441,7 +447,7 @@ if (isset($_POST["deleteBtn"])) {
         }
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             console.log(currentPos);
             if (currentPos !== "Director") {
                 if (currentPos !== "Technical Assistant") {

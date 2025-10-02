@@ -25,11 +25,11 @@ function filterFunction(
 
     console.log(
       "currently posting: " +
-        campusFilter +
-        ", " +
-        deptFilter +
-        ", " +
-        sizeFilter
+      campusFilter +
+      ", " +
+      deptFilter +
+      ", " +
+      sizeFilter
     );
     console.log("show summary?: " + showSum);
 
@@ -49,7 +49,7 @@ function filterFunction(
       success: function (data) {
         $(tableId).parent().html(data);
       },
-      
+
     });
   }
   $(campus + ", " + dept + ", " + size + ", " + gender + ", " + checkbox).on(
@@ -110,8 +110,8 @@ function generateReportFilter(
     element.fadeIn();
 
     const campusFilter = $(filterCampus).val();
-    const deptFilter   = $(filterDepartment).val();
-    const sizeFilter   = $(filterSize).val();
+    const deptFilter = $(filterDepartment).val();
+    const sizeFilter = $(filterSize).val();
     const genderFilter = $(filterGender).val();
 
     const showSum = $(checkBoxSum).is(":checked") ? "yes" : "no";

@@ -71,12 +71,12 @@ if (isset($_POST["saveBtn"])) {
                     $types .= "s";
                     $params[] = $newHashedPassword;
                 } else {
-                    echo "<script>alert('Incorrect old password');</script>";
+                    alertError("Error", "Incorrect password");
                 }
             }
             $stmt->close();
         } else {
-            echo "<script>alert('New passwords do not match');</script>";
+            alertError("Confirm Password", "Password is not sa same");
         }
     }
 
@@ -91,14 +91,14 @@ if (isset($_POST["saveBtn"])) {
 
         if ($stmt->execute()) {
             insertLog($currentUser, "Profile Updated", date('Y-m-d H:i:s'));
-            echo '<script>alert("Update successful")</script>';
+            alertSuccess("Updated", "Account updated successfully");
         } else {
-            echo '<script>alert("Update failed")</script>';
+            alertError("Error", "Updated Failed");
         }
 
         $stmt->close();
     } else {
-        echo '<script>alert("No data to update")</script>';
+        alertError("Failed", "No data to update");
     }
 
     $con->close();
@@ -157,7 +157,7 @@ if (isset($_POST["saveBtn"])) {
                                         placeholder="<?= $currentLname ?>" class="form-control">
                                 </div>
                             </div> -->
-                            
+
                             <div class="row mt-2">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputUsername" class="col-form-label col-sm-3">Username:</label>
@@ -238,72 +238,73 @@ if (isset($_POST["saveBtn"])) {
 
 <!-- MODAL -->
 <?php require('./reusableHTML/personalInfoModal.php') ?>
+<?php include('../phpFunctions/alerts.php'); ?>
 
 <script>
     $(document).ready(function () {
         // $('#personalModal').load("./reusableHTML/personalInfoModal.php", function () {
 
-            const personalBtn = document.getElementById("personalInfoButton");
-            const modal = document.getElementById("modal");
-            const closeBtn = modal.querySelector(".close-btn");
-            const cancelBtn = document.getElementById("cancelInfo");
+        const personalBtn = document.getElementById("personalInfoButton");
+        const modal = document.getElementById("modal");
+        const closeBtn = modal.querySelector(".close-btn");
+        const cancelBtn = document.getElementById("cancelInfo");
 
-            const childrenNum = $("#inputChildrenNum");
-            const childConcern = $("#inputConcern");
-            const childrenNumCol = $("#childrenNumCol");
-            const childConcernCol = $("#childConcernCol");
+        const childrenNum = $("#inputChildrenNum");
+        const childConcern = $("#inputConcern");
+        const childrenNumCol = $("#childrenNumCol");
+        const childConcernCol = $("#childConcernCol");
 
 
-            personalBtn.addEventListener("click", () => {
-                console.log("open");
-                modal.classList.add("open");
-            });
+        personalBtn.addEventListener("click", () => {
+            console.log("open");
+            modal.classList.add("open");
+        });
 
-            closeBtn.addEventListener("click", () => {
-                console.log("close");
-                modal.classList.remove("open");
-            });
+        closeBtn.addEventListener("click", () => {
+            console.log("close");
+            modal.classList.remove("open");
+        });
 
-            modal.addEventListener("click", e => {
-                if (e.target === modal) modal.classList.remove("open");
-            });
+        modal.addEventListener("click", e => {
+            if (e.target === modal) modal.classList.remove("open");
+        });
 
-            cancelBtn.addEventListener("click", e => {
-                modal.classList.remove("open");
-            })
+        cancelBtn.addEventListener("click", e => {
+            modal.classList.remove("open");
+        })
 
-            // Gender toggle
-            const genderSelect = $("#inputGender");
-            const otherGender = $("#otherGender");
-            otherGender.hide();
+        // Gender toggle
+        const genderSelect = $("#inputGender");
+        const otherGender = $("#otherGender");
+        otherGender.hide();
 
-            function toggleChildOptions() {
-                const checkedChild = $('input[name="inputChildren"]:checked').val();
-                if (checkedChild === "No") {
-                    childrenNum.val("");
-                    childrenNumCol.hide();
-                    childConcern.val("");
-                    childConcernCol.hide();
-                } else {
-                    childrenNumCol.show();
-                    childConcernCol.show();
-                }
+        function toggleChildOptions() {
+            const checkedChild = $('input[name="inputChildren"]:checked').val();
+            if (checkedChild === "No") {
+                childrenNum.val("");
+                childrenNumCol.hide();
+                childConcern.val("");
+                childConcernCol.hide();
+            } else {
+                childrenNumCol.show();
+                childConcernCol.show();
             }
+        }
 
 
-            genderSelect.on("change", function () {
-                if ($(this).val() === "LGBTQIA+") {
-                    otherGender.show();
-                } else {
-                    otherGender.val("")
-                    otherGender.hide();
-                }
-            });
+        genderSelect.on("change", function () {
+            if ($(this).val() === "LGBTQIA+") {
+                otherGender.show();
+            } else {
+                otherGender.val("")
+                otherGender.hide();
+            }
+        });
 
+        toggleChildOptions();
+        $('input[name="inputChildren"]').on('change', function () {
             toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function () {
-                toggleChildOptions();
-            })
+        })
         // });
     });
 </script>
