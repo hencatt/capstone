@@ -360,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "employees") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Employees</h1>
                     </div>

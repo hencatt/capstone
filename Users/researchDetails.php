@@ -154,7 +154,7 @@ if (isset($_POST['confirmBtnReject'])) {
 </head>
 
 <body>
- 
+
 
     <!-- Left Sidebar -->
 
@@ -168,58 +168,41 @@ if (isset($_POST['confirmBtnReject'])) {
             <?php topbar($currentUser, $currentPosition, "researchDetails", $researchTitle, $previousPage) ?>
 
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col d-flex flex-row gap-3">
 
                         <h1><?= $researchTitle; ?></h1>
                         <!-- TODO DATE SUBMITTED -->
-                        <figcaption class="blockquote-footer align-self-end"><?= $researchDateSubmitted; ?></figcaption>
+                        <figcaption class="blockquote-footer align-self-end">Date Submitted: <?= $researchDateSubmitted; ?></figcaption>
                     </div>
                     <div class="col d-flex justify-content-end gap-3">
 
                         <?php
-                        if ($currentPosition === "Panel") {
+                        if ($currentPosition === "Panel"): ?>
                             echo '
                             <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
                             <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
                             ';
-                        } ?>
-                        <button class="btn btn-outline-primary">View PDF</button>
+                            <?php
+                        endif;
+                        ?>
+                        <?php
+                        if ($currentPosition === "Researcher"):
+                            ?>
+                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit PDF</button>
+                            <?php
+                        endif;
+                        ?>
+                        <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">View PDF</button>
                     </div>
                 </div>
                 <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
-                    <div class="col-7">
+                    <div class="col">
+                        Sustainable Development Goals: <b><?= $sdg ?></b><br>
+                        NEUST Agenda: <b><?= $agenda ?></b></b>
+                        <hr>
                         <p><?= $researchDescription ?></p>
                     </div>
-                    <div class="col" style="background-color: #e2f1ffff; 
-                    padding:10px; 
-                    border-radius: 10px;
-                    border: 1px solid gray;
-                    ">
-                        <div class="row">
-                            <div class="col vertical-align: middle;">
-                                <div class="row">
-                                    <div class="col" style="text-align: center;"><i>NEUST Research Agenda</i>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col" style="text-align: center;"><b><?= $agenda ?></b>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col vertical-align: middle;">
-                                <div class="row">
-                                    <div class="col" style="text-align: center;"><i>Sustainable Development Goals</i>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col" style="text-align: center;"><b><?= $sdg ?></b>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
                 <div class="row mt-3 gap-5">
                     <div class="col d-flex flex-column"

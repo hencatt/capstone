@@ -116,8 +116,9 @@ div a {
 
 .notifications {
   background-color: rgb(255, 255, 255);
-  width: 350px;
+  max-width: 350px;
   height: 150px;
+  max-height: max-content;
   border-radius: 10px;
   padding: 1rem 1.3rem;
   position: absolute;

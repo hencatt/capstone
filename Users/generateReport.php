@@ -62,7 +62,7 @@ if (isset($_POST['btnGeneratePDF'])) {
         <div class="col-lg-10 col-sm-8 col-xs-6 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "report") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <h1>Generate Report <span class="material-symbols-outlined">
                             article
                         </span></h1>

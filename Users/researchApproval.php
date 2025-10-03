@@ -36,7 +36,7 @@ $currentLname = $user['lname'];
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "approval") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Research Approval</h1>
                     </div>

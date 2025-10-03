@@ -92,7 +92,7 @@ if (isset($_POST["deleteBtn"])) {
 
 <body>
 
-   
+
 
     <div class="row everything">
         <div class="col sidebar">
@@ -103,7 +103,7 @@ if (isset($_POST["deleteBtn"])) {
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", $currentPosition, "events") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Events <span class="material-symbols-outlined">
                                 event
@@ -279,9 +279,9 @@ if (isset($_POST["deleteBtn"])) {
                                             </div>
 
                                         ";
-                                    ?>            <?php
+                                    ?>             <?php
 
-                                                echo <<<EOD
+                                                 echo <<<EOD
 
                                         <div class="editModal" id="editModal$j">
                                             <div class="innerModal">
@@ -392,8 +392,8 @@ if (isset($_POST["deleteBtn"])) {
                                         EOD;
 
 
-                                                $i = ($i + 1 > 6) ? 0 : $i + 1;
-                                                $j++;
+                                                 $i = ($i + 1 > 6) ? 0 : $i + 1;
+                                                 $j++;
                                 }
                             } else {
                                 echo <<<EOD
@@ -426,6 +426,7 @@ if (isset($_POST["deleteBtn"])) {
         const editHead = $('#editHeadText');
         const editTrigger = $('#editBtnTrigger');
 
+        let isVisible = false;
 
         function toggleEdit() {
 
@@ -440,8 +441,9 @@ if (isset($_POST["deleteBtn"])) {
                     viewMoreId.toggle();
                     editDeleteBtn.toggle();
                 };
-                editTrigger.prop('disabled', !isDisabled);
-                editBtn.text(editTrigger.isDisabled ? "View" : "Edit");
+                isVisible = !isVisible;
+                // editTrigger.prop('disabled', !isDisabled);
+                editBtn.text(isVisible ? "View" : "Edit");
             });
 
         }
