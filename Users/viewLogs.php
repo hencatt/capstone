@@ -40,7 +40,7 @@ if ($currentPosition !== "Director") {
             <?= topbar($currentUser, $currentPosition, "logs") ?>
             <div id="contents">
 
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Logs <span class="material-symbols-outlined">overview</span></h1>
                         <p>Any user activity will be recorded here.</p>

@@ -35,7 +35,7 @@ doubleCheck($currentPosition);
             <?php topbar($currentUser, $currentPosition, "researchView") ?>
 
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <h1>Researches <span class="material-symbols-outlined">
                             article_person
                         </span></h1>

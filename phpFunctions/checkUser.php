@@ -3,7 +3,6 @@ require_once 'gad_portal.php';
 
 function checkUser($userId, $username)
 {
-
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_position'])) {
         header("Location: ../index.php");
         exit();
@@ -21,7 +20,7 @@ function checkUser($userId, $username)
     $result = $stmt->get_result();
 
     if ($result->num_rows < 1) {
-        echo "<script>alert('Please log in again')</script>";
+        alertError("Error", "Please log in again");
         header("Location: ../index.php");
         exit();
     }

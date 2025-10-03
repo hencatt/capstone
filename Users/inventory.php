@@ -41,7 +41,7 @@ deleteItemInventory("deleteItem", $currentUser);
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "inventory") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Inventory</h1>
                     </div>
@@ -51,7 +51,7 @@ deleteItemInventory("deleteItem", $currentUser);
                         <!-- BUTTONS HERE -->
                     </div>
                 </div>
-                <div class="row mt-4 d-flex justify-content-end">
+                <div class="row mt-2 d-flex justify-content-end">
                     <div class="col-2" id="inventoryFilters">
                         <!-- TODO CATEGORY FUNCTION -->
 
