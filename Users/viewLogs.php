@@ -28,7 +28,7 @@ if ($currentPosition !== "Director") {
 </head>
 
 <body>
-    <?php addDelay("viewLogs", $currentUser, $currentPosition) ?>
+  
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
             <?php sidebar("viewLogs", $currentPosition);

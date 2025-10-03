@@ -49,7 +49,7 @@ deleteItemInventory("deleteItem", $currentUser);
 </head>
 
 <body>
-    <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
+    
 
     <!-- Left Sidebar -->
     <div class="row everything">

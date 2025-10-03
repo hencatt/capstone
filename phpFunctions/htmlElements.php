@@ -38,6 +38,7 @@ function headerLinks($title)
 
         <script src="../scripts/script.js" defer></script>
         <script src="../scripts/functions.js"></script>
+        <script src="../scripts/loadingSim.js"></script>
         <title>$title</title>
 EOD;
 }

@@ -30,8 +30,7 @@ deleteItemInventory("deleteItem", $currentUser);
 </head>
 
 <body>
-    <?= addDelay("inventory", $currentUser, $currentPosition); ?>
-
+   
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
             <?php sidebar("inventory", $currentPosition);

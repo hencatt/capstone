@@ -50,7 +50,7 @@ if (isset($_POST['btnGeneratePDF'])) {
         }
     </style>
 
-    <?php addDelay("report", $currentUser, $currentPosition) ?>
+   
     <!-- Left Sidebar -->
     <div class="row everything">
         <div class="col sidebar">

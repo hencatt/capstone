@@ -92,7 +92,7 @@ if (isset($_POST["deleteBtn"])) {
 
 <body>
 
-    <?php addDelay("events", $currentUser, $currentPosition); ?>
+   
 
     <div class="row everything">
         <div class="col sidebar">

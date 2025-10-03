@@ -36,7 +36,7 @@ createAnnouncements("announcementBtn", $currentUser);
 </head>
 
 <body>
-    <?= addDelay("announcement", $currentUser, $currentPosition); ?>
+   
     <div class="row everything">
         <div class="col sidebar">
             <?php sidebar("announcement", $currentPosition) ?>
