@@ -348,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-color: #007bff;
         }
     </style>
-    <?= addDelay("employees", $currentUser, $currentPosition); ?>
+  
 
     <div class="row everything">
         <div class="col sidebar" id="sidebar">

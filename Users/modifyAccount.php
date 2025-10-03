@@ -115,7 +115,7 @@ if (isset($_POST["saveBtn"])) {
 <head>
     <?= headerLinks("Modify Account") ?>
 </head>
-<?php addDelay("account", $currentUser, $currentPosition) ?>
+
 
 <!-- Left Sidebar -->
 <div class="row everything">

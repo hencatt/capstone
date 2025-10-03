@@ -102,7 +102,7 @@ if (isset($_POST['submitResearch'])) {
             }
         }
     </style>
-    <?= addDelay("researchSubmit", $currentUser, $currentPosition); ?>
+  
     <div class="row">
         <div class="col sidebar">
             <?php echo sidebar("research", $currentPosition) ?>

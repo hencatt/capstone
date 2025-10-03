@@ -25,7 +25,7 @@ doubleCheck($currentPosition);
 </head>
 
 <body>
-    <?php addDelay("researchView", $currentUser, $currentPosition) ?>
+  
     <div class="row everything">
         <div class="col sidebar">
             <?php echo sidebar("researchView", $currentPosition) ?>

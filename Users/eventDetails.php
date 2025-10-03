@@ -69,11 +69,11 @@ if ($stmt->execute()) {
 </head>
 
 <body>
-    <?= addDelay("eventDetails", $currentUser, $currentPosition) ?>
+    
 
     <div class="row everything">
         <div class="col sidebar">
-            <?php echo sidebar("events", $currentPosition) ?>
+            <?php echo sidebar("eventDetails", $currentPosition, "eventDetails", $eventTitle) ?>
         </div>
 
         <!-- MAIN CONTENTS -->

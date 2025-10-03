@@ -183,7 +183,7 @@ $a
 </head>
 
 <body>
-    <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
+   
 
     <div class="row everything">
         <div class="col sidebar" id="sidebar">

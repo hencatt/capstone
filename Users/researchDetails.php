@@ -154,13 +154,13 @@ if (isset($_POST['confirmBtnReject'])) {
 </head>
 
 <body>
-    <?= addDelay("researchDetails", $currentUser, $currentPosition); ?>
+ 
 
     <!-- Left Sidebar -->
 
     <div class="row everything">
         <div class="col sidebar">
-            <?php sidebar("researchDetails", $currentPosition) ?>
+            <?php sidebar("researchDetails", $currentPosition, "researchDetails", $researchTitle) ?>
         </div>
         <!-- Main Contents -->
 
@@ -187,65 +187,66 @@ if (isset($_POST['confirmBtnReject'])) {
                         <button class="btn btn-outline-primary">View PDF</button>
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-7" style="background-color: white; padding: 10px; border-radius: 10px;">
+                <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
+                    <div class="col-7">
                         <p><?= $researchDescription ?></p>
                     </div>
-
-                    <div class="col vertical-align: middle;">
-
+                    <div class="col" style="background-color: #e2f1ffff; 
+                    padding:10px; 
+                    border-radius: 10px;
+                    border: 1px solid gray;
+                    ">
                         <div class="row">
-                            <div class="col" style="text-align: center;"><i>NEUST Research Agenda</i>
+                            <div class="col vertical-align: middle;">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;"><i>NEUST Research Agenda</i>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col" style="text-align: center;"><b><?= $agenda ?></b>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col vertical-align: middle;">
+                                <div class="row">
+                                    <div class="col" style="text-align: center;"><i>Sustainable Development Goals</i>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col" style="text-align: center;"><b><?= $sdg ?></b>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col" style="text-align: center;"><b><?= $agenda ?></b>
-                            </div>
-                        </div>
-
                     </div>
-
-                    <div class="col vertical-align: middle;">
-
-                        <div class="row">
-                            <div class="col" style="text-align: center;"><i>Sustainable Development Goals</i>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="text-align: center;"><b><?= $sdg ?></b>
-                            </div>
-                        </div>
-
-                    </div>
-
 
                 </div>
                 <div class="row mt-3 gap-5">
-                    <div class="col gap-3 d-flex flex-column"
+                    <div class="col d-flex flex-column"
                         style="background-color: white; padding: 25px; border-radius: 10px;">
                         <h5><i>Comments</i></h5>
-                        <?php if ($currentPosition === "Panel") {
-                            echo '
-                        <form method="POST">
-                            <div class="row d-flex align-items-center">
-                                <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center" style="margin-left: 1.3rem">
-                                <textarea 
-                                style="
-                                overflow: hidden;
-                                box-sizing: border-box;
-                                resize: none;
-                                border: 1px solid gray;
-                                padding: 10px;
-                                border-radius: 10px;
-                                width: 100%;"
-                                rows="1" cols="50"  name="comments" id="comments" placeholder="Enter comment here..."
-                                ></textarea>
-                                <button class="btn btn-outline-primary" id="comment_send"
-                                    name="comment_send">send</button>
+
+
+                        <?php if ($currentPosition === "Panel") { ?>
+                            <form method="POST">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center"
+                                        style="margin-left: 1.3rem">
+                                        <textarea style="
+                                            overflow: hidden;
+                                            box-sizing: border-box;
+                                            resize: none;
+                                            border: 1px solid gray;
+                                            padding: 10px;
+                                            border-radius: 10px;
+                                            width: 100%;" rows="1" cols="50" name="comments" id="comments"
+                                            placeholder="Enter comment here..."></textarea>
+                                        <button class="btn btn-outline-primary" id="comment_send"
+                                            name="comment_send">send</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                            ';
+                            </form>
+                            <?php
                         }
                         ?>
 
@@ -270,7 +271,7 @@ if (isset($_POST['confirmBtnReject'])) {
                                     while ($row = $result->fetch_assoc()) {
                                         echo '
                                 <div style="border: solid 1px gray; margin-top: 1.3rem; padding:20px; border-radius: 10px">
-                                    <div class="row mt-3 d-flex flex-row">
+                                    <div class="row d-flex flex-row">
                                         <div class="d-flex flex-row" style="width:max-content;">
                                          <span class="material-symbols-outlined">
                                                     person
@@ -281,6 +282,7 @@ if (isset($_POST['confirmBtnReject'])) {
                                             <i class="blockquote-footer">' . htmlspecialchars($row['comment_datetime']) . '</i>
                                         </div>
                                     </div>
+                                        <hr>
                                     <div class="row mt-1">
                                         <div class="col" style="overflow-wrap: anywhere; white-space: normal;
                                             display: -webkit-box;">

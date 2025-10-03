@@ -7,15 +7,10 @@ function addDelay($location, $user, $userPosition)
 <script src="../scripts/loadingSim.js" async></script>
 <div id="loading-bar"></div>
     <div id="loader">
-
         <div class="row everything">
             <div class="col sidebar">
                 '; ?><?php sidebar("$location", $userPosition);
                         echo '</div>
-            <div class="col-10 mt-3 mainContent">';
-                        topbar("$user", $_SESSION["user_position"], "loading");
-                        echo '
-            </div>
         </div>
     </div>
 ';
@@ -23,7 +18,7 @@ function addDelay($location, $user, $userPosition)
 
                     if ($location === 'account') {
                         echo '
-<script src="../scripts/loadingSim.js" async></script>
+<script src="../scripts/loadingSim.js" defer></script>
 <div id="loading-bar"></div>
     <div id="loader">
 

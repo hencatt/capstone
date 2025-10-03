@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 
 
 <body>
-    <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
+ 
     <!-- Left Sidebar -->
     <div class="row everything">
         <div class="col sidebar">

@@ -36,7 +36,7 @@ createAnnouncements("announcementBtn", $currentUser);
 </head>
 
 <body>
-    <?= addDelay("announcement", $currentUser, $currentPosition); ?>
+   
     <div class="row everything">
         <div class="col sidebar">
             <?php sidebar("announcement", $currentPosition) ?>
@@ -65,7 +65,7 @@ createAnnouncements("announcementBtn", $currentUser);
                         <div class="col"></div>
                         <div class="col-3">
                             <label for="inputAnnouncementDate" class="form-label">Date:</label>
-                            <input type="date" name="inputAnnouncementDate" id="inputAnnouncementDate" class="form-control" pattern="\d{4}-\d{2}-\d{2}">
+                            <input type="date" name="inputAnnouncementDate" id="inputAnnouncementDate" class="form-control" pattern="\d{4}-\d{2}-\d{2}" required>
                         </div>
                         <div class="col">
                             <label for="inputCategory" class="form-label">Category</label>
@@ -129,7 +129,7 @@ createAnnouncements("announcementBtn", $currentUser);
     </div>
 
     <?php include('../phpFunctions/alerts.php'); ?>
-    
+
     <script>
         const currentPos = "<?php echo $currentPosition ?>";
         const announceTitle = $('#inputAnnouncementTitle');

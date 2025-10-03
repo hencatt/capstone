@@ -219,8 +219,8 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
     EOD;
 }
 
-
-function sidebar($active, $role)
+// subPage = page title of said subpage
+function sidebar($active, $role, $currentPage = null, $subPage = null)
 {
     $dashboardOption = "";
     $employeeOption = "";
@@ -235,6 +235,7 @@ function sidebar($active, $role)
     $viewLogsOption = "";
 
     $sidebarHighlight = "background-color:rgba(145, 152, 255, 0.66); border-radius:10px;";
+
     $dashboardStyle = "";
     $eventStyle = "";
     $researchStyle = "";
@@ -246,7 +247,10 @@ function sidebar($active, $role)
     $announcementStyle = "";
     $viewLogsStyle = "";
     $approvalOption = "";
+    $approvalStyle = "";
 
+    $subOption = "";
+    $subOptionStyle = "";
     $destination = "#";
 
     switch ($active) {
@@ -268,7 +272,7 @@ function sidebar($active, $role)
             break;
         case "approval":
             $approvalOption = "active";
-            $eventStyle = $sidebarHighlight;
+            $approvalStyle = $sidebarHighlight;
             break;
         case "research";
             $researchOption = "active";
@@ -295,6 +299,26 @@ function sidebar($active, $role)
             $viewLogsStyle = $sidebarHighlight;
     }
     ;
+    if ($subPage !== null) {
+        $subOption = "active";
+        $subOptionStyle = $sidebarHighlight;
+    }
+
+    function ifSubPage($ifPage = null, $desiredPage = null, $subOption, $subOptionStyle, $subPage = null)
+    {
+        if (
+            $desiredPage !== null &&
+            $ifPage == $desiredPage &&
+            $subPage !== null
+        ) {
+            return '
+        <li class="categoryItem" id="' . $subOption . '" style="cursor: pointer; ' . $subOptionStyle . '">
+        <span class="material-symbols-outlined">
+        subdirectory_arrow_right
+        </span>
+        ' . $subPage . '</li>';
+        }
+    }
 
     if ($role === "Director") {
         $destination = "director.php";
@@ -364,7 +388,9 @@ function sidebar($active, $role)
                             <span class="material-symbols-outlined">event</span>
                             Events
                             </li></a>
-        ',
+        ' .
+            ifSubPage($currentPage, "eventDetails", $subOption, $subOptionStyle, $subPage)
+        ,
 
         "researchView" => '
         <a href="researchView.php" class="categoryItem" id="' . $researchViewOption . '" style="' . $researchViewStyle . '"><li>
@@ -372,7 +398,9 @@ function sidebar($active, $role)
                             visibility</span>
                             View Researches
                             </li></a>
-        ',
+        ' .
+            ifSubPage($currentPage, "researchDetails", $subOption, $subOptionStyle, $subPage)
+        ,
 
         "researchSubmit" => '
         <a href="submitResearch.php" class="categoryItem" id="' . $researchOption . '" style="' . $researchStyle . '"><li>
@@ -397,11 +425,13 @@ function sidebar($active, $role)
         ',
 
         "approval" => '
-        <a href="researchApproval.php" class="categoryItem" id="' . $approvalOption . '">
+        <a href="researchApproval.php" class="categoryItem" id="' . $approvalOption . '" style="' . $approvalStyle . '">
             <li><span class="material-symbols-outlined">check_circle</span>
             Approval
             </li></a>
-        ',
+        ' .
+            ifSubPage($currentPage, "researchDetails", $subOption, $subOptionStyle, $subPage)
+        ,
 
         "logout" => '
         <a href="../logout.php?logout=true" class="categoryItem" id="' . $logoutOption . '"><li>
@@ -427,6 +457,13 @@ function sidebar($active, $role)
         "category.settings" => '
         <label class="category">Settings</label>
         ',
+
+
+
+        "subPage" => '
+        <li class="categoryItem" id="' . $subOption . '" style="' . $subOptionStyle . '">
+        ' . $subPage . '</li>
+        '
 
     ];
 
