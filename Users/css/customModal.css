@@ -66,6 +66,7 @@
 
 /* PERSONAL INFO */
 .modalInfo {
+    overflow-y: auto;
     position: fixed;
     top: 0; left: 0;
     width: 100vw;

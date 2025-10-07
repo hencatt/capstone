@@ -420,21 +420,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addEmployeeBtn && modal) {
         addEmployeeBtn.addEventListener('click', function() {
             modal.classList.add('open');
-            document.body.style.overflow = 'hidden';
         });
     }
 
     closeBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
             modal.classList.remove('open');
-            document.body.style.overflow = '';
+          
         });
     });
 
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
             modal.classList.remove('open');
-            document.body.style.overflow = '';
+          
         }
     });
 

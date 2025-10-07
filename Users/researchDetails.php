@@ -99,8 +99,7 @@ if (isset($_POST['comment_send'])) {
     $stmt->bind_param("sssi", $comment, $currentUser, $currentDate, $currentResearch);
     if ($stmt->execute()) {
         alertSuccess("Success", "Your comment was posted");
-    }
-    ;
+    };
     redirectPage($currentResearch);
 }
 
@@ -115,14 +114,11 @@ if (isset($_POST['confirmBtnApprove'])) {
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
         alertSuccess("Voted", "You approved " . $researchTitle);
-    }
-    ;
+    };
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);
-
-}
-;
+};
 
 if (isset($_POST['confirmBtnReject'])) {
     $vote = "Reject";
@@ -135,14 +131,11 @@ if (isset($_POST['confirmBtnReject'])) {
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
         alertSuccess("Voted", "You rejected " . $researchTitle);
-    }
-    ;
+    };
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);
-
-}
-;
+};
 
 ?>
 
@@ -179,18 +172,16 @@ if (isset($_POST['confirmBtnReject'])) {
 
                         <?php
                         if ($currentPosition === "Panel"): ?>
-                            echo '
                             <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
                             <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
-                            ';
-                            <?php
+                        <?php
                         endif;
                         ?>
                         <?php
                         if ($currentPosition === "Researcher"):
-                            ?>
+                        ?>
                             <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit PDF</button>
-                            <?php
+                        <?php
                         endif;
                         ?>
                         <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">View PDF</button>
@@ -229,7 +220,7 @@ if (isset($_POST['confirmBtnReject'])) {
                                     </div>
                                 </div>
                             </form>
-                            <?php
+                        <?php
                         }
                         ?>
 
@@ -326,7 +317,7 @@ if (isset($_POST['confirmBtnReject'])) {
             <div class="row mt-4">
                 <div class="col gap-3 d-flex justify-content-end">
                     <form method="POST">
-                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-danger" type="button" name="cancelBtn" id="cancelBtn">Cancel</button>
                         <button class="btn btn-outline-success" name="confirmBtnApprove"
                             id="confirmBtnApprove">Confirm</button>
                     </form>
@@ -345,7 +336,7 @@ if (isset($_POST['confirmBtnReject'])) {
             <div class="row mt-4">
                 <div class="col gap-3 d-flex justify-content-end">
                     <form method="POST">
-                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-danger" type="button" name="cancelBtnReject" id="cancelBtnReject">Cancel</button>
                         <button class="btn btn-outline-success" name="confirmBtnReject"
                             id="confirmBtnApprove">Confirm</button>
                     </form>
@@ -357,16 +348,17 @@ if (isset($_POST['confirmBtnReject'])) {
     <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
-        (function () {
+        (function() {
             const commentArea = document.getElementById("comments");
             const commentBtn = document.getElementById("comment_send");
             const approveBtn = document.getElementById("approveBtn");
             const rejectBtn = document.getElementById("rejectBtn");
             const cancelBtn = document.getElementById("cancelBtn");
+            const cancelBtnReject = document.getElementById("cancelBtnReject")
             const confirmModal = document.querySelectorAll(".modalConfirmation");
             const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
 
-            commentArea.addEventListener("input", function () {
+            commentArea.addEventListener("input", function() {
                 this.style.height = "auto";
                 this.style.height = this.scrollHeight + "px";
             });
@@ -378,20 +370,26 @@ if (isset($_POST['confirmBtnReject'])) {
                 }
             });
 
-            approveBtn.addEventListener("click", function () {
+            approveBtn.addEventListener("click", function() {
                 confirmModal.forEach((modal) => {
                     modal.classList.add("open");
                 });
             });
 
-            rejectBtn.addEventListener("click", function () {
+            rejectBtn.addEventListener("click", function() {
                 confirmModalReject.forEach((modal) => {
                     modal.classList.add("open");
                 });
             });
 
-            cancelBtn.addEventListener("click", function () {
+            cancelBtn.addEventListener("click", function() {
                 confirmModal.forEach((modal) => {
+                    modal.classList.remove("open");
+                });
+            });
+
+            cancelBtnReject.addEventListener("click", function() {
+                confirmModalReject.forEach((modal) => {
                     modal.classList.remove("open");
                 });
             });
