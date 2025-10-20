@@ -16,6 +16,17 @@ body {
   overflow-x: hidden;
 }
 
+.dateText::before {
+  content: "- ";
+}
+
+.dateText{
+  color: gray;
+  font-style: italic;
+  font-size: small;
+  align-self: center;
+}
+
 .itemText {
   color: #00adf1;
 }

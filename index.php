@@ -1,7 +1,7 @@
 <?php
-require_once "phpFunctions/gad_portal.php";
-include_once 'phpFunctions/variables.php';
-include_once 'phpFunctions/insertingLogs.php';
+require_once "./phpFunctions/gad_portal.php";
+include_once './phpFunctions/variables.php';
+include_once './phpFunctions/insertingLogs.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the user's IP address
@@ -65,22 +65,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Redirect based on user position
                 switch ($_SESSION['user_position']) {
                     case "Director":
-                        header("Location: /capstone/Users/director.php");
+                        header("Location: ./Users/director.php");
                         break;
                     case "Focal Person":
-                        header("Location: /capstone/Users/focalPerson.php");
+                        header("Location: ./Users/focalPerson.php");
                         break;
                     case "Technical Assistant":
-                        header("Location: /capstone/Users/TA.php");
+                        header("Location: ./Users/TA.php");
                         break;
                     case "Researcher":
-                        header("Location: /capstone/Users/researchView.php");
+                        header("Location: ./Users/researchView.php");
                         break;
                     case "RET Chair":
-                        header("Location: /capstone/Users/events.php");
+                        header("Location: ./Users/events.php");
                         break;
                     case "Panel":
-                        header("Location: /capstone/Users/researchApproval.php");
+                        header("Location: ./Users/researchApproval.php");
                         break;
                     default:
                         echo "Invalid Position";

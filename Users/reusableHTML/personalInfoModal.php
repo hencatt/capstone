@@ -1,4 +1,3 @@
-
 <div id="modal" class="modalInfo">
     <div class="modalInfo-content" style="width: 90%;
     
@@ -23,45 +22,38 @@
                     <div class="row">
                         <div class="col">
                             <label for="inputFname" class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="inputFname" id="inputFname" placeholder="Enter Text Here..." required>
+                            <input type="text" class="form-control" name="inputFname" id="inputFname"
+                                placeholder="Enter Text Here..." required>
                         </div>
                         <div class="col">
                             <label for="inputMname" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" name="inputMname" id="inputMname" placeholder="Enter Text Here..." required>
+                            <input type="text" class="form-control" name="inputMname" id="inputMname"
+                                placeholder="Enter Text Here..." required>
                         </div>
                         <div class="col">
                             <label for="inputLname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="inputLname" id="inputLname" placeholder="Enter Text Here..." required>
+                            <input type="text" class="form-control" name="inputLname" id="inputLname"
+                                placeholder="Enter Text Here..." required>
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col">
+                        <!-- <div class="col">
                             <label for="inputEmail" class="form-label">Email</label>
                             <input type="email" name="inputEmail" id="inputEmail" class="form-control" required>
-                        </div>
+                        </div> -->
                         <div class="col">
                             <label for="inputContact" class="form-label">Contact No.</label>
                             <input type="text" name="inputContact" id="inputContact" class="form-control" required>
                         </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="row mt-3">
-                            <div class="col">
-                                <label for="inputDepartment" class="form-label">Department</label>
-                                <input type="text" class="form-control" 
-                                    name="inputDepartment" 
-                                    id="inputDepartment" 
-                                    value="<?= htmlspecialchars($_SESSION['user_department']) ?>" 
-                                    readonly>
-                            </div>
-                            <div class="col">
-                                <label for="inputCampus" class="form-label">Campus</label>
-                                <input type="text" class="form-control" 
-                                    name="inputCampus" 
-                                    id="inputCampus" 
-                                    value="<?= htmlspecialchars($_SESSION['user_campus']) ?>" 
-                                    readonly>
-                            </div>
+                        <div class="col">
+                            <label for="inputDepartment" class="form-label">Department</label>
+                            <input type="text" class="form-control" name="inputDepartment" id="inputDepartment"
+                                value="<?= htmlspecialchars($_SESSION['user_department']) ?>" readonly>
+                        </div>
+                        <div class="col">
+                            <label for="inputCampus" class="form-label">Campus</label>
+                            <input type="text" class="form-control" name="inputCampus" id="inputCampus"
+                                value="<?= htmlspecialchars($_SESSION['user_campus']) ?>" readonly>
                         </div>
                     </div>
                     <div class="row mt-4">
@@ -148,7 +140,8 @@
                                         <option value="Female">Female</option>
                                         <option value="LGBTQIA+">LGBTQIA+</option>
                                     </select>
-                                    <input type="text" class="form-control mt-2" id="otherGender" name="otherGender" placeholder="Please specify" style="display: none;">
+                                    <input type="text" class="form-control mt-2" id="otherGender" name="otherGender"
+                                        placeholder="Please specify" style="display: none;">
                                 </div>
                             </div>
 
@@ -167,7 +160,7 @@
                                 </div>
                             </div>
 
-                           
+
                         </div>
                     </div>
                 </div>
@@ -227,13 +220,43 @@
                 </div>
                 <div class="row">
                     <div class="col d-flex flex-row justify-content-end gap-3">
+                        <button class="btn btn-outline-success" name="saveInfo" id="saveInfo"
+                            type="submit">Save</button>
                         <button class="btn btn-outline-secondary" name="editInfo" id="editInfo"
                             type="button">Edit</button>
-                        <button class="btn btn-outline-success" name="saveInfo" id="saveInfo" type="submit">Save</button>
-                        <button type="button" id="cancelInfo" class="btn btn-secondary close-btn">Cancel</button>
+                        <button type="button" id="cancelInfo" name="cancelInfo"
+                            class="btn btn-secondary close-btn">Cancel</button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+
+        $('#editInfo').click(function () {
+
+            const isDisabled = $('#inputFname').prop('disabled');
+
+            // Toggle disabled state for inputs
+            $('#saveInfo, #inputFname, #inputLname, #inputMname, #inputStreet, #inputContact, #inputBirthdate, #inputPriority, #inputStAddress, #inputCity, #inputProvince, #inputMaritalStatus, #inputSize, #inputSex, #inputGender, #inputIncome, #inputChildren, #inputChildrenNum, #inputConcern').prop('disabled', !isDisabled);
+
+            // Optional: Clear values when switching back to disabled (like a reset)
+            if (!isDisabled) {
+            $('#inputFname, #inputLname, #inputMname, #inputStreet, #inputContact, #inputBirthdate, #inputPriority, #inputStAddress, #inputCity, #inputProvince, #inputMaritalStatus, #inputSize, #inputSex, #inputGender, #inputIncome, #inputChildren, #inputChildrenNum, #inputConcern').val('');
+            }
+
+            // Change button text to "Cancel" or "Edit"
+            $('#editInfo').text(isDisabled ? 'Cancel' : 'Edit');
+            $('cancelInfo').prop(isDisabled ? $('#cancelInfo').hide() : $('#cancelInfo').show());
+            $('#editInfo').prop(isDisabled ? $('#saveInfo').show() : $('#saveInfo').hide());
+
+        });
+
+        $('#saveBtn').click(function () {
+            location.reload();
+        });
+
+    });
+</script>

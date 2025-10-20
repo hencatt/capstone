@@ -37,4 +37,5 @@ function alertSuccess($title, $msg){
 function alertError($title, $msg){
     setSessionStatus($title, $msg, "error");
 }
+
 ?>
