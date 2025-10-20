@@ -4,7 +4,7 @@ require_once 'includes.php';
 
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("Technical Assistant");
 
 if ($_SESSION['user_position'] !== 'Technical Assistant') {

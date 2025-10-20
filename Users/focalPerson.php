@@ -10,7 +10,7 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("Focal Person");
 
 $sql = "SELECT department, campus FROM accounts_tbl WHERE id = ?";

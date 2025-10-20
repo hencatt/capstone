@@ -9,7 +9,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 
 $previousPage = $_GET['prev'];
 $eventId = $_GET['id'];
