@@ -3,7 +3,7 @@ require_once 'includes.php';
 
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 $user = getUser();
 $currentUserId = $user['id'];
 $currentUser = $user['fullname'];
@@ -38,6 +38,7 @@ if ($result->num_rows > 0) {
     $researchDateSubmitted = htmlspecialchars($row['date_submitted']);
     $agenda = htmlspecialchars($row['research_agenda']);
     $sdg = htmlspecialchars($row['research_sdg']);
+    $file = $row['file'];
 }
 
 function redirectPage($researchId)
@@ -120,7 +121,6 @@ if (isset($_POST['confirmBtnApprove'])) {
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);
-
 }
 ;
 
@@ -140,7 +140,6 @@ if (isset($_POST['confirmBtnReject'])) {
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);
-
 }
 ;
 
@@ -169,31 +168,33 @@ if (isset($_POST['confirmBtnReject'])) {
 
             <div id="contents">
                 <div class="row mt-4">
-                    <div class="col d-flex flex-row gap-3">
+                    <div class="col d-flex gap-3">
 
                         <h1><?= $researchTitle; ?></h1>
-                        <!-- TODO DATE SUBMITTED -->
-                        <figcaption class="blockquote-footer align-self-end">Date Submitted: <?= $researchDateSubmitted; ?></figcaption>
+                        <span class="dateText">Date Submitted: <?= $researchDateSubmitted; ?></span>
                     </div>
-                    <div class="col d-flex justify-content-end gap-3">
+                    <!-- <div class="col d-flex">
+                        <figcaption class="blockquote-footer align-self-center">Date Submitted: <?= $researchDateSubmitted; ?></figcaption>
+                    </div> -->
+                    <div class="col d-flex justify-content-end align-items-center gap-3">
 
                         <?php
                         if ($currentPosition === "Panel"): ?>
-                            echo '
                             <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
                             <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
-                            ';
                             <?php
                         endif;
                         ?>
                         <?php
                         if ($currentPosition === "Researcher"):
                             ?>
-                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit PDF</button>
+                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit
+                                PDF</button>
                             <?php
                         endif;
                         ?>
                         <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">View PDF</button>
+                        <div id="pdfContainer" style="margin-top: 20px;"></div>
                     </div>
                 </div>
                 <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
@@ -326,7 +327,8 @@ if (isset($_POST['confirmBtnReject'])) {
             <div class="row mt-4">
                 <div class="col gap-3 d-flex justify-content-end">
                     <form method="POST">
-                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-danger" type="button" name="cancelBtn"
+                            id="cancelBtn">Cancel</button>
                         <button class="btn btn-outline-success" name="confirmBtnApprove"
                             id="confirmBtnApprove">Confirm</button>
                     </form>
@@ -345,7 +347,8 @@ if (isset($_POST['confirmBtnReject'])) {
             <div class="row mt-4">
                 <div class="col gap-3 d-flex justify-content-end">
                     <form method="POST">
-                        <button class="btn btn-outline-danger" name="cancelBtn" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-outline-danger" type="button" name="cancelBtnReject"
+                            id="cancelBtnReject">Cancel</button>
                         <button class="btn btn-outline-success" name="confirmBtnReject"
                             id="confirmBtnApprove">Confirm</button>
                     </form>
@@ -363,36 +366,139 @@ if (isset($_POST['confirmBtnReject'])) {
             const approveBtn = document.getElementById("approveBtn");
             const rejectBtn = document.getElementById("rejectBtn");
             const cancelBtn = document.getElementById("cancelBtn");
+            const cancelBtnReject = document.getElementById("cancelBtnReject")
             const confirmModal = document.querySelectorAll(".modalConfirmation");
             const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
+            const pos = <?php echo json_encode($currentPosition); ?>
 
-            commentArea.addEventListener("input", function () {
-                this.style.height = "auto";
-                this.style.height = this.scrollHeight + "px";
-            });
 
-            commentArea.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    commentBtn.click();
+            if (pos === "Panel") {
+                commentArea.addEventListener("input", function () {
+                    this.style.height = "auto";
+                    this.style.height = this.scrollHeight + "px";
+                });
+
+                commentArea.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        commentBtn.click();
+                    }
+                });
+
+
+                approveBtn.addEventListener("click", function () {
+                    confirmModal.forEach((modal) => {
+                        modal.classList.add("open");
+                    });
+                });
+
+                rejectBtn.addEventListener("click", function () {
+                    confirmModalReject.forEach((modal) => {
+                        modal.classList.add("open");
+                    });
+                });
+
+                cancelBtn.addEventListener("click", function () {
+                    confirmModal.forEach((modal) => {
+                        modal.classList.remove("open");
+                    });
+                });
+
+                cancelBtnReject.addEventListener("click", function () {
+                    confirmModalReject.forEach((modal) => {
+                        modal.classList.remove("open");
+                    });
+                });
+            }
+
+
+
+            // SHOW PDF
+            document.getElementById("viewPdf").addEventListener("click", function () {
+                <?php
+                $filePath = $file; // example: "researchfiles/LAB_HENREICH_CATIG.pdf"
+                $fileData = file_exists($filePath) ? file_get_contents($filePath) : null;
+                ?>
+
+                const base64Data = <?php echo json_encode($fileData ? base64_encode($fileData) : null); ?>;
+
+                if (!base64Data) {
+                    alert("PDF file not found!");
+                    return;
                 }
-            });
 
-            approveBtn.addEventListener("click", function () {
-                confirmModal.forEach((modal) => {
-                    modal.classList.add("open");
+                // Decode base64 → binary
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: "application/pdf" });
+                const pdfURL = URL.createObjectURL(blob);
+
+                // 🧠 Create modal overlay
+                const overlay = document.createElement("div");
+                overlay.style.position = "fixed";
+                overlay.style.top = "0";
+                overlay.style.left = "0";
+                overlay.style.width = "100%";
+                overlay.style.height = "100%";
+                overlay.style.backgroundColor = "rgba(0,0,0,0.6)";
+                overlay.style.backdropFilter = "blur(4px)";
+                overlay.style.display = "flex";
+                overlay.style.justifyContent = "center";
+                overlay.style.alignItems = "center";
+                overlay.style.zIndex = "9999";
+
+                // 🪟 Modal box
+                const modal = document.createElement("div");
+                modal.style.width = "80%";
+                modal.style.height = "85%";
+                modal.style.backgroundColor = "#fff";
+                modal.style.borderRadius = "10px";
+                modal.style.overflow = "hidden";
+                modal.style.position = "relative";
+                modal.style.boxShadow = "0 0 20px rgba(0,0,0,0.3)";
+                modal.style.display = "flex";
+                modal.style.flexDirection = "column";
+
+                // ❌ Close button
+                const closeBtn = document.createElement("button");
+                closeBtn.textContent = "×";
+                closeBtn.style.position = "absolute";
+                closeBtn.style.top = "10px";
+                closeBtn.style.right = "15px";
+                closeBtn.style.border = "none";
+                closeBtn.style.background = "transparent";
+                closeBtn.style.fontSize = "28px";
+                closeBtn.style.cursor = "pointer";
+                closeBtn.style.zIndex = "10";
+                closeBtn.addEventListener("click", () => {
+                    URL.revokeObjectURL(pdfURL);
+                    overlay.remove();
                 });
-            });
 
-            rejectBtn.addEventListener("click", function () {
-                confirmModalReject.forEach((modal) => {
-                    modal.classList.add("open");
-                });
-            });
+                // 🧾 PDF viewer inside modal
+                const pdfViewer = document.createElement("object");
+                pdfViewer.data = pdfURL;
+                pdfViewer.type = "application/pdf";
+                pdfViewer.width = "100%";
+                pdfViewer.height = "100%";
+                pdfViewer.style.border = "none";
+                pdfViewer.innerHTML = "<div style='padding:20px;text-align:center;'>No PDF viewer available</div>";
 
-            cancelBtn.addEventListener("click", function () {
-                confirmModal.forEach((modal) => {
-                    modal.classList.remove("open");
+                modal.appendChild(closeBtn);
+                modal.appendChild(pdfViewer);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                // ✨ Optional: click outside to close
+                overlay.addEventListener("click", (e) => {
+                    if (e.target === overlay) {
+                        URL.revokeObjectURL(pdfURL);
+                        overlay.remove();
+                    }
                 });
             });
 

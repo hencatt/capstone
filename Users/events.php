@@ -14,7 +14,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 
 if (isset($_POST['editSaveBtn'])) {
     $id = htmlspecialchars($_POST['announceID']);

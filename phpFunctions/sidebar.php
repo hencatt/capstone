@@ -495,14 +495,18 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
     if ($role === "Focal Person") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
+
         echo $sidebar['category.home'];
         echo $sidebar['dashboard'];
+
         echo $sidebar['category.general'];
         echo $sidebar['employees'];
         echo $sidebar['inventory'];
         echo $sidebar['events'];
+
         echo $sidebar['category.research'];
         echo $sidebar['researchView'];
+        
         echo $sidebar['category.settings'];
         echo $sidebar['report'];
         echo $sidebar['logout'];

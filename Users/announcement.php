@@ -15,7 +15,7 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 
 if ($currentPosition !== "Director") {
     if ($currentPosition !== "Technical Assistant") {

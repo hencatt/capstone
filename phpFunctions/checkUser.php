@@ -1,7 +1,7 @@
 <?php
 require_once 'gad_portal.php';
 
-function checkUser($userId, $username)
+function checkUser($userId)
 {
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_position'])) {
         header("Location: ../index.php");
@@ -13,14 +13,14 @@ function checkUser($userId, $username)
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $sql = "SELECT * FROM accounts_tbl WHERE id = ? AND username = ?";
+    $sql = "SELECT * FROM accounts_tbl WHERE id = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("is", $userId, $username);
+    $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows < 1) {
-        alertError("Error", "Please log in again");
+        // alertError("Error", "Please log in again");
         header("Location: ../index.php");
         exit();
     }

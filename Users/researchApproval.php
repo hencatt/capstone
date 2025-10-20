@@ -2,7 +2,7 @@
 require_once "includes.php";
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("Panel");
 
 $user = getUser();

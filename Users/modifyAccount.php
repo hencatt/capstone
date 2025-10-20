@@ -102,6 +102,11 @@ if (isset($_POST["saveBtn"])) {
     }
 
     $con->close();
+
+    // sleep(2);
+
+    // header("Location: ../index.php");
+
 }
 
 
@@ -310,27 +315,30 @@ if (isset($_POST["saveBtn"])) {
 </script>
 <!-- PANG TOGGLE NA BUTTON EDIT AND CANCEL -->
 <script>
-    $('#editBtn').click(function () {
-        const isDisabled = $('#inputEmail').prop('disabled');
+    $(document).ready(function () {
+        $('#editBtn').click(function () {
+            const isDisabled = $('#inputEmail').prop('disabled');
 
-        // Toggle disabled state for inputs
-        $('#saveBtn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
+            // Toggle disabled state for inputs
+            $('#saveBtn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
 
-        // Optional: Clear values when switching back to disabled (like a reset)
-        if (!isDisabled) {
-            $('#inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
-        }
+            // Optional: Clear values when switching back to disabled (like a reset)
+            if (!isDisabled) {
+                $('#inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
+            }
 
-        // Change button text to "Cancel" or "Edit"
-        $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');
-        $('#editBtn').prop(isDisabled ? $('#saveBtn').show() : $('#saveBtn').hide());
+            // Change button text to "Cancel" or "Edit"
+            $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');
+            $('#editBtn').prop(isDisabled ? $('#saveBtn').show() : $('#saveBtn').hide());
+
+        });
+
+        $('#saveBtn').click(function () {
+            location.reload();
+        });
+
     });
-</script>
 
-<script>
-    $('#saveBtn').click(function () {
-        location.reload();
-    });
 </script>
 
 

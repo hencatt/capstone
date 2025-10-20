@@ -10,7 +10,7 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("Focal Person");
 
 $sql = "SELECT department, campus FROM accounts_tbl WHERE id = ?";
@@ -420,21 +420,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addEmployeeBtn && modal) {
         addEmployeeBtn.addEventListener('click', function() {
             modal.classList.add('open');
-            document.body.style.overflow = 'hidden';
         });
     }
 
     closeBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
             modal.classList.remove('open');
-            document.body.style.overflow = '';
+          
         });
     });
 
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
             modal.classList.remove('open');
-            document.body.style.overflow = '';
+          
         }
     });
 
