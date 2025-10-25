@@ -24,7 +24,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name";
 
     if ($noFilters) {
-        $sql .= ", et.email, et.contact_no, et.department";
+        $sql .= ", et.campus, et.email, et.contact_no, et.department";
     } else {
         if ($campus !== "None")
             $sql .= ", et.campus";
@@ -144,7 +144,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     echo '<th>Full Name</th>';
 
     if ($noFilters) {
-        echo '<th>Email</th><th>Contact No</th><th>Department</th>';
+        echo '<th>Campus</th><th>Department</th>';
     } else {
         if ($campus !== "None")
             echo '<th>Campus</th>';
@@ -159,6 +159,12 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
         echo '<th>Signature</th>';
     }
 
+    // ==================================
+    // ADD EXTRA HEADER HERE
+    echo '<th>-</th>';
+    // ==================================
+
+
     echo '</tr></thead><tbody id="employeeTableBody">';
 
     if ($result && $result->num_rows > 0) {
@@ -167,8 +173,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
             echo '<td>' . htmlspecialchars($row['full_name']) . '</td>';
 
             if ($noFilters) {
-                echo '<td>' . htmlspecialchars($row['email']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['contact_no']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['department']) . '</td>';
                 if ($generate === "report" && $position === "Focal Person") {
                     echo '<td></td>';
@@ -186,6 +191,12 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
             if ($generate === "report" && $position === "Focal Person") {
                 echo '<td></td>';
             }
+
+            // ==================================
+            // ADD EXTRA BUTTONS / MORE HERE
+            echo '<td> View More </td>';
+            // ==================================
+
 
             echo '</tr>';
         }

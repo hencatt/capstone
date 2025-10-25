@@ -49,7 +49,7 @@ deleteItemInventory("deleteItem", $currentUser);
 </head>
 
 <body>
-    
+
 
     <!-- Left Sidebar -->
     <div class="row everything">
@@ -98,9 +98,13 @@ deleteItemInventory("deleteItem", $currentUser);
                                 <div class="col">
                                     <h1>Employee</h1>
                                 </div>
-                                <div class="col d-flex justify-content-end">
+                                <div class="col d-flex justify-content-end align-items-center gap-3">
                                     <a href="./employees.php"><button class="btn btn-outline-primary">View
                                             More</button></a>
+                                    <!-- <button id="add_account" class="btn btn-outline-success">
+                                        Add Account
+                                        <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                                    </button> -->
                                 </div>
                             </div>
                             <!-- SEARCH BARS, FILTERS ETC ROWS -->
@@ -261,15 +265,15 @@ deleteItemInventory("deleteItem", $currentUser);
 
     <!-- SEARCH FUNCTION FOR EMPLOYEE SEARCH FUNCTION -->
     <script>
-        $(document).ready(function () {
-            $("#searchEmployeeInput").keyup(function () {
+        $(document).ready(function() {
+            $("#searchEmployeeInput").keyup(function() {
                 var employeeName = $(this).val();
 
                 console.log("Searching for: " + employeeName);
 
                 $.post("../searchFunction.php", {
                     employeeSearch: employeeName
-                }, function (data, status) {
+                }, function(data, status) {
                     $("#employeeTableBody").html(data);
                 })
             });
@@ -303,15 +307,15 @@ EOD;
 
     <!-- SAVE FILTER FUNCTION -->
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
 
             // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
-            $('#filters').load("./reusableHTML/filters.php", function () {
-                $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
+            $('#filters').load("./reusableHTML/filters.php", function() {
+                $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
                     filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
                     resetFilterFunction(position);

@@ -37,14 +37,17 @@
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <!-- <div class="col">
+                        <div class="col">
                             <label for="inputEmail" class="form-label">Email</label>
                             <input type="email" name="inputEmail" id="inputEmail" class="form-control" required>
-                        </div> -->
+                        </div>
                         <div class="col">
                             <label for="inputContact" class="form-label">Contact No.</label>
                             <input type="text" name="inputContact" id="inputContact" class="form-control" required>
                         </div>
+
+                    </div>
+                    <div class="row mt-4">
                         <div class="col">
                             <label for="inputDepartment" class="form-label">Department</label>
                             <input type="text" class="form-control" name="inputDepartment" id="inputDepartment"
@@ -233,9 +236,9 @@
     </div>
 </div>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-        $('#editInfo').click(function () {
+        $('#editInfo').click(function() {
 
             const isDisabled = $('#inputFname').prop('disabled');
 
@@ -244,7 +247,7 @@
 
             // Optional: Clear values when switching back to disabled (like a reset)
             if (!isDisabled) {
-            $('#inputFname, #inputLname, #inputMname, #inputStreet, #inputContact, #inputBirthdate, #inputPriority, #inputStAddress, #inputCity, #inputProvince, #inputMaritalStatus, #inputSize, #inputSex, #inputGender, #inputIncome, #inputChildren, #inputChildrenNum, #inputConcern').val('');
+                $('#inputFname, #inputLname, #inputMname, #inputStreet, #inputContact, #inputBirthdate, #inputPriority, #inputStAddress, #inputCity, #inputProvince, #inputMaritalStatus, #inputSize, #inputSex, #inputGender, #inputIncome, #inputChildren, #inputChildrenNum, #inputConcern').val('');
             }
 
             // Change button text to "Cancel" or "Edit"
@@ -254,7 +257,7 @@
 
         });
 
-        $('#saveBtn').click(function () {
+        $('#saveBtn').click(function() {
             location.reload();
         });
 

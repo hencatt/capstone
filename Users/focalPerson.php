@@ -199,10 +199,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                                         <div class="col d-flex justify-content-end align-items-center gap-3">
                                             <a href="./employees.php"><button class="btn btn-outline-primary">View
                                                     More</button></a>
-                                                    <button type="button" class="btn btn-success" id="addEmployeeBtn">
+                                                    <!-- <button type="button" class="btn btn-success" id="addEmployeeBtn">
                                                         Add Employee
                                                         <span class="material-symbols-outlined">add</span>
-                                                    </button>
+                                                    </button> -->
                                         </div>
                                     </div>
                                     <!-- SEARCH BARS, FILTERS ETC ROWS -->
