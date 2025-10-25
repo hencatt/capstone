@@ -31,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
     $marital_status = $_POST['inputMaritalStatus'] ?? '';
     $sex            = $_POST['inputSex'] ?? '';
 
-    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+') 
-                ? ($_POST['otherGender'] ?? '') 
-                : ($_POST['inputGender'] ?? '');
+    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+')
+        ? ($_POST['otherGender'] ?? '')
+        : ($_POST['inputGender'] ?? '');
 
     $size            = $_POST['inputSize'] ?? '';
     $income          = $_POST['inputIncome'] ?? '';
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
             (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt_info->bind_param(
-            "sssssssssssiis", 
+            "sssssssssssiis",
             $fname,
             $mname,
             $lname,
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Send credentials email to the new user
                 // sendUserCredentials($email, $username, $plainPassword);
             } else {
-               alertError("Error", "Please try again");
+                alertError("Error", "Please try again");
             }
         }
 
@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             alertSuccess("Updated", "Account updated successfully!");
         } else {
-           alertError("Error", "There has been an error updating account");
+            alertError("Error", "There has been an error updating account");
         }
 
         $stmt->close();
@@ -348,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-color: #007bff;
         }
     </style>
-  
+
 
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
@@ -366,9 +366,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <?php
-                    if ($currentPosition === "Director") {
-                        // Director can add accounts
-                        echo '
+                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
+                    // Director can add accounts
+                    echo '
                             <div class="row mt-3 d-flex justify-content-end">
                                 <div class="col-2">
                                     <button id="add_account" class="btn btn-outline-success">
@@ -378,9 +378,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         ';
-                    } elseif ($currentPosition === "Focal Person") {
-                        // Focal Person can add employees
-                        echo '
+                } elseif ($currentPosition === "Focal Person") {
+                    // Focal Person can add employees
+                    echo '
                             <div class="row mt-3 d-flex justify-content-end">
                                 <div class="col-2">
                                     <button type="button" class="btn btn-success" id="addEmployeeBtn">
@@ -390,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         ';
-                    }
+                }
                 ?>
                 <!-- FiltersHere -->
                 <div class="row mt-3">
@@ -496,11 +496,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'
-                ?>
-                <?php
-                // Add this block for Focal Person modal space
-                if ($currentPosition === "Focal Person") {
-                    echo '
+            ?>
+            <?php
+            // Add this block for Focal Person modal space
+            if ($currentPosition === "Focal Person") {
+                echo '
                     
                     <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                         aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
@@ -627,9 +627,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>    
                     ';
-                }    
-                
-                ?>
+            }
+
+            ?>
         </div>
     </div>
 
@@ -691,9 +691,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <?php include('../phpFunctions/alerts.php'); ?>
+    <script>
+        $(document).ready(function() {
+            const position = <?= json_encode($currentPosition) ?>;
+            const campus = <?= json_encode($currentCampus) ?>;
+            const dept = <?= json_encode($currentDepartment) ?>;
+            // Load filters, table, buttons first
+            $('#filters').load("./reusableHTML/filters.php", function() {
+                resetFilterFunction(position);
+                restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
+
+                setTimeout(() => {
+                    filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+
+                }, 50);
+
+                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function() {
+
+                    $('#filterButton').load("./reusableHTML/filtersButton.php", function() {
+                        // Now everything exists → safe to run
+
+                    });
+                });
+            });
+        });
+    </script>
 
     <script>
-        window.addEventListener("pageshow", function (event) {
+        window.addEventListener("pageshow", function(event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
@@ -746,25 +771,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     </script>
-    <script>
-        $(document).ready(function () {
-            const position = <?= json_encode($currentPosition) ?>;
-            const campus = <?= json_encode($currentCampus) ?>;
-            const dept = <?= json_encode($currentDepartment) ?>;
 
-            // Load filters, table, buttons first
-            $('#filters').load("./reusableHTML/filters.php", function () {
-                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
-                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
-                        // Now everything exists → safe to run
-                        filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
-                        resetFilterFunction(position);
-                        restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
-                    });
-                });
-            });
-        });
-    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <scrip nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js">
@@ -817,12 +825,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (confirm('Are you sure you want to deactivate this user?')) {
                             fetch('../deactivate_user.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: `id=${userId}`,
-                            })
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: `id=${userId}`,
+                                })
                                 .then(response => response.text())
                                 .then(data => {
                                     alert(data);
@@ -886,73 +894,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 }
             });
-
-            
         </script>
 </body>
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Modal logic
-    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-    const modal = document.getElementById('modal');
-    const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal logic
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        const modal = document.getElementById('modal');
+        const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
-    if (addEmployeeBtn && modal) {
-        addEmployeeBtn.addEventListener('click', function() {
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        });
-    }
-
-    closeBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            modal.classList.remove('open');
-            document.body.style.overflow = '';
-        });
-    });
-
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.remove('open');
-            document.body.style.overflow = '';
+        if (addEmployeeBtn && modal) {
+            addEmployeeBtn.addEventListener('click', function() {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
         }
-    });
 
-    // jQuery logic for gender and child options
-    $(function() {
-        const genderSelect = $("#inputGender");
-        const otherGender = $("#otherGender");
-        otherGender.hide();
+        closeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
 
-        genderSelect.on("change", function () {
-            if ($(this).val() === "LGBTQIA+") {
-                otherGender.show();
-            } else {
-                otherGender.val("");
-                otherGender.hide();
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
             }
         });
 
-        function toggleChildOptions() {
-            const checkedChild = $('input[name="inputChildren"]:checked').val();
-            if (checkedChild === "No") {
-                $("#childrenNum").val("");
-                $("#childrenNumCol").hide();
-                $("#childConcern").val("");
-                $("#childConcernCol").hide();
-            } else {
-                $("#childrenNumCol").show();
-                $("#childConcernCol").show();
-            }
-        }
+        // jQuery logic for gender and child options
+        $(function() {
+            const genderSelect = $("#inputGender");
+            const otherGender = $("#otherGender");
+            otherGender.hide();
 
-        toggleChildOptions();
-        $('input[name="inputChildren"]').on('change', function () {
+            genderSelect.on("change", function() {
+                if ($(this).val() === "LGBTQIA+") {
+                    otherGender.show();
+                } else {
+                    otherGender.val("");
+                    otherGender.hide();
+                }
+            });
+
+            function toggleChildOptions() {
+                const checkedChild = $('input[name="inputChildren"]:checked').val();
+                if (checkedChild === "No") {
+                    $("#childrenNum").val("");
+                    $("#childrenNumCol").hide();
+                    $("#childConcern").val("");
+                    $("#childConcernCol").hide();
+                } else {
+                    $("#childrenNumCol").show();
+                    $("#childConcernCol").show();
+                }
+            }
+
             toggleChildOptions();
+            $('input[name="inputChildren"]').on('change', function() {
+                toggleChildOptions();
+            });
         });
     });
-});
 </script>
 
 </html>

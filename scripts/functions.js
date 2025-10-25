@@ -62,7 +62,7 @@ function filterFunction(
 
 function restrictDeptAndCampus(position, dept, campus, deptId, campusId) {
   console.log(position);
-  if (position === "Technical Assistant" || position === "Focal Person") {
+  if (position === "Focal Person") {
     console.log("restricted");
     $(deptId).val(dept).change();
     $(campusId).val(campus).change();

@@ -11,40 +11,68 @@
 </head>
 
 <body>
-    <div>
-        <div id="toast">
+
+    <style>
+        .scoringSheetBorder {
+            border: 1px solid black;
+        }
+    </style>
+
+    <div class="row">
+        <div class="col">
+            <h1>Grade Sheet</h1>
+
         </div>
     </div>
-    <div>
-        <button id="a">aaaaa
+    <!-- MAIN TABLE -->
+    <div class="row">
+        <div class="col d-flex align-items-center justify-content-center scoringSheetBorder">
+            Element and items/question
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col text-center scoringSheetBorder">
+                    DONE? (col.2)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center scoringSheetBorder">No</div>
+                <div class="col text-center scoringSheetBorder">Partly</div>
+                <div class="col text-center scoringSheetBorder">Yes</div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center justify-content-center scoringSheetBorder">
+            Score for an item/element (col. 3)
+        </div>
+        <div class="col align-items-center text-center justify-content-center scoringSheetBorder">
+            Comments/gender issues identified (col. 4)
+        </div>
+        <div class="col">
+            <!-- reaaranging -->
+        </div>
+    </div>
 
-        </button>
+    <div class="row" id="row1">
+        <div class="col scoringSheetBorder">
+            <p>Involvement of women and men</p>
+            <p>(max score: 2; for each item, 1)</p>
+        </div>
+        <div class="col">
+            <div class="row scoringSheetBorder">
+                <div class="col">jjjj</div>
+                <div class="col">qwe</div>
+                <div class="col">qwe</div>
+            </div>
+        </div>
+        <div class="col scoringSheetBorder"></div>
+        <div class="col scoringSheetBorder"></div>
+        <div class="col d-flex justify-content-start align-items-center">
+            <!-- rearranging -->
+             ==
+        </div>
     </div>
 
 
-    <script>
-        (function () {
-            const a = document.getElementById("a");
-            function showToast(message, bgColor = "white") {
-                const toast = document.getElementById("toast");
-                toast.style.visibility = "visible";
-                toast.style.opacity = "1";
-                toast.textContent = message;
-                toast.style.backgroundColor = bgColor;
-                toast.classList.add("show");
-
-                setTimeout(() => {
-                    toast.style.visibility = "hidden";
-                    toast.style.opacity = "0";
-                    toast.classList.remove("show");
-                }, 3000);
-            }
-            a.addEventListener("click", () => {
-                showToast("Ninja", "red")
-            })
-
-        })();
-    </script>
 </body>
 
 </html>

@@ -16,8 +16,6 @@ if (!isset($_SESSION['user_id'])) {
         <thead>
             <tr>
                 <th colspan="2">Full Name</th>
-                <th colspan="2">Email</th>
-                <th>Contact No</th>
                 <th>Department</th>
                 <th>Campus</th>
             </tr>
@@ -43,8 +41,6 @@ if (!isset($_SESSION['user_id'])) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td colspan='2'>" . htmlspecialchars($row['full_name']) . "</td>";
-                    echo "<td colspan='2'>" . htmlspecialchars($row['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['contact_no']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['department']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['campus']) . "</td>";
                     echo "</tr>";

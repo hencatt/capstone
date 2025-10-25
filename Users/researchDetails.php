@@ -291,7 +291,7 @@ if (isset($_POST['confirmBtnReject'])) {
                     </div>
 
                     <div class="col-3 d-flex flex-column"
-                        style="background-color: white; padding: 25px; border-radius: 10px; max-height:280px;">
+                        style="background-color: white; padding: 25px; border-radius: 10px; max-height:330px;">
                         <h5>Authors</h5>
                         <div class="row">
                             <div class="col d-flex flex-column justify-content-center">
