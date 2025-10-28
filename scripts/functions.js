@@ -88,6 +88,39 @@ function resetFilterFunction(position) {
   });
 }
 
+function generateInventoryFilter(position, pdfButton, elementId, category, tableId) {
+  const pdfBtn = $(pdfButton);
+  const element = $(elementId);
+  const categoryEl = $(category);
+
+  function updateResult() {
+    console.log("filter inventory");
+    pdfBtn.fadeIn();
+    element.fadeIn();
+
+    $.ajax({
+      url: "../phpFunctions/filterFunction_inventory.php",
+      method: "POST",
+      data: {
+        currentPosition: position,
+        item_category: categoryEl.val()
+      },
+      success: function (data) {
+        $(tableId).html(data);
+      },
+      error: function (xhr, status, error) {
+        console.error("AJAX Error:", error);
+      }
+    });
+  }
+
+  categoryEl.on("change", updateResult);
+
+
+  // updateResult();
+}
+
+
 function generateReportFilter(
   position,
   pdfButton,
