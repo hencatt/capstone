@@ -213,14 +213,14 @@ if (isset($_POST['confirmBtnReject'])) {
                             ?>
                         </div>
 
-                        <!-- <?php
-                        if ($currentPosition === "Researcher"):
+                        <?php
+                        if ($currentPosition === "RET Chair" || $currentPosition === "Researcher"):
                             ?>
                             <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit
                                 PDF</button>
                             <?php
                         endif;
-                        ?> -->
+                        ?>
                         <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">View PDF</button>
                         <div id="pdfContainer" style="margin-top: 20px;"></div>
                     </div>
