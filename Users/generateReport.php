@@ -244,11 +244,13 @@ if (isset($_POST['btnGeneratePDF'])) {
                     <div class="col">
                         <form action="generateReport.php" id="dapatPrint">
                             <div class="table-responsive" id="generatePDF">
-                                <table class="table table-sm table-striped" id="inventoryTable">
-
+                                <table class="table table-striped table-sm" id="inventoryTable">
                                 </table>
-                                <table id="employeeTable">
-                                </table>
+                                <div id="employeeTableMaster">
+                                    
+                                    <table class="table table-striped table-sm" id="employeeTable">
+                                    </table>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -294,17 +296,11 @@ if (isset($_POST['btnGeneratePDF'])) {
         const filter_size = $('#filterSize');
 
 
-        function hideElement() {
-            if (filter_gender.val() === "None" && filter_dept.val() === "None" && filter_campus.val() === "None" && filter_size.val() === "None") {
-                $('#btnGeneratePDF').hide();
-                $('#generatePDF').hide();
-            }
-        }
-
-
         $(document).ready(function () {
+
             $("#inventoryReport").hide();
             $("#inventoryTable").hide();
+
             $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function () {
                 generateInventoryFilter(
                     position,
@@ -315,12 +311,14 @@ if (isset($_POST['btnGeneratePDF'])) {
                 );
             });
 
+
             $('input[name="toggleOptions"]').change(function () {
                 if ($('#employeeToggle').is(':checked')) {
                     $('#employeeReport').show();
                     $('#employeeTable').show();
                     $('#makeReceiptDIV').show();
                     $('#makeSummaryDIV').show();
+                    $('#employeeTableMaster').show();
 
                     $('#inventoryReport').hide();
                     $('#inventoryTable').hide();
@@ -329,10 +327,12 @@ if (isset($_POST['btnGeneratePDF'])) {
                     $('#inventoryTable').show();
                     $('#inventoryReport').show();
 
+                    $('#employeeTableMaster').hide();
                     $('#makeReceiptDIV').hide();
                     $('#makeSummaryDIV').hide();
                     $('#employeeTable').hide();
                     $('#employeeReport').hide();
+
                 }
             });
 
@@ -351,8 +351,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                 "#checkboxReceipt",
                 "#employeeTable"
             );
-            hideElement();
-            filter_gender.add(filter_dept).add(filter_campus).add(filter_size).on("change", hideElement);
+
         });
     </script>
 

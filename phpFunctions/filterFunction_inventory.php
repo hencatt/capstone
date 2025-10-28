@@ -24,6 +24,7 @@ if (isset($_POST['item_category'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
+    echo '<table class="table table-bordered table-striped">';
     echo '
         <thead class="thead-dark">
             <tr>
@@ -57,7 +58,7 @@ if (isset($_POST['item_category'])) {
         echo '<tr><td colspan="7" style="text-align:center;">No items found.</td></tr>';
     }
 
-    echo '</tbody>';
+    echo '</tbody></table>';
 
     $stmt->close();
     $con->close();
