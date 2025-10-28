@@ -47,6 +47,29 @@ function redirectPage($researchId)
     exit;
 }
 
+function checkVoters($researchId, $panelId)
+{
+    $isVoted = false;
+
+    $con = con();
+
+    $sql = "SELECT panel_id, research_id 
+        FROM votes_tbl 
+        WHERE research_id = ? AND panel_id = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("ii", $researchId, $panelId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows >= 1) {
+        $isVoted = true;
+    } else {
+        $isVoted = false;
+    }
+
+    return $isVoted;
+}
+
 function checkVotes($researchId)
 {
     $approve = "Approved";
@@ -70,13 +93,13 @@ function checkVotes($researchId)
     $reject_count = (int) $row['reject_count'];
     $total_votes = $approve_count + $reject_count;
 
-    if ($total_votes >= 3) {
-        if ($approve_count === 3) {
+    if ($total_votes > 1) {
+        if ($approve_count > 1) {
             $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
             $stmt2 = $con->prepare($sql2);
             $stmt2->bind_param("si", $approve, $researchId);
             $stmt2->execute();
-        } else {
+        } else if ($reject_count > 1) {
             $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
             $stmt2 = $con->prepare($sql2);
             $stmt2->bind_param("si", $reject, $researchId);
@@ -89,6 +112,8 @@ function checkVotes($researchId)
         $stmt2->execute();
     }
 }
+
+checkVotes($currentResearch);
 
 
 if (isset($_POST['comment_send'])) {
@@ -178,21 +203,24 @@ if (isset($_POST['confirmBtnReject'])) {
                     </div> -->
                     <div class="col d-flex justify-content-end align-items-center gap-3">
 
-                        <?php
-                        if ($currentPosition === "Panel"): ?>
-                            <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
-                            <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
+                        <div id="approvalBtn" class="gap-3">
                             <?php
-                        endif;
-                        ?>
-                        <?php
+                            if ($currentPosition === "Panel"): ?>
+                                <button class="btn btn-success" name="approveBtn" id="approveBtn">Approve</button>
+                                <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">Reject</button>
+                                <?php
+                            endif;
+                            ?>
+                        </div>
+
+                        <!-- <?php
                         if ($currentPosition === "Researcher"):
                             ?>
                             <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit
                                 PDF</button>
                             <?php
                         endif;
-                        ?>
+                        ?> -->
                         <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">View PDF</button>
                         <div id="pdfContainer" style="margin-top: 20px;"></div>
                     </div>
@@ -361,6 +389,20 @@ if (isset($_POST['confirmBtnReject'])) {
 
     <script>
         (function () {
+
+            function displayApproval() {
+                const currentPos = <?php echo json_encode($currentPosition); ?>;
+                const isVoted = <?php echo checkVoters($currentResearch, $currentUserId) ? 'true' : 'false'; ?>;
+                console.log(isVoted);
+
+                if (currentPos === "Panel") {
+                    const approvalBtn = document.getElementById("approvalBtn");
+                    approvalBtn.style.display = isVoted ? "none" : "flex";
+                }
+            }
+
+            displayApproval();
+
             const commentArea = document.getElementById("comments");
             const commentBtn = document.getElementById("comment_send");
             const approveBtn = document.getElementById("approveBtn");
@@ -387,6 +429,7 @@ if (isset($_POST['confirmBtnReject'])) {
 
 
                 approveBtn.addEventListener("click", function () {
+                    console.log("clicked approve")
                     confirmModal.forEach((modal) => {
                         modal.classList.add("open");
                     });
