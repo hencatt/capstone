@@ -135,6 +135,9 @@ $tables = [
       `date_submitted` date DEFAULT NULL,
       `research_agenda` varchar(100) DEFAULT NULL,
       `research_sdg` varchar(100) DEFAULT NULL,
+      `research_category`, enum('Proposal','Completed') NOT NULL DEFAULT 'Proposal',
+      `research_grant`, enum('Yes','No') NOT NULL DEFAULT 'No',
+      `research_grant_times`, INT(2) NOT NULL DEFAULT 0,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
