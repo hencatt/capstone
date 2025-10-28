@@ -38,6 +38,17 @@ if ($result->num_rows > 0) {
     $researchDateSubmitted = htmlspecialchars($row['date_submitted']);
     $agenda = htmlspecialchars($row['research_agenda']);
     $sdg = htmlspecialchars($row['research_sdg']);
+    $grant = htmlspecialchars($row['research_grant']);
+
+
+
+
+    $granted = false;
+
+    if ($grant === "Yes") {
+        $granted = true;
+    }
+
     $file = $row['file'];
 }
 
@@ -226,13 +237,50 @@ if (isset($_POST['confirmBtnReject'])) {
                     </div>
                 </div>
                 <div class="row mt-3" style="background-color: white; padding: 10px; border-radius: 10px;">
-                    <div class="col">
-                        Sustainable Development Goals: <b><?= $sdg ?></b><br>
-                        NEUST Agenda: <b><?= $agenda ?></b></b>
-                        <hr>
-                        <p><?= $researchDescription ?></p>
+                    <div class="row">
+                        <div class="col">
+                            Sustainable Development Goals: <b><?= $sdg ?></b><br>
+                            NEUST Agenda: <b><?= $agenda ?></b></b>
+                        </div>
+                        <div class="col-4">
+                            <div class="row">
+                                <div class="col">
+                                    Grant Status: <b><?= $granted ? "Yes" : "Not Granted" ?></b><br>
+                                    Total Amount Granted: <b><?php
+                                    if ($grant === "No"):
+                                        ?>N/A
+                                            <?php
+                                    else:
+                                        ?>
+                                            Php5,000.00
+                                        <?php endif; ?>
+                                    </b><br class="mb-3">
+                                    Re-Submission Status: <b>Closed</b><br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <hr>
+                            <p><?= $researchDescription ?></p>
+                        </div>
                     </div>
                 </div>
+                <?php
+                if ($currentPosition === "RET Chair"):
+                    ?>
+                    <div class="row mt-3">
+                        <div class="col d-flex flex-row justify-content-end align-items-center gap-3">
+                            <div class="btn btn-outline-secondary" id="changeGrantStatus" name="changeGrantStatus">Change
+                                Grant Status</div>
+                            <div class="btn btn-outline-secondary" id="changeGrantStatus" name="changeGrantStatus">Open
+                                Re-Submission of PDF</div>
+                        </div>
+                    </div>
+                    <?php
+                endif;
+                ?>
                 <div class="row mt-3 gap-5">
                     <div class="col d-flex flex-column"
                         style="background-color: white; padding: 25px; border-radius: 10px;">
