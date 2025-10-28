@@ -29,7 +29,7 @@ if (isset($_POST['submitResearch'])) {
     $dateSubmitted = ($_POST['inputDateNow']);
     $agenda = $_POST['researchAgenda'];
     $sdg = $_POST['researchSDG'];
-    // $status = $_POST['researchStatus'];
+    $category = $_POST['researchCategory'];
     $description = trim($_POST['researchDescription']);
 
     // Handle file upload
@@ -53,8 +53,8 @@ if (isset($_POST['submitResearch'])) {
 
     if (move_uploaded_file($fileTmp, $targetFile)) {
         // Insert research info with author and co-author(s)
-        $stmt = $con->prepare("INSERT INTO research_tbl (research_title, date_started, date_completed, file, description, author, co_author, date_submitted, research_agenda, research_sdg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $coauthorStr, $dateSubmitted, $agenda, $sdg);
+        $stmt = $con->prepare("INSERT INTO research_tbl (research_title, date_started, date_completed, file, description, author, co_author, date_submitted, research_agenda, research_sdg, research_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
         $stmt->execute();
         $stmt->close();
 
@@ -263,10 +263,10 @@ if (isset($_POST['submitResearch'])) {
                             </div>
                             <div class="row mt-5 mb-5">
                                 <div class="col">
-                                    <label for="researchStatus">Research Status</label>
-                                    <select name="researchStatus" id="researchStatus" class="form-select" required>
-                                        <option value="completed">Completed</option>
-                                        <option value="incomplete">Incomplete</option>
+                                    <label for="researchCategory">Research Category</label>
+                                    <select name="researchCategory" id="researchCategory" class="form-select" required>
+                                        <option value="Proposal">Proposal</option>
+                                        <option value="Completed">Completed</option>
                                     </select>
                                 </div>
                             </div>
