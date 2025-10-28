@@ -116,6 +116,13 @@ updateResearchStatus();
                             <thead>
                                 <tr>
                                     <th>Research Title</th>
+                                    <?php
+                                    if ($currentPosition === "RET Chair"):
+                                        ?>
+                                        <th>Grant</th>
+                                        <?php
+                                    endif;
+                                    ?>
                                     <th>Date Submitted</th>
                                     <th>Status</th>
                                     <th>Category</th>
@@ -143,8 +150,13 @@ updateResearchStatus();
                                     while ($row = $result->fetch_assoc()) {
                                         echo '
                                         <tr>
-                                        <td>' . htmlspecialchars($row['research_title']) . '</td>
-                                        <td>' . htmlspecialchars($row['date_submitted']) . '</td>';
+                                        <td>' . htmlspecialchars($row['research_title']) . '</td>';
+
+                                        if($currentPosition === "RET Chair"){
+                                        echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
+                                        }
+                                        
+                                        echo '<td>' . htmlspecialchars($row['date_submitted']) . '</td>';
 
                                         switch (htmlspecialchars($row['status'])) {
                                             case "Approved":
