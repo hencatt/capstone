@@ -136,13 +136,30 @@ updateResearchStatus();
                                 }
                                 $stmt->execute();
                                 $result = $stmt->get_result();
+
+                                $statusColor = "";
+
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) {
                                         echo '
                                         <tr>
                                         <td>' . htmlspecialchars($row['research_title']) . '</td>
-                                        <td>' . htmlspecialchars($row['date_submitted']) . '</td>
-                                        <td>' . htmlspecialchars($row['status']) . '</td>
+                                        <td>' . htmlspecialchars($row['date_submitted']) . '</td>';
+
+                                        switch (htmlspecialchars($row['status'])) {
+                                            case "Approved":
+                                                $statusColor = "color: green;";
+                                                break;
+                                            case "Rejected":
+                                                $statusColor = "color: red;";
+                                                break;
+                                            default:
+                                                $statusColor = "color: orange;";
+                                                break;
+                                        }
+
+                                        echo '
+                                        <td style="' . $statusColor . '">' . htmlspecialchars($row['status']) . '</td>
                                         <td>' . htmlspecialchars($row['research_category']) . '</td>
                                         <td><a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=View Researches" style="color: #5f8cecff;">View More</a></td>
                                         
