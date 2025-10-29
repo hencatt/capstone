@@ -32,6 +32,7 @@ $tables = [
       `campus` varchar(100) NOT NULL,
       `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
       `is_active` int(2) NOT NULL DEFAULT 1,
+      
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
@@ -59,6 +60,7 @@ $tables = [
       `department` varchar(100) NOT NULL,
       `campus` varchar(100) NOT NULL,
       `status` varchar(10) NOT NULL DEFAULT 'Active',
+      `inactive_date` DATE NULL DEFAULT NULL,
       `account_id` int(11) NULL,
       PRIMARY KEY (`id`),
       KEY `fk_accountTbl_employeeTbl` (`account_id`),

@@ -21,7 +21,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $noFilters = ($campus === "None" && $dept === "None" && $size === "None" && $gender === "None");
 
     // Dynamically build SELECT fields
-    $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name";
+    $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name, ei.id AS emp_id";
 
     if ($noFilters) {
         $sql .= ", et.campus, et.email, et.contact_no, et.department";
@@ -37,8 +37,8 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     }
 
     $sql .= " FROM employee_info ei
-              INNER JOIN employee_tbl et ON ei.id = et.id
-              WHERE 1=1";
+          INNER JOIN employee_tbl et ON ei.id = et.id
+          WHERE et.status = 'Active'";
 
     // Build WHERE conditions for specific filters (not Show All)
     if ($campus !== "None" && $campus !== "Show All") {
@@ -161,7 +161,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
 
     // ==================================
     // ADD EXTRA HEADER HERE
-    echo '<th>-</th>';
+    echo '<th>Actions</th>';
     // ==================================
 
 
@@ -192,11 +192,83 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
                 echo '<td></td>';
             }
 
-            // ==================================
-            // ADD EXTRA BUTTONS / MORE HERE
-            echo '<td> View More </td>';
-            // ==================================
+// ==================================
+// ADD EXTRA BUTTONS / MORE HERE
+            $idAttr = htmlspecialchars($row['emp_id']);
+                echo '<td>
+                    <button type="button" class="btn btn-outline-primary btn-sm view-btn me-1"
+                        data-id="' . $idAttr . '" data-bs-toggle="modal" data-bs-target="#viewEmployeeModal"
+                        title="View Details">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
+                        data-id="' . $idAttr . '" title="Delete Record">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>';
 
+
+            echo file_get_contents(__DIR__ . '/../Users/reusableHTML/viewEmployeeModal.php');
+            
+   echo <<<JS
+<script>
+$(document).off('click', '.view-btn').on('click', '.view-btn', function() {
+    const id = $(this).data('id');
+    if (!id) {
+        alert('No employee ID found');
+        return;
+    }
+
+    $.post('../phpFunctions/getEmployeeDetails.php', { id: id }, function(resp) {
+        console.log("Server Response:", resp);
+
+        if (!resp || resp.error) {
+            alert(resp ? resp.error : 'Failed to load details');
+            return;
+        }
+
+        // Populate fields
+        $('#v_full_name').text((resp.fname || '') + ' ' + (resp.m_initial ? resp.m_initial + '. ' : '') + (resp.lname || ''));
+        $('#v_email').text(resp.email || '');
+        $('#v_contact').text(resp.contact_no || '');
+        $('#v_department').text(resp.department || '');
+        $('#v_campus').text(resp.campus || '');
+        $('#v_address').text(resp.address || '');
+        $('#v_birthday').text(resp.birthday || '');
+        $('#v_marital_status').text(resp.marital_status || '');
+        $('#v_sex').text(resp.sex || '');
+        $('#v_gender').text(resp.gender || '');
+        $('#v_priority_status').text(resp.priority_status || '');
+        $('#v_size').text(resp.size || '');
+        $('#v_income').text(resp.income || '');
+        $('#v_children_num').text(resp.children_num || '');
+        $('#v_concern').text(resp.concern || '');
+    }, 'json').fail(function() {
+        alert('Request failed');
+    });
+});
+
+$(document).off('click', '.delete-btn').on('click', '.delete-btn', function() {
+    const id = $(this).data('id');
+    if (!id) return;
+
+    if (!confirm('Delete this record?')) return;
+
+    $.post('../phpFunctions/deleteEmployee.php', { id: id }, function(resp) {
+        if (resp && resp.success) {
+            alert(resp.message);
+            // Instead of reloading, remove the row:
+            $(`button.delete-btn[data-id='\${id}']`).closest('tr').fadeOut(300, function(){ $(this).remove(); });
+        } else {
+            alert(resp && resp.error ? resp.error : 'Delete failed');
+        }
+    }, 'json').fail(() => alert('Delete request failed'));
+});
+</script>
+JS;
+
+            
+            
 
             echo '</tr>';
         }
