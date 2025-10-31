@@ -1,6 +1,5 @@
 <?php
 require_once 'includes.php';
-
 session_start();
 
 checkUser($_SESSION['user_id']);
@@ -12,7 +11,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
-
+$id = $user['id'];
 
 if ($currentPosition === "Director") {
     $dashboard = "director.php";
@@ -26,11 +25,31 @@ if (isset($_POST['submitResearch'])) {
     $title = trim($_POST['researchTitle']);
     $dateStarted = $_POST['dateStarted'];
     $dateComplete = $_POST['dateComplete'];
-    $dateSubmitted = ($_POST['inputDateNow']);
+    $dateSubmitted = $_POST['inputDateNow'];
     $agenda = $_POST['researchAgenda'];
     $sdg = $_POST['researchSDG'];
     $category = $_POST['researchCategory'];
     $description = trim($_POST['researchDescription']);
+    $inputEmail = trim($_POST['inputEmail']); // ✅ get email from form input
+
+    // ✅ Check if email exists in either accounts_tbl or employee_tbl
+    $checkEmail = $con->prepare("
+        SELECT email FROM accounts_tbl WHERE email = ?
+        UNION
+        SELECT email FROM employee_tbl WHERE email = ?
+    ");
+    $checkEmail->bind_param("ss", $inputEmail, $inputEmail);
+    $checkEmail->execute();
+    $checkEmail->store_result();
+
+    if ($checkEmail->num_rows == 0) {
+
+        echo "<script>alert('❌ Email not found in the database. Please use a registered email.'); window.history.back();</script>";
+        exit();
+    }
+
+
+    $checkEmail->close();
 
     // Handle file upload
     $fileName = $_FILES['researchUpload']['name'];
@@ -38,33 +57,45 @@ if (isset($_POST['submitResearch'])) {
     $targetDir = "researchfiles/";
     $targetFile = $targetDir . basename($fileName);
 
-    // Get author (current user)
+    // Get author
     $author = $currentFname . " " . $currentLname;
 
-    // Get co-authors from JS array (combine names)
+    // Get co-authors
     $coauthors = [];
     if (!empty($_POST['coauthors'])) {
         foreach ($_POST['coauthors'] as $coauthor) {
             $coauthors[] = $coauthor['fname'] . " " . $coauthor['mname'] . (empty($coauthor['lname']) ? "" : " " . $coauthor['lname']);
         }
     }
-
     $coauthorStr = implode(", ", $coauthors);
 
     if (move_uploaded_file($fileTmp, $targetFile)) {
-        // Insert research info with author and co-author(s)
-        $stmt = $con->prepare("INSERT INTO research_tbl (research_title, date_started, date_completed, file, description, author, co_author, date_submitted, research_agenda, research_sdg, research_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $con->prepare("
+            INSERT INTO research_tbl (
+                research_title, date_started, date_completed, file,
+                description, author, co_author, date_submitted,
+                research_agenda, research_sdg, research_category
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
         $stmt->bind_param("sssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
-        $stmt->execute();
+        $result = $stmt->execute();
         $stmt->close();
 
-        alertSuccess("Uploaded", $title." Uploaded");
+        if ($result) {
+            // ✅ Send email after successful upload
+            include '../phpFunctions/email.php';
+            sendSubmissionNotification($con, $inputEmail, $title);
 
-        insertLog($currentUser, "Submitted research: $title", date('Y-m-d H:i:s'));
-        header("Location: submitResearch.php?success=1");
-        exit;
+            alertSuccess("Uploaded", $title . " Uploaded");
+            insertLog($currentUser, "Submitted research: $title", date('Y-m-d H:i:s'));
+
+            header("Location: submitResearch.php?success=1");
+            exit;
+        } else {
+            alertError("Error", "Failed to upload research data to database.");
+        }
     } else {
-        alertError("Error", "Failed to upload research");
+        alertError("Error", "Failed to upload research file.");
     }
 }
 ?>
