@@ -1,6 +1,6 @@
 <?php
 require_once 'includes.php';
-// require_once '../phpFunctions/email.php';
+require_once '../phpFunctions/email.php';
 
 session_start();
 
@@ -101,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $campus = $_POST['campus'];
 
         $conn = new mysqli('localhost', 'root', '', 'gad_portal');
-
+        // header("Location: " . $_SERVER['PHP_SELF']);
+        // exit();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -121,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alertSuccess("Done", "Account Created");
 
                 // Send credentials email to the new user
-                // sendUserCredentials($email, $username, $plainPassword);
+                sendUserCredentials($email, $username, $plainPassword, $fname, $lname);
             } else {
                 alertError("Error", "Please try again");
             }
@@ -193,12 +194,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+    $conn = new mysqli('localhost', 'root', '', 'gad_portal');
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
+<?php include '../phpFunctions/email.php'; ?>
 <head>
     <?= headerLinks("Employees"); ?>
 </head>
@@ -381,14 +386,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif ($currentPosition === "Focal Person") {
                     // Focal Person can add employees
                     echo '
-                            <div class="row mt-3 d-flex justify-content-end">
+                            <div class="row mt-2 d-flex justify-content-end">
                                 <div class="col-2">
-                                    <button type="button" class="btn btn-success" id="addEmployeeBtn">
+                                    <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
                                         Add Employee
                                         <span class="material-symbols-outlined">add</span>
                                     </button>
                                 </div>
+                                <div class="col-2">
+                                    <button id="add_account" class="btn btn-outline-success">
+                                        Add Researcher
+                                        <span class="material-symbols-outlined">add</span>
+                                    </button>
+                                </div>
                             </div>
+
                         ';
                 }
                 ?>
@@ -429,6 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="password" name="pass" placeholder="Password" required>
                         <select name="pos" id="position" required>
                         ';
+          
             if ($currentPosition === "Director") {
                 echo '
                             <option value="Director">Director</option>
@@ -437,6 +450,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="Panel">Panel</option>
                             <option value="RET Chair">RET Chair</option>
                         </select>';
+            } else if ($currentPosition === "Technical Assistant") {
+                echo '
+                            <option value="Technical Assistant">Technical Assistant</option>
+                            <option value="Focal Person">Focal Person</option>
+                            <option value="Panel">Panel</option>
+                            <option value="RET Chair">RET Chair</option>
+                        </select>'; 
             } else {
                 echo '
                             <option value="Researcher">Researcher</option>
@@ -448,7 +468,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select name="dept" id="department" required>';
 
 
-            if ($currentPosition === "Director") {
+            if ($currentPosition === "Director " || $currentPosition === "Technical Assistant") {
                 echo '<option value="" disabled selected>Select Department</option>
                             <option value="CPADM">CPADM</option>
                             <option value="CMBT">CMBT - BA, HM</option>
@@ -474,7 +494,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                         <select name="campus" id="campus" required>';
 
-            if ($currentPosition === "Director") {
+            if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
                 echo '
                             <option value="" disabled selected>Select Campus</option>
                             <option value="Sumacab">Sumacab</option>
@@ -492,7 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo '
                         </select>
                         <div class="buttons">
-                            <button type="submit">Add</button>
+                            <button type="submit" class="btn btn-outline-success">Add</button>
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'

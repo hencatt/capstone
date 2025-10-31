@@ -123,26 +123,26 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "research_tbl" => "
-    CREATE TABLE IF NOT EXISTS `research_tbl` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `research_title` varchar(255) NOT NULL,
-      `author` varchar(100) NOT NULL,
-      `co_author` varchar(300) NOT NULL,
-      `date_started` date NOT NULL,
-      `date_completed` date NOT NULL,
-      `file` longblob NOT NULL,
-      `description` varchar(500) NOT NULL,
-      `status` enum('Approved','Pending','Rejected') NOT NULL DEFAULT 'Pending',
-      `date_submitted` date DEFAULT NULL,
-      `research_agenda` varchar(100) DEFAULT NULL,
-      `research_sdg` varchar(100) DEFAULT NULL,
-      `research_category`, enum('Proposal','Completed') NOT NULL DEFAULT 'Proposal',
-      `research_grant`, enum('Yes','No') NOT NULL DEFAULT 'No',
-      `research_grant_times`, INT(2) NOT NULL DEFAULT 0,
-      PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-    ",
+  "research_tbl" => "
+  CREATE TABLE IF NOT EXISTS `research_tbl` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `research_title` varchar(255) NOT NULL,
+    `author` varchar(100) NOT NULL,
+    `co_author` varchar(300) NOT NULL,
+    `date_started` date NOT NULL,
+    `date_completed` date NOT NULL,
+    `file` longblob NOT NULL,
+    `description` varchar(500) NOT NULL,
+    `status` enum('Approved','Pending','Rejected') NOT NULL DEFAULT 'Pending',
+    `date_submitted` date DEFAULT NULL,
+    `research_agenda` varchar(100) DEFAULT NULL,
+    `research_sdg` varchar(100) DEFAULT NULL,
+    `research_category` enum('Proposal','Completed') NOT NULL DEFAULT 'Proposal',
+    `research_grant` enum('Yes','No') NOT NULL DEFAULT 'No',
+    `research_grant_times` int(2) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  ",
 
     "comments_tbl" => "
     CREATE TABLE IF NOT EXISTS `comments_tbl` (

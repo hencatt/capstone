@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check for failed login attempts in the last 15 minutes
-    $cooldownPeriod = 15; // minutes
+    // $cooldownPeriod = 15; // minutes
     $maxAttempts = 5;
     $currentTime = date('Y-m-d H:i:s');
 
