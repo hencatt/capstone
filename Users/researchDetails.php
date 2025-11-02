@@ -1,6 +1,6 @@
 <?php
 require_once 'includes.php';
-
+require_once '../phpFunctions/email.php';
 session_start();
 
 checkUser($_SESSION['user_id']);
@@ -104,18 +104,21 @@ function checkVotes($researchId)
     $reject_count = (int) $row['reject_count'];
     $total_votes = $approve_count + $reject_count;
 
-    if ($total_votes > 1) {
-        if ($approve_count > 1) {
-            $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
-            $stmt2 = $con->prepare($sql2);
-            $stmt2->bind_param("si", $approve, $researchId);
-            $stmt2->execute();
-        } else if ($reject_count > 1) {
-            $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
-            $stmt2 = $con->prepare($sql2);
-            $stmt2->bind_param("si", $reject, $researchId);
-            $stmt2->execute();
-        }
+    if ($approve_count > 1) {
+    $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+    $stmt2 = $con->prepare($sql2);
+    $stmt2->bind_param("si", $approve, $researchId);
+    $stmt2->execute();
+    sendResearchApprovalEmail($con, $researchId);
+    
+    } else if ($reject_count > 1) {
+        $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+        $stmt2 = $con->prepare($sql2);
+        $stmt2->bind_param("si", $reject, $researchId);
+        $stmt2->execute();
+
+        sendResearchRejectionEmail($con, $researchId);
+
     } else {
         $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
         $stmt2 = $con->prepare($sql2);
@@ -177,7 +180,11 @@ if (isset($_POST['confirmBtnReject'])) {
     checkVotes($currentResearch);
     redirectPage($currentResearch);
 }
+     
+    
 ;
+
+   
 
 ?>
 

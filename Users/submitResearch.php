@@ -34,19 +34,13 @@ if (isset($_POST['submitResearch'])) {
 
     // ✅ Check if email exists in either accounts_tbl or employee_tbl
     $checkEmail = $con->prepare("
-        SELECT email FROM accounts_tbl WHERE email = ?
-        UNION
-        SELECT email FROM employee_tbl WHERE email = ?
+        SELECT research_email FROM research_tbl WHERE research_email = ?
     ");
-    $checkEmail->bind_param("ss", $inputEmail, $inputEmail);
+    $checkEmail->bind_param("s", $inputEmail);
     $checkEmail->execute();
     $checkEmail->store_result();
 
-    if ($checkEmail->num_rows == 0) {
-
-        echo "<script>alert('❌ Email not found in the database. Please use a registered email.'); window.history.back();</script>";
-        exit();
-    }
+    
 
 
     $checkEmail->close();
@@ -73,11 +67,11 @@ if (isset($_POST['submitResearch'])) {
         $stmt = $con->prepare("
             INSERT INTO research_tbl (
                 research_title, date_started, date_completed, file,
-                description, author, co_author, date_submitted,
+                description, author, research_email, co_author, date_submitted,
                 research_agenda, research_sdg, research_category
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("sssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
+       $stmt->bind_param("ssssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $inputEmail, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
         $result = $stmt->execute();
         $stmt->close();
 

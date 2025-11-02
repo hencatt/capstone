@@ -128,6 +128,7 @@ $tables = [
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `research_title` varchar(255) NOT NULL,
     `author` varchar(100) NOT NULL,
+    `research_email` VARCHAR(100) NOT NULL,
     `co_author` varchar(300) NOT NULL,
     `date_started` date NOT NULL,
     `date_completed` date NOT NULL,
