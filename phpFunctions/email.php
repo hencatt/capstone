@@ -28,7 +28,7 @@ if (!function_exists('sendUserCredentials')) {
             $mail->addAddress($email);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Your Account Credentials';
+            $mail->Subject = 'NEUST GAD PORTAL';
 
             $fullName = trim($fname . " " . $lname);
 
@@ -86,7 +86,7 @@ if (!function_exists('sendUserCredentials')) {
 
             // Content
             $mail->isHTML(true);
-            $mail->Subject = 'Research Submission';
+            $mail->Subject = 'NEUST GAD PORTAL';
             $mail->Body    = '
                 <p>Dear Researcher,</p>
                 <p>Your research has been successfully submitted. Please wait for evaluation.</p>
@@ -142,7 +142,7 @@ if (!function_exists('sendResearchApprovalEmail')) {
             $mail->setFrom('genderanddevelopment.neust@gmail.com', 'NEUST GAD Portal');
             $mail->addAddress($recipient);
             $mail->isHTML(true);
-            $mail->Subject = 'Research Approval Notification';
+            $mail->Subject = 'NEUST GAD PORTAL';
             $mail->Body    = "
                 <p>Dear Researcher,</p>
                 <p>We are pleased to inform you that your research titled 
@@ -201,7 +201,7 @@ if (!function_exists('sendResearchRejectionEmail')) {
             $mail->setFrom('genderanddevelopment.neust@gmail.com', 'NEUST GAD Portal');
             $mail->addAddress($recipient);
             $mail->isHTML(true);
-            $mail->Subject = 'Research Rejection Notification';
+            $mail->Subject = 'NEUST GAD PORTAL';
             $mail->Body    = "
                 <p>Dear Researcher,</p>
                 <p>We regret to inform you that your research titled 
