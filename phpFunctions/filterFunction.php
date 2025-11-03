@@ -159,11 +159,12 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
         echo '<th>Signature</th>';
     }
 
-    // ==================================
-    // ADD EXTRA HEADER HERE
-    echo '<th>Actions</th>';
-    // ==================================
-
+    if ($generate !== "report") {
+        // ==================================
+        // ADD EXTRA HEADER HERE
+        echo '<th>Actions</th>';
+        // ==================================
+    }
 
     echo '</tr></thead><tbody id="employeeTableBody">';
 
@@ -192,9 +193,11 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
                 echo '<td></td>';
             }
 
-// ==================================
+
+            if ($generate !== "report") {
+                // ==================================
 // ADD EXTRA BUTTONS / MORE HERE
-            $idAttr = htmlspecialchars($row['emp_id']);
+                $idAttr = htmlspecialchars($row['emp_id']);
                 echo '<td>
                     <button type="button" class="btn btn-outline-primary btn-sm view-btn me-1"
                         data-id="' . $idAttr . '" data-bs-toggle="modal" data-bs-target="#viewEmployeeModal"
@@ -208,9 +211,9 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
                 </td>';
 
 
-            echo file_get_contents(__DIR__ . '/../Users/reusableHTML/viewEmployeeModal.php');
-            
-   echo <<<JS
+                echo file_get_contents(__DIR__ . '/../Users/reusableHTML/viewEmployeeModal.php');
+
+                echo <<<JS
 <script>
 $(document).off('click', '.view-btn').on('click', '.view-btn', function() {
     const id = $(this).data('id');
@@ -266,9 +269,9 @@ $(document).off('click', '.delete-btn').on('click', '.delete-btn', function() {
 });
 </script>
 JS;
+            }
 
-            
-            
+
 
             echo '</tr>';
         }

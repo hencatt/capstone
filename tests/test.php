@@ -12,65 +12,47 @@
 
 <body>
 
-    <style>
-        .scoringSheetBorder {
-            border: 1px solid black;
-        }
-    </style>
-
     <div class="row">
-        <div class="col">
-            <h1>Grade Sheet</h1>
+        <div class="col-6">
 
-        </div>
-    </div>
-    <!-- MAIN TABLE -->
-    <div class="row">
-        <div class="col d-flex align-items-center justify-content-center scoringSheetBorder">
-            Element and items/question
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col text-center scoringSheetBorder">
-                    DONE? (col.2)
+            <div class="row mb-3 align-items-center">
+                <label class="col-3 col-form-label fw-semibold">Name:</label>
+                <div class="col">
+                    <input type="text" id="inputName" class="form-control" placeholder="Enter name..." required>
                 </div>
             </div>
-            <div class="row">
-                <div class="col text-center scoringSheetBorder">No</div>
-                <div class="col text-center scoringSheetBorder">Partly</div>
-                <div class="col text-center scoringSheetBorder">Yes</div>
-            </div>
-        </div>
-        <div class="col d-flex align-items-center justify-content-center scoringSheetBorder">
-            Score for an item/element (col. 3)
-        </div>
-        <div class="col align-items-center text-center justify-content-center scoringSheetBorder">
-            Comments/gender issues identified (col. 4)
-        </div>
-        <div class="col">
-            <!-- reaaranging -->
-        </div>
-    </div>
 
-    <div class="row" id="row1">
-        <div class="col scoringSheetBorder">
-            <p>Involvement of women and men</p>
-            <p>(max score: 2; for each item, 1)</p>
-        </div>
-        <div class="col">
-            <div class="row scoringSheetBorder">
-                <div class="col">jjjj</div>
-                <div class="col">qwe</div>
-                <div class="col">qwe</div>
+            <div class="row mb-3 align-items-center">
+                <label class="col-3 col-form-label fw-semibold">Item Name:</label>
+                <div class="col">
+                    <input type="text" id="inputItemName" class="form-control" placeholder="Enter item..." required>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label class="col-3 col-form-label fw-semibold">Received Item/s:</label>
+                <div class="col">
+                    <input type="number" id="inputReceived" class="form-control" placeholder="e.g. 10" required>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label class="col-3 col-form-label fw-semibold">Distributed Item/s:</label>
+                <div class="col">
+                    <input type="number" id="inputDistributed" class="form-control" placeholder="e.g. 2" required>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btnConvert" class="btn btn-primary px-4 fw-semibold">
+                    Convert to Table
+                </button>
             </div>
         </div>
-        <div class="col scoringSheetBorder"></div>
-        <div class="col scoringSheetBorder"></div>
-        <div class="col d-flex justify-content-start align-items-center">
-            <!-- rearranging -->
-             ==
-        </div>
-    </div>
+
+        <hr class="mt-4">
+
+        <div id="receivedTable"></div>
 
 
 </body>

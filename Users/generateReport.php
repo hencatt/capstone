@@ -75,9 +75,21 @@ if (isset($_POST['btnGeneratePDF'])) {
                                     <input type="radio" name="toggleOptions" id="employeeToggle" autocomplete="off"
                                         checked> Employee
                                 </label>
+
+                                <?php
+                                if ($currentPosition !== "Focal Person"):
+                                    ?>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
+                                        Inventory
+                                    </label>
+                                    <?php
+                                endif;
+                                ?>
+
                                 <label class="btn btn-secondary">
-                                    <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
-                                    Inventory
+                                    <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
+                                    Received Item/s
                                 </label>
                             </div>
                         </div>
@@ -200,7 +212,23 @@ if (isset($_POST['btnGeneratePDF'])) {
                             <label for="orientation" id="orientationLabel" class="form-select-label">Orientation</label>
                             <select name="orientation" id="orientation" class="form-select">
                                 <option value="portrait">Portrait</option>
-                                <option value="landscape" selected>Landscpae</option>
+                                <option value="landscape" selected>Landscape</option>
+                            </select>
+                        </div>
+                        <div class="col-1">
+                            <label for="margin" id="marginLabel" class="form-select-label">Margin</label>
+                            <select name="margin" id="margin" class="form-select">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
                             </select>
                         </div>
                         <div class="col-1">
@@ -221,11 +249,17 @@ if (isset($_POST['btnGeneratePDF'])) {
                         </div>
                         <div class="col d-flex flex-row justify-content-end align-items-center gap-3">
 
-                            <div id="makeReceiptDIV">
-                                <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
-                                <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
-                                    class="form-check-input">
-                            </div>
+                            <?php
+                            if ($currentPosition !== "Focal Person"):
+                                ?>
+                                <div id="makeReceiptDIV">
+                                    <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
+                                    <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
+                                        class="form-check-input">
+                                </div>
+                                <?php
+                            endif;
+                            ?>
                             <div id="makeSummaryDIV">
                                 <label for="checkboxShowSummary" class="form-check-label">Show Summary</label>
                                 <input type="checkbox" name="checkboxShowSummary" id="checkboxShowSummary"
@@ -242,17 +276,33 @@ if (isset($_POST['btnGeneratePDF'])) {
                 </div>
                 <div class="row mt-3">
                     <div class="col">
+
                         <form action="generateReport.php" id="dapatPrint">
                             <div class="table-responsive" id="generatePDF">
+
                                 <table class="table table-striped table-sm" id="inventoryTable">
+                                    <!-- inventory table here -->
                                 </table>
+
                                 <div id="employeeTableMaster">
-                                    
                                     <table class="table table-striped table-sm" id="employeeTable">
+                                        <!-- employee table here -->
                                     </table>
                                 </div>
+
+                                <div id="receivedItemsDIV">
+
+                                    <!-- input fields here, same as preview -->
+
+                                    <!-- the generated result -->
+                                    <div id="receivedItemPrintTable"></div>
+
+                                </div>
+
+
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -312,31 +362,114 @@ if (isset($_POST['btnGeneratePDF'])) {
             });
 
 
+
+            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function () {
+
+                // ✅ Load available inventory items to dropdown
+                $.ajax({
+                    url: "../phpFunctions/get_inventory_items.php",
+                    type: "POST",
+                    success: function (res) {
+                        let items = JSON.parse(res);
+                        let select = $("#inputItemName");
+
+                        select.empty();
+                        select.append(`<option value="">Select Item</option>`);
+
+                        items.forEach(item => {
+                            select.append(`<option value="${item.id}">${item.itemName}</option>`);
+                        });
+                    }
+                });
+
+                // ✅ When user selects item, fetch its qty
+                $("#inputItemName").on("change", function () {
+                    let itemId = $(this).val();
+                    if (!itemId) return;
+
+                    $.ajax({
+                        url: "../phpFunctions/get_item_stock.php",
+                        type: "POST",
+                        data: { itemId },
+                        success: function (res) {
+                            let data = JSON.parse(res);
+                            $("#inputReceived").val(data.itemQuantity);
+                            $("#dbRemaining").val(data.itemQuantity);
+                        }
+                    });
+                });
+
+                receivedItemTable(
+                    "#inputName",
+                    "#inputItemName",
+                    "#inputReceived",
+                    "#inputDistributed",
+                    "#btnGeneratePDF",
+                    "#receivedItemsDIV",
+                    "#receivedItemTable"
+                );
+            });
+
+
+
+
+
+
+            function hideReceivedItems() {
+                $('#receivedItemsDIV').hide();
+                $('#receivedTable').empty();
+            }
+
+            function showReceivedItems() {
+                $('#receivedItemsDIV').show();
+            }
+
+            function hideEmployeeSummary() {
+                $('#employeeTableMaster').hide();
+                $('#makeReceiptDIV').hide();
+                $('#makeSummaryDIV').hide();
+                $('#employeeTable').hide();
+                $('#employeeReport').hide();
+            }
+
+            function showEmployeeSummary() {
+                $('#employeeReport').show();
+                $('#employeeTable').show();
+                $('#makeReceiptDIV').show();
+                $('#makeSummaryDIV').show();
+                $('#employeeTableMaster').show();
+            }
+
+            function hideInventorySummary() {
+                $('#inventoryReport').hide();
+                $('#inventoryTable').hide();
+            }
+
+            function showInventorySummary() {
+                $('#inventoryTable').show();
+                $('#inventoryReport').show();
+            }
+
+
             $('input[name="toggleOptions"]').change(function () {
                 if ($('#employeeToggle').is(':checked')) {
-                    $('#employeeReport').show();
-                    $('#employeeTable').show();
-                    $('#makeReceiptDIV').show();
-                    $('#makeSummaryDIV').show();
-                    $('#employeeTableMaster').show();
-
-                    $('#inventoryReport').hide();
-                    $('#inventoryTable').hide();
-
+                    showEmployeeSummary();
+                    hideInventorySummary();
+                    hideReceivedItems();
                 } else if ($('#inventoryToggle').is(':checked')) {
-                    $('#inventoryTable').show();
-                    $('#inventoryReport').show();
-
-                    $('#employeeTableMaster').hide();
-                    $('#makeReceiptDIV').hide();
-                    $('#makeSummaryDIV').hide();
-                    $('#employeeTable').hide();
-                    $('#employeeReport').hide();
-
+                    showInventorySummary();
+                    hideEmployeeSummary();
+                    hideReceivedItems();
+                } else if ($('#receivedItemToggle').is(':checked')) {
+                    showReceivedItems();
+                    hideEmployeeSummary();
+                    hideInventorySummary();
+                    $('#generatePDF').show();
                 }
             });
 
             $('#btnGeneratePDF').hide();
+
 
             $('#generatePDF').hide();
             generateReportFilter(
@@ -352,38 +485,51 @@ if (isset($_POST['btnGeneratePDF'])) {
                 "#employeeTable"
             );
 
+            // ======================= PRINTING =========================
+
+            const sizeSelect = $("#size");
+            const scaleSelect = $("#scale");
+            const marginSelect = $("#margin");
+            const orientationSelect = $("#orientation");
+
+            $(document).on("click", "#btnGeneratePDF", function () {
+
+                // Hide input fields before PDF generation
+                $("#receivedItemsDIV").find("#inputFields").hide();
+
+                const element = $("#generatePDF")[0];
+
+                const opt = {
+                    margin: parseInt(marginSelect.val()), // ✅ proper integer
+                    filename: `Report.pdf`,
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    html2canvas: {
+                        scale: parseFloat(scaleSelect.val()),
+                        scrollY: 0
+                    },
+                    jsPDF: {
+                        unit: 'pt',
+                        format: sizeSelect.val(),
+                        orientation: orientationSelect.val()
+                    }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // ✅ Show input fields again after export
+                    $("#receivedItemsDIV").find("#inputFields").show();
+                });
+
+            });
+
         });
     </script>
 
 
     <script>
-        const sizeSelect = document.getElementById("size");
-        const scaleSelect = document.getElementById("scale");
-        const orientationSelect = document.getElementById("orientation");
 
-        document.getElementById('btnGeneratePDF').addEventListener('click', () => {
-            const element = document.getElementById('generatePDF');
-
-            const opt = {
-                margin: 0, // Remove all outer margins
-                filename: `Report.pdf`,
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: `${scaleSelect.value}`,
-                    scrollY: 0 // 🔥 Important: prevents scroll offset bug
-                },
-                jsPDF: {
-                    unit: 'pt',
-                    format: `${sizeSelect.value}`,
-                    orientation: `${orientationSelect.value}`
-                }
-            };
-
-            html2pdf().set(opt).from(element).save();
-        });
     </script>
 </body>
 
