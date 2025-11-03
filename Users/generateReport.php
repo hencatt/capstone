@@ -77,20 +77,27 @@ if (isset($_POST['btnGeneratePDF'])) {
                                 </label>
 
                                 <?php
-                                if ($currentPosition !== "Focal Person"):
+                                    if($currentPosition === "Director" || $currentPosition === "Technical Assistant"):
+                                ?>
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
+                                    Inventory
+                                </label>
+                                <?php
+                                    endif;
+                                ?>
+
+
+                                <?php
+                                if ($currentPosition === "Focal Person"):
                                     ?>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
-                                        Inventory
+                                        <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
+                                        Received Item/s
                                     </label>
                                     <?php
                                 endif;
                                 ?>
-
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
-                                    Received Item/s
-                                </label>
                             </div>
                         </div>
                     </div>
