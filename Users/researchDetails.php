@@ -105,12 +105,12 @@ function checkVotes($researchId)
     $total_votes = $approve_count + $reject_count;
 
     if ($approve_count > 1) {
-    $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
-    $stmt2 = $con->prepare($sql2);
-    $stmt2->bind_param("si", $approve, $researchId);
-    $stmt2->execute();
-    sendResearchApprovalEmail($con, $researchId);
-    
+        $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
+        $stmt2 = $con->prepare($sql2);
+        $stmt2->bind_param("si", $approve, $researchId);
+        $stmt2->execute();
+        sendResearchApprovalEmail($con, $researchId);
+
     } else if ($reject_count > 1) {
         $sql2 = "UPDATE research_tbl SET status = ? WHERE id = ?";
         $stmt2 = $con->prepare($sql2);
@@ -180,11 +180,11 @@ if (isset($_POST['confirmBtnReject'])) {
     checkVotes($currentResearch);
     redirectPage($currentResearch);
 }
-     
-    
+
+
 ;
 
-   
+
 
 ?>
 
@@ -253,16 +253,18 @@ if (isset($_POST['confirmBtnReject'])) {
                             <div class="row">
                                 <div class="col">
                                     Grant Status: <b><?= $granted ? "Yes" : "Not Granted" ?></b><br>
-                                    Total Amount Granted: <b><?php
-                                    if ($grant === "No"):
-                                        ?>N/A
-                                            <?php
-                                    else:
-                                        ?>
-                                            Php5,000.00
+                                    Total Amount Granted: <b>
+                                        <?php if ($grant === "No"): ?>
+                                            N/A
+                                        <?php else: ?>
+                                            <?= htmlspecialchars($row['research_grant_times']) * 5000 ?> Php
                                         <?php endif; ?>
                                     </b><br class="mb-3">
-                                    Re-Submission Status: <b>Closed</b><br>
+
+                                    Re-Submission Status: <b>
+                                        <?= ($row['research_resubmission_status'] === "Yes") ? "Open" : "Closed"; ?>
+                                    </b><br>
+
                                 </div>
                             </div>
                         </div>
@@ -281,7 +283,8 @@ if (isset($_POST['confirmBtnReject'])) {
                         <div class="col d-flex flex-row justify-content-end align-items-center gap-3">
                             <div class="btn btn-outline-secondary" id="changeGrantStatus" name="changeGrantStatus">Change
                                 Grant Status</div>
-                            <div class="btn btn-outline-secondary" id="changeGrantStatus" name="changeGrantStatus">Open
+                            <div class="btn btn-outline-secondary" id="changeResubmissionStatus"
+                                name="changeResubmissionStatus">Open
                                 Re-Submission of PDF</div>
                         </div>
                     </div>
@@ -443,12 +446,133 @@ if (isset($_POST['confirmBtnReject'])) {
     <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
-        (function () {
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const grantBtn = document.getElementById("changeGrantStatus");
+            const resubmitBtn = document.getElementById("changeResubmissionStatus");
+
+            // trigger modals
+            if (grantBtn) grantBtn.addEventListener("click", openGrantModal);
+            if (resubmitBtn) resubmitBtn.addEventListener("click", openReSubmitModal);
+
+
+            // ------------ GRANT MODAL ------------------
+            function openGrantModal() {
+                const modal = document.createElement("div");
+                modal.className = "modal fade show";
+                modal.style.display = "block";
+                modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <h5>Change Grant Status</h5>
+                <label class="mt-2">Grant?</label>
+                <input type="checkbox" id="grantSwitch" class="form-check-input ms-2">
+
+                <div id="grantTimesDiv" class="mt-3" style="display:none;">
+                    <label>How many times granted?</label>
+                    <input type="number" id="grantCount" class="form-control" min="1" value="1">
+                    <small class="text-muted">₱5,000 per grant</small>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" id="cancelGrant">Cancel</button>
+                    <button class="btn btn-primary" id="saveGrant">Save</button>
+                </div>
+            </div>
+        </div>
+    `;
+                document.body.appendChild(modal);
+
+                const grantSwitch = document.getElementById("grantSwitch");
+                const grantTimesDiv = document.getElementById("grantTimesDiv");
+
+                grantSwitch.addEventListener("change", () => {
+                    grantTimesDiv.style.display = grantSwitch.checked ? "block" : "none";
+                });
+
+                document.getElementById("cancelGrant").onclick = () => modal.remove();
+
+                document.getElementById("saveGrant").onclick = () => {
+                    const grant = grantSwitch.checked ? "Yes" : "No";
+                    const times = grantSwitch.checked ? document.getElementById("grantCount").value : 0;
+
+                    fetch("../phpFunctions/updateResearch.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "grant",
+                            research_id: <?= json_encode($researchId) ?>,
+                            research_grant: grant,
+                            research_grant_times: times
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                            modal.remove();
+                            location.reload();
+                        });
+                };
+            }
+
+            // ------------ RESUBMISSION MODAL ------------------
+            function openReSubmitModal() {
+                const modal = document.createElement("div");
+                modal.className = "modal fade show";
+                modal.style.display = "block";
+                modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <h5>Re-Submission Status</h5>
+                
+                <label class="mt-2">Allow Re-Submission?</label>
+                <input type="checkbox" id="reSubmitSwitch" class="form-check-input ms-2">
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <button class="btn btn-secondary" id="cancelRe">Cancel</button>
+                    <button class="btn btn-primary" id="saveRe">Save</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+                document.body.appendChild(modal);
+
+                document.getElementById("cancelRe").onclick = () => modal.remove();
+
+                document.getElementById("saveRe").onclick = () => {
+                    const status = document.getElementById("reSubmitSwitch").checked ? "Yes" : "No";
+
+                    fetch("../phpFunctions/updateResearch.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "resubmit",
+                            research_id: <?= json_encode($researchId) ?>,
+                            research_resubmission_status: status
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.message);
+                            modal.remove();
+
+                            // toggle visibility instantly without reload
+                            const box = document.getElementById("reSubmitPdf");
+                            if (box) box.style.display = (status === "Yes") ? "block" : "none";
+
+                            location.reload();
+                        });
+                };
+            }
+
+            const status = "<?php echo $row['research_resubmission_status']; ?>";
+            const section = document.getElementById("reSubmitPdf");
+            if (section) section.style.display = (status === "Yes") ? "block" : "none";
 
             function displayApproval() {
                 const currentPos = <?php echo json_encode($currentPosition); ?>;
                 const isVoted = <?php echo checkVoters($currentResearch, $currentUserId) ? 'true' : 'false'; ?>;
-                console.log(isVoted);
 
                 if (currentPos === "Panel") {
                     const approvalBtn = document.getElementById("approvalBtn");
@@ -513,8 +637,10 @@ if (isset($_POST['confirmBtnReject'])) {
 
             // SHOW PDF
             document.getElementById("viewPdf").addEventListener("click", function () {
+
+
                 <?php
-                $filePath = $file; // example: "researchfiles/LAB_HENREICH_CATIG.pdf"
+                $filePath = $file;
                 $fileData = file_exists($filePath) ? file_get_contents($filePath) : null;
                 ?>
 
@@ -600,7 +726,7 @@ if (isset($_POST['confirmBtnReject'])) {
                 });
             });
 
-        })();
+        });
     </script>
 </body>
 

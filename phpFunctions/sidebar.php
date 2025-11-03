@@ -526,7 +526,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         echo $sidebar['category.research'];
         echo $sidebar['researchView'];
         echo $sidebar['researchGallery'];
-        echo $sidebar[''];
+        // echo $sidebar['report'];
 
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];

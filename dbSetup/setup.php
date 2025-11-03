@@ -141,6 +141,7 @@ $tables = [
     `research_category` enum('Proposal','Completed') NOT NULL DEFAULT 'Proposal',
     `research_grant` enum('Yes','No') NOT NULL DEFAULT 'No',
     `research_grant_times` int(2) NOT NULL DEFAULT 0,
+    `research_resubmission_status` enum('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
   ",
