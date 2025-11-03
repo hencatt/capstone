@@ -120,6 +120,46 @@ function generateInventoryFilter(position, pdfButton, elementId, category, table
   // updateResult();
 }
 
+function receivedItemTable(inputName, inputItemName, inputReceived, inputDistributed, pdfButton, elementId, tableId) {
+
+  const pdfBtn = $(pdfButton);
+  const element = $(elementId);
+
+  $(document).off("click", "#btnConvert").on("click", "#btnConvert", function () {
+
+    const name = $(inputName).val();
+    const itemId = $(inputItemName).val(); // ✅ this is ID now
+    const received = $("#dbRemaining").val(); // ✅ from DB
+    const distributed = $(inputDistributed).val();
+
+    if (!name || !itemId || received === "" || distributed === "") {
+      alert("Please fill all fields first.");
+      return;
+    }
+
+    $("#receivedTable").html("<small class='text-muted'>Generating table...</small>");
+
+    $.ajax({
+      url: "../phpFunctions/receivedItems.php",
+      type: "POST",
+      data: { name, itemId, received, distributed }, // ✅ send itemId
+
+      success: function (result) {
+        $("#receivedTable").hide().html(result).fadeIn();
+        $(tableId).html(result);
+        pdfBtn.fadeIn();
+        element.fadeIn();
+      },
+
+      error: function () {
+        alert("Error processing request");
+      }
+    });
+  });
+}
+
+
+
 
 function generateReportFilter(
   position,
@@ -175,4 +215,6 @@ function generateReportFilter(
   // bind all filters in one go
   $(filterCampus + ", " + filterDepartment + ", " + filterSize + ", " + filterGender + ", " + checkBoxSum + ", " + checkboxReceipt)
     .on("change", updateResult);
+
+    updateResult();
 }
