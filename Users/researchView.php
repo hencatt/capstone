@@ -106,6 +106,30 @@ updateResearchStatus();
                                 type="submit">Refresh</button></form>
                     </div> -->
                 </div>
+                <?php
+                    if($currentPosition !== "Researcher"):
+                ?>
+                <!-- TOGGLE START -->
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="toggleOptions" id="proposal_toggle" autocomplete="off"
+                                    checked>
+                                Proposal
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="toggleOptions" id="completed_toggle" autocomplete="off"
+                                    checked>
+                                Completed
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- TOGGLE END -->
+                 <?php
+                    endif;
+                 ?>
                 <div class="row mt-3 flex flex-col gap-3">
                     <div class="col" style="background-color: white;
                     padding: 10px;
@@ -152,10 +176,10 @@ updateResearchStatus();
                                         <tr>
                                         <td>' . htmlspecialchars($row['research_title']) . '</td>';
 
-                                        if($currentPosition === "RET Chair"){
-                                        echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
+                                        if ($currentPosition === "RET Chair") {
+                                            echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
                                         }
-                                        
+
                                         echo '<td>' . htmlspecialchars($row['date_submitted']) . '</td>';
 
                                         switch (htmlspecialchars($row['status'])) {

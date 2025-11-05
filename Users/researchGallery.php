@@ -37,12 +37,40 @@ $currentLname = $user['lname'];
                     </div>
                 </div>
                 <div class="row mt-2">
+                    <!-- CHANGE LOREM -->
                     <div class="col">
                         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repudiandae, magnam.
                     </div>
                 </div>
 
-                <!-- APPROVED RESEARCHES -->
+                <!-- TOGGLE START -->
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="toggleOptions" id="approved_toggle" autocomplete="off"
+                                    checked>
+                                Approved
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="toggleOptions" id="rejected_toggle" autocomplete="off"
+                                    checked>
+                                Rejected
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="toggleOptions" id="rejected_toggle" autocomplete="off"
+                                    checked>
+                                Pending
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- TOGGLE END -->
+
+
+
+                <!-- ====================================== APPROVED RESEARCHES ======================================  -->
+
                 <div class="row mt-4">
                     <div class="col">
                         <h4>Approved Reseraches</h4>
@@ -108,6 +136,9 @@ $currentLname = $user['lname'];
                     <?php endwhile; ?>
                 </div>
 
+                <!-- ====================================== REJECTED RESEARCHES ======================================  -->
+
+
                 <hr>
 
                 <div class="row">
@@ -120,6 +151,75 @@ $currentLname = $user['lname'];
                     <!-- LOOP HERE -->
                     <?php
                     $status = "Rejected";
+                    $con = con();
+                    $sql = "SELECT * FROM research_tbl WHERE status = ?";
+                    $stmt = $con->prepare($sql);
+                    $stmt->bind_param("s", $status);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    while ($row = $result->fetch_assoc()): ?>
+
+
+                        <div class="col d-flex flex-column gap-3"
+                            style="background-color:white; padding:20px; border-radius: 10px; max-width: 400px; min-height:500px; max-height: 500px;">
+                            <div style="max-height: 400px;">
+                                <div>
+                                    <h5>
+                                        <?=
+                                            $row['research_title'];
+                                        ?>
+                                    </h5>
+                                    <i class="blockquote-footer">Date Submitted:
+                                        <?=
+                                            $row['date_submitted'];
+                                        ?>
+                                    </i>
+                                </div>
+                                <hr>
+                                <div>
+                                    <i><b>Author/s: </b>
+                                        <?=
+                                            $row['author'] . ", " . $row['co_author'];
+                                        ?>
+                                    </i><br>
+                                    <i><b>NEUST Agenda: </b>
+                                        <?=
+                                            $row['research_agenda'];
+                                        ?>
+                                    </i><br>
+                                    <i><b>SDG: </b>
+                                        <?=
+                                            $row['research_sdg'];
+                                        ?>
+                                    </i>
+                                </div>
+                                <hr>
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    <?=
+                                        $row['description'];
+                                    ?>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary mt-auto align-self-end">View PDF</button>
+                        </div>
+
+                    <?php endwhile; ?>
+                </div>
+
+
+                <!-- ====================================== PENDING RESEARCHES ======================================  -->
+                <hr>
+
+                <div class="row">
+                    <div class="col">
+                        <h4>Pending Researches</h4>
+                    </div>
+                </div>
+
+                <div class="row mt-2 d-flex flex-row gap-3" style="overflow-x: auto;">
+                    <!-- LOOP HERE -->
+                    <?php
+                    $status = "Pending";
                     $con = con();
                     $sql = "SELECT * FROM research_tbl WHERE status = ?";
                     $stmt = $con->prepare($sql);
