@@ -234,7 +234,7 @@ if (isset($_POST['confirmBtnReject'])) {
                         <?php
                         if ($currentPosition === "RET Chair" || $currentPosition === "Researcher"):
                             ?>
-                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd">Re-submit
+                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd" style="display: none;">Re-submit
                                 PDF</button>
                             <?php
                         endif;
@@ -257,7 +257,7 @@ if (isset($_POST['confirmBtnReject'])) {
                                         <?php if ($grant === "No"): ?>
                                             N/A
                                         <?php else: ?>
-                                            <?= htmlspecialchars($row['research_grant_times']) * 5000 ?> Php
+                                            ₱ <?= htmlspecialchars($row['research_grant_times']) * 5000 ?>
                                         <?php endif; ?>
                                     </b><br class="mb-3">
 

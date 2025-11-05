@@ -95,7 +95,7 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
     echo
         <<<EOD
         
-        <div class="row gap-5" id="topBar">
+        <div class="row gap-5 d-flex justify-content-between" id="topBar">
                     <div class="col-6 d-flex flex-row align-items-center">
     EOD;
 
@@ -191,9 +191,6 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
         <<<EOD
                     </div>
                     <div class="col-1 d-flex flex-row align-items-center justify-content-center"
-                    style="
-                    
-                    "
                     >
                     
                         <div class="wrapper">
@@ -208,7 +205,7 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
                         </div>
                         
                     </div>
-                    <div class="col-auto d-flex flex-row align-items-center justify-content-center" id="profile">
+                    <div class="col-auto d-flex justify-content-end align-items-center" id="profile">
                         <a href="/capstone/Users/modifyAccount.php">
                             <div class="row align-items-center justify-content-center gap-3">
                                 <div class="col-1">
@@ -506,7 +503,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
 
         echo $sidebar['category.research'];
         echo $sidebar['researchView'];
-        
+
         echo $sidebar['category.settings'];
         echo $sidebar['report'];
         echo $sidebar['logout'];

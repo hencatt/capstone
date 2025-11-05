@@ -13,32 +13,32 @@ $currentPosition = $user['position'];
 doubleCheck($currentPosition);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
-    $fname        = $_POST['inputFname'] ?? '';
-    $mname        = $_POST['inputMname'] ?? '';
-    $lname        = $_POST['inputLname'] ?? '';
-    $email        = $_POST['inputEmail'] ?? '';
-    $contact_no   = $_POST['inputContact'] ?? '';
-    $department   = $_POST['inputDepartment'] ?? '';
-    $campus       = $_POST['inputCampus'] ?? '';
-    $status       = 'Active';
+    $fname = $_POST['inputFname'] ?? '';
+    $mname = $_POST['inputMname'] ?? '';
+    $lname = $_POST['inputLname'] ?? '';
+    $email = $_POST['inputEmail'] ?? '';
+    $contact_no = $_POST['inputContact'] ?? '';
+    $department = $_POST['inputDepartment'] ?? '';
+    $campus = $_POST['inputCampus'] ?? '';
+    $status = 'Active';
 
-    $street   = $_POST['inputStAddress'] ?? '';
-    $city     = $_POST['inputCity'] ?? '';
+    $street = $_POST['inputStAddress'] ?? '';
+    $city = $_POST['inputCity'] ?? '';
     $province = $_POST['inputProvince'] ?? '';
-    $address  = trim($street . ', ' . $city . ', ' . $province, ', ');
+    $address = trim($street . ', ' . $city . ', ' . $province, ', ');
 
-    $birthdate      = $_POST['inputBirthdate'] ?? '';
+    $birthdate = $_POST['inputBirthdate'] ?? '';
     $marital_status = $_POST['inputMaritalStatus'] ?? '';
-    $sex            = $_POST['inputSex'] ?? '';
+    $sex = $_POST['inputSex'] ?? '';
 
     $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+')
         ? ($_POST['otherGender'] ?? '')
         : ($_POST['inputGender'] ?? '');
 
-    $size            = $_POST['inputSize'] ?? '';
-    $income          = $_POST['inputIncome'] ?? '';
+    $size = $_POST['inputSize'] ?? '';
+    $income = $_POST['inputIncome'] ?? '';
     $priority_status = $_POST['inputPriority'] ?? '';
-    $childrenNum     = isset($_POST['inputChildrenNum']) ? (int)$_POST['inputChildrenNum'] : 0;
+    $childrenNum = isset($_POST['inputChildrenNum']) ? (int) $_POST['inputChildrenNum'] : 0;
     $concern = !empty($_POST['inputConcern']) ? $_POST['inputConcern'] : 'N/A';
 
     if (empty($email)) {
@@ -194,16 +194,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-    $conn = new mysqli('localhost', 'root', '', 'gad_portal');
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+$conn = new mysqli('localhost', 'root', '', 'gad_portal');
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <?php include '../phpFunctions/email.php'; ?>
+
 <head>
     <?= headerLinks("Employees"); ?>
 </head>
@@ -371,38 +372,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <?php
-                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
-                    // Director can add accounts
-                    echo '
-                            <div class="row mt-3 d-flex justify-content-end">
-                                <div class="col-2">
-                                    <button id="add_account" class="btn btn-outline-success">
-                                    Add Account
-                                    <ion-icon name="add-outline" class="add-icon"></ion-icon>
-                                    </button>
-                                </div>
-                            </div>
-                        ';
-                } elseif ($currentPosition === "Focal Person") {
-                    // Focal Person can add employees
-                    echo '
-                            <div class="row mt-2 d-flex justify-content-end">
-                                <div class="col-2">
-                                    <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
-                                        Add Employee
-                                        <span class="material-symbols-outlined">add</span>
-                                    </button>
-                                </div>
-                                <div class="col-2">
-                                    <button id="add_account" class="btn btn-outline-success">
-                                        Add Researcher
-                                        <span class="material-symbols-outlined">add</span>
-                                    </button>
-                                </div>
-                            </div>
+                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
 
-                        ';
-                }
+                    <div class="row mt-3 d-flex justify-content-end">
+                        <?php if ($currentPosition === "Director"): ?>
+                            <div class="col">
+                                <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
+                                            checked>
+                                        Employees
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off"
+                                            checked>
+                                        Accounts
+                                    </label>
+                                </div>
+                            </div>
+                            <?php
+                        endif;
+                        ?>
+                        <div class="col-2">
+                            <button id="add_account" class="btn btn-outline-success">
+                                Add Account
+                                <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                <?php elseif ($currentPosition === "Focal Person"): ?>
+
+                    <div class="row mt-2 d-flex justify-content-end">
+                        <div class="col-2">
+                            <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
+                                Add Employee
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
+                        </div>
+                        <div class="col-2">
+                            <button id="add_account" class="btn btn-outline-success">
+                                Add Researcher
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
+                        </div>
+                    </div>
+                    <?php
+                endif;
                 ?>
                 <!-- FiltersHere -->
                 <div class="row mt-3">
@@ -441,7 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="password" name="pass" placeholder="Password" required>
                         <select name="pos" id="position" required>
                         ';
-          
+
             if ($currentPosition === "Director") {
                 echo '
                             <option value="Director">Director</option>
@@ -456,7 +472,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="Focal Person">Focal Person</option>
                             <option value="Panel">Panel</option>
                             <option value="RET Chair">RET Chair</option>
-                        </select>'; 
+                        </select>';
             } else {
                 echo '
                             <option value="Researcher">Researcher</option>
@@ -516,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'
-            ?>
+                ?>
             <?php
             // Add this block for Focal Person modal space
             if ($currentPosition === "Focal Person") {
@@ -712,12 +728,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include('../phpFunctions/alerts.php'); ?>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
             // Load filters, table, buttons first
-            $('#filters').load("./reusableHTML/filters.php", function() {
+            $('#filters').load("./reusableHTML/filters.php", function () {
                 resetFilterFunction(position);
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
 
@@ -726,9 +742,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 }, 50);
 
-                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function() {
+                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
 
-                    $('#filterButton').load("./reusableHTML/filtersButton.php", function() {
+                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
                         // Now everything exists → safe to run
 
                     });
@@ -738,7 +754,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 
     <script>
-        window.addEventListener("pageshow", function(event) {
+        window.addEventListener("pageshow", function (event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
@@ -845,12 +861,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (confirm('Are you sure you want to deactivate this user?')) {
                             fetch('../deactivate_user.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                    },
-                                    body: `id=${userId}`,
-                                })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: `id=${userId}`,
+                            })
                                 .then(response => response.text())
                                 .then(data => {
                                     alert(data);
@@ -918,27 +934,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Modal logic
         const addEmployeeBtn = document.getElementById('addEmployeeBtn');
         const modal = document.getElementById('modal');
         const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
         if (addEmployeeBtn && modal) {
-            addEmployeeBtn.addEventListener('click', function() {
+            addEmployeeBtn.addEventListener('click', function () {
                 modal.classList.add('open');
                 document.body.style.overflow = 'hidden';
             });
         }
 
-        closeBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        closeBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
             });
         });
 
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
@@ -946,12 +962,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         // jQuery logic for gender and child options
-        $(function() {
+        $(function () {
             const genderSelect = $("#inputGender");
             const otherGender = $("#otherGender");
             otherGender.hide();
 
-            genderSelect.on("change", function() {
+            genderSelect.on("change", function () {
                 if ($(this).val() === "LGBTQIA+") {
                     otherGender.show();
                 } else {
@@ -974,7 +990,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function() {
+            $('input[name="inputChildren"]').on('change', function () {
                 toggleChildOptions();
             });
         });
