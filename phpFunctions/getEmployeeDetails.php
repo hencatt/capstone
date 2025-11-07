@@ -42,11 +42,18 @@ if (!$stmt) {
     $conn->close();
     exit;
 }
+
 $stmt->bind_param('i', $id);
 $stmt->execute();
 $res = $stmt->get_result();
 
 if ($res && $row = $res->fetch_assoc()) {
+    // ✅ Split address into parts safely
+    $parts = array_map('trim', explode(',', $row['address'] ?? ''));
+    $row['street']   = $parts[0] ?? '';
+    $row['city']     = $parts[1] ?? '';
+    $row['province'] = $parts[2] ?? '';
+
     echo json_encode($row);
 } else {
     echo json_encode(['error' => 'Record not found']);

@@ -12,6 +12,7 @@ $currentCampus = $user['campus'];
 $currentPosition = $user['position'];
 doubleCheck($currentPosition);
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
     $fname = $_POST['inputFname'] ?? '';
     $mname = $_POST['inputMname'] ?? '';
@@ -375,17 +376,15 @@ if ($conn->connect_error) {
                 if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
 
                     <div class="row mt-3 d-flex justify-content-end">
-                        <?php if ($currentPosition === "Director"): ?>
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
                             <div class="col">
                                 <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
-                                            checked>
+                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off" checked>
                                         Employees
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off"
-                                            checked>
+                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
                                         Accounts
                                     </label>
                                 </div>
@@ -407,13 +406,11 @@ if ($conn->connect_error) {
                         <div class="col-2">
                             <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
                                 Add Employee
-                                <span class="material-symbols-outlined">add</span>
                             </button>
                         </div>
                         <div class="col-2">
                             <button id="add_account" class="btn btn-outline-success">
                                 Add Researcher
-                                <span class="material-symbols-outlined">add</span>
                             </button>
                         </div>
                     </div>
@@ -428,6 +425,7 @@ if ($conn->connect_error) {
                 <div class="row mt-3" id="filterButton">
                     <!-- FILTER BUTTONS HERE -->
                 </div>
+
                 <!-- TableHere -->
                 <div class="row mt-3 tableOverview">
                     <div class="col" id="showEmployeeTable">
@@ -534,7 +532,7 @@ if ($conn->connect_error) {
                     </form>'
                 ?>
             <?php
-            // Add this block for Focal Person modal space
+
             if ($currentPosition === "Focal Person") {
                 echo '
                     
@@ -675,7 +673,7 @@ if ($conn->connect_error) {
 
 
     <!-- Edit Account Modal -->
-    <div class="modals" id="edit_account_modal" style="display: none;">
+    <!-- <div class="modals" id="edit_account_modal" style="display: none;">
         <div class="modal_edit_account">
             <div class="modal_title">
                 <h2>Edit Account</h2>
@@ -724,7 +722,7 @@ if ($conn->connect_error) {
                 </div>
             </form>
         </div>
-    </div>
+    </div> -->
 
     <?php include('../phpFunctions/alerts.php'); ?>
     <script>
@@ -807,6 +805,7 @@ if ($conn->connect_error) {
             }
         });
     </script>
+    
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -931,7 +930,58 @@ if ($conn->connect_error) {
                 }
             });
         </script>
+
+<script>
+$(document).ready(function () {
+    const position = <?= json_encode($currentPosition) ?>;
+    const campus = <?= json_encode($currentCampus) ?>;
+    const dept = <?= json_encode($currentDepartment) ?>;
+
+    function initializeTable(selector) {
+        // Destroy existing DataTable if already initialized
+        if ($.fn.DataTable.isDataTable(selector)) {
+            $(selector).DataTable().destroy();
+        }
+
+        // Initialize again
+        setTimeout(() => {
+            $(selector).DataTable({
+                responsive: true,
+                autoWidth: false,
+                pageLength: 10
+            });
+        }, 200);
+    }
+
+    function loadEmployeeTable() {
+        $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
+            initializeTable('#employee_table');
+        });
+    }
+
+    function loadAccountsTable() {
+        $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function () {
+            initializeTable('#accounts_table');
+        });
+    }
+
+    // Default: load employee table on page load
+    loadEmployeeTable();
+
+    $("input[name='toggleOptions']").change(function () {
+        if ($("#employee_toggle").is(":checked")) {
+            loadEmployeeTable();
+        } else if ($("#account_toggle").is(":checked")) {
+            loadAccountsTable();
+        }
+    });
+});
+</script>
+
+
+
 </body>
+
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
