@@ -114,6 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result->num_rows > 0) {
             setSessionStatus("Error", "Email already exist", "error");
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+
         } else {
             // Insert the new account
             $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, campus, date_created, is_active) 
@@ -482,7 +485,7 @@ if ($conn->connect_error) {
                         <select name="dept" id="department" required>';
 
 
-            if ($currentPosition === "Director " || $currentPosition === "Technical Assistant") {
+            if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
                 echo '<option value="" disabled selected>Select Department</option>
                             <option value="CPADM">CPADM</option>
                             <option value="CMBT">CMBT - BA, HM</option>
@@ -673,24 +676,62 @@ if ($conn->connect_error) {
 
 
     <!-- Edit Account Modal -->
-    <!-- <div class="modals" id="edit_account_modal" style="display: none;">
-        <div class="modal_edit_account">
-            <div class="modal_title">
-                <h2>Edit Account</h2>
-            </div>
-            <form method="post" class="form_edit_account" novalidate>
-                <input type="text" name="edit_fname" id="edit_fname" placeholder="First Name" required>
-                <input type="text" name="edit_lname" id="edit_lname" placeholder="Last Name" required>
-                <input type="hidden" name="edit_id" id="edit_id">
-                <input type="text" name="edit_username" id="edit_username" placeholder="Username" required>
-                <input type="email" name="edit_email" id="edit_email" placeholder="Email" required>
-                <input type="password" name="edit_password" id="edit_password" placeholder="Password">
-                <select name="edit_position" id="edit_position" required>
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-3 border-0">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="editAccountModalLabel">
+          <i class="fas fa-user-edit me-2"></i> Edit Account
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+        <form id="editAccountForm">
+            <div class="modal-body">
+            <input type="hidden" name="acc_id" id="acc_id">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="acc_username" name="acc_username" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="acc_password" name="acc_password" placeholder="Leave blank to keep current">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" id="acc_fname" name="acc_fname" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="acc_lname" name="acc_lname" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="acc_email" name="acc_email" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Position</label>
+                <select class="form-select" id="acc_position" name="acc_position" required>
+                    <option value="" disabled selected>Select Position</option>
                     <option value="Director">Director</option>
                     <option value="Technical Assistant">Technical Assistant</option>
                     <option value="Focal Person">Focal Person</option>
+                    <option value="Panel">Panel</option>
+                    <option value="RET Chair">RET Chair</option>
                 </select>
-                <select name="edit_department" id="edit_department" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label class="form-label">Department</label>
+                <select class="form-select" id="acc_department" name="acc_department" required>
+                    <option value="" disabled selected>Select Department</option>
                     <option value="CPADM">CPADM</option>
                     <option value="CMBT">CMBT - BA, HM</option>
                     <option value="CoArch">CoArch</option>
@@ -705,24 +746,34 @@ if ($conn->connect_error) {
                     <option value="IOLL">IOLL</option>
                     <option value="CON">CON</option>
                     <option value="GS">GS</option>
-                    <option value="SIC">SIC</option>
+                </select>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                <label class="form-label">Campus</label>
+                <select class="form-select" id="acc_campus" name="acc_campus" required>
+                    <option value="" disabled selected>Select Campus</option>
+                    <option value="Sumacab">Sumacab</option>
+                    <option value="GT">Gen. Tinio</option>
+                    <option value="San Isidro">San Isidro</option>
                     <option value="Gabaldon">Gabaldon</option>
                     <option value="Atate">Atate</option>
-                    <option value="FMC">FMC</option>
-                    <option value="NTP">NTP</option>
-                    <option value="Research">Research</option>
-                    <option value="Extension">Extension</option>
-                    <option value="Student Organization">Student Organization</option>
-                    <option value="Publication">Publication</option>
-                    <option value="VAWC">VAWC</option>
+                    <option value="Fort Magsaysay">Fort Magsaysay</option>
                 </select>
-                <div class="buttons">
-                    <button type="submit" name="update_account">Update</button>
-                    <button type="button" class="add_btn_close" id="close_edit_account">Close</button>
                 </div>
-            </form>
+            </div>
+            </div>
+
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i> Save Changes
+            </button>
+            </div>
+        </form>
         </div>
-    </div> -->
+    </div>
+</div>
 
     <?php include('../phpFunctions/alerts.php'); ?>
     <script>
@@ -1045,6 +1096,50 @@ $(document).ready(function () {
             });
         });
     });
+</script>
+
+
+<!-- Try lang -->
+<script>
+    $(document).ready(function() {
+    // 🔹 Open Edit Account Modal
+    $(document).on('click', '.editAccountBtn', function() {
+        const id = $(this).data('id');
+
+        $.post('../phpFunctions/getAccountDetails.php', { id }, function(resp) {
+            if (!resp || resp.error) {
+                alert(resp?.error || 'Failed to fetch account details.');
+                return;
+            }
+
+            $('#account_id').val(resp.id);
+            $('#edit_fname').val(resp.fname);
+            $('#edit_lname').val(resp.lname);
+            $('#edit_username').val(resp.username);
+            $('#edit_position').val(resp.position);
+            $('#edit_department').val(resp.department);
+            $('#edit_campus').val(resp.campus);
+
+            $('#editAccountModal').modal('show');
+        }, 'json').fail(() => alert('Request failed while fetching account.'));
+    });
+
+    // 🔹 Save Account Update
+    $('#editAccountForm').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+
+        $.post('../phpFunctions/updateAccount.php', formData, function(resp) {
+            if (resp.success) {
+                alert(resp.message);
+                $('#editAccountModal').modal('hide');
+                location.reload();
+            } else {
+                alert(resp.error || 'Update failed.');
+            }
+        }, 'json').fail(() => alert('Request failed while updating account.'));
+    });
+});
 </script>
 
 </html>
