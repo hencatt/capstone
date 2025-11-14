@@ -77,8 +77,8 @@ $result = $con->query($sql);
 <?php $con->close(); ?>
 
 <!-- Reuse existing modals -->
-<?php include_once 'reusableHTML/viewEmployeeModal.php'; ?>
-<?php include_once 'reusableHTML/personalInfoModal.php'; ?>
+<?php include_once 'viewEmployeeModal.php'; ?>
+<?php include_once 'personalInfoModal.php'; ?>
 
 <script>
 $(document).ready(function() {
