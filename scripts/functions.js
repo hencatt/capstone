@@ -191,6 +191,7 @@ function generateReportFilter(
       url: "../phpFunctions/filterFunction.php",
       method: "POST",
       data: {
+        currentPage: "reportPage",
         deptFilter: deptFilter,
         campusFilter: campusFilter,
         sizeFilter: sizeFilter,

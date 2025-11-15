@@ -1,7 +1,7 @@
 <?php
 require_once "gad_portal.php";
 
-if (isset($_POST['currentPage'], $_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
+if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
     $campus = $_POST['campusFilter'];
     $dept = $_POST['deptFilter'];
     $size = $_POST['sizeFilter'];
@@ -11,8 +11,11 @@ if (isset($_POST['currentPage'], $_POST['searchQuery'], $_POST['campusFilter'], 
     $position = $_POST['currentPosition'];
     $generate = $_POST['whatGenerate'];
     $location = $_POST['currentPage'];
-
-    $search = $_POST['searchQuery'];
+    $search = null;
+    
+    if (isset($_POST['searchQuery'],)) {
+        $search = $_POST['searchQuery'];
+    }
 
 
     $con = newCon();
