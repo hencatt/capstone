@@ -11,6 +11,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
+$currentEmail = $user['email']; 
 $id = $user['id'];
 
 if ($currentPosition === "Director") {
@@ -264,8 +265,9 @@ if (isset($_POST['submitResearch'])) {
                             <div class="row mt-4">
                                 <div class="col">
                                     <label for="inputEmail" class="form-label">Email</label>
-                                    <input type="text" name="inputEmail" id="inputEmail" class="form-control" required
-                                        placeholder="Enter your email...">
+                                    <select name="inputEmail" id="inputEmail" class="form-select" required>
+                                        <option value="<?= $currentEmail ?>"><?= $currentEmail ?></option>
+                                    </select>                                  
                                     <!-- note -->
                                     <br>
                                     <figcaption class="blockquote-footer d-flex align-items-end">(Note: Only primary
@@ -412,21 +414,21 @@ if (isset($_POST['submitResearch'])) {
             // Load modal content
             $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function () {
                 // Delegate click event to dynamically added employee rows
-                $('#coAuthorsModal').on('click', '.employeeRow', function () {
+               $('#coAuthorsModal').on('click', '.employeeRow', function () {
                     const fname = $(this).data('fname');
                     const mname = $(this).data('mname');
                     const lname = $(this).data('lname');
+                    const email = $(this).data('email');
 
-                    console.log("Clicked:", fname, mname, lname);
-
-                    // prevent duplicates
+                    // Prevent duplicate co-authors in the table
                     if (!coauthors.some(c => c.lname === lname && c.fname === fname)) {
-                        coauthors.push({
-                            lname,
-                            fname,
-                            mname
-                        });
-                        updateCoauthorsList(); // now works globally
+                        coauthors.push({ lname, fname, mname, email });
+                        updateCoauthorsList();
+                    }
+
+                    // Add email to dropdown (NO DUPLICATE OPTIONS)
+                    if ($("#inputEmail option[value='" + email + "']").length === 0) {
+                        $("#inputEmail").append(`<option value="${email}">${email}</option>`);
                     }
                 });
 
