@@ -172,7 +172,33 @@ $age45_54 = getAge(35, 44);
 $age55_64 = getAge(35, 44);
 $age65_abv = getAge(65, 125);
 
-$a
+function getDepartmentBreakdown(): mixed
+{
+    $con = newCon();
+    $sql = "SELECT
+        COALESCE(t.department, 'Unknown') AS department,
+        COUNT(DISTINCT t.id) AS total_employees,
+        SUM(CASE WHEN ei.gender = 'Male' THEN 1 ELSE 0 END) AS male_total,
+        SUM(CASE WHEN ei.gender = 'Female' THEN 1 ELSE 0 END) AS female_total,
+        SUM(CASE WHEN ei.gender = 'LGBTQIA+' THEN 1 ELSE 0 END) AS lgbt_total,
+        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, ei.birthday, CURDATE()) >= 60 THEN 1 ELSE 0 END) AS retire_count
+    FROM employee_tbl t
+    LEFT JOIN employee_info ei ON ei.employee_id = t.id
+    GROUP BY department
+    ORDER BY total_employees DESC";
+
+    $result = $con->query($sql);
+    $departments = [];
+
+    if ($result === false) {
+        error_log("getDepartmentBreakdown SQL error: " . $con->error . " -- SQL: " . $sql);
+    } else {
+        $departments = $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    return $departments;
+}
+$departmentData = getDepartmentBreakdown();
 ?>
 
 <!DOCTYPE html>
@@ -183,7 +209,6 @@ $a
 </head>
 
 <body>
-   
 
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
@@ -204,11 +229,11 @@ $a
                         <h6>Total Retirees</h6><br>
                         <h6 class="itemText"><?= $age25_34 ?></h6>
                     </div>
-                    <div class="col summaryOverview">
+                    <!--<div class="col summaryOverview">
                         <h6>New Hires</h6><br>
                         <h6 class="itemText">(number)</h6>
                     </div>
-                </div>
+                </div>-->
                 <div class="row mt-3 d-flex flex-row align-items-center justify-content-center gap-3">
                     <div class="col-5 d-flex justify-content-center " style="background-color:white; border-radius: 10px;">
                         <!-- <h4>Gender Distribution</h4> -->
@@ -219,21 +244,55 @@ $a
                         <!-- <h4>Age Distribution</h4> -->
                         <!-- <canvas height="300px" id="ageGraph"></canvas> -->
                         <div id="ageChart"></div>
+                        <div>
+                            <!-- <h4>Events</h4> -->
+                            <!-- <canvas height="300px" id="ageGraph"></canvas> -->
+                        </div>
                     </div>
                 </div>
-                <div class="row mt-3 d-flex flex-row align-items-center justify-content-center gap-3">
-                    <div class="col">
-                        <h4>Retirement Forecast</h4>
-                        <div id="retirementGraph"></div>
-                    </div>
-                    <div class="col">
-                        <h4>Diversity Metrics</h4>
-                        <div id="diversityGraph"></div>
-                    </div>
+                <div class="col" style="background-color:white; border-radius: 10px; padding:1rem;">
+                  <h2 class="w-100 mb-3">Department Breakdown</h2>
+                
+                                    <div class="table-responsive">
+                                        <?php
+                
+                                        $sum_total_employees = 0;
+                                        foreach ($departmentData as $d) {
+                                                $sum_total_employees += (int) ($d['total_employees'] ?? 0);
+                                        }
+                                        ?>
+                                        <table class="table table-sm table-striped ">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-start">Department</th>
+                                                    <th class="text-center">Total Employees</th>
+                                                    <th class="text-center">Male</th>
+                                                    <th class="text-center">Female</th>
+                                                    <th class="text-center">LGBT</th>
+                                                    <th class="text-center">Retirees</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="font-size: 17px;">
+                                                <?php foreach ($departmentData as $dept): ?>
+                                                <tr>
+                                                    <td class="text-start"><?= htmlspecialchars($dept['department']) ?></td>
+                                                    <td class="text-center"><?= $dept['total_employees'] ?></td>
+                                                    <td class="text-center"><?= $dept['male_total'] ?></td>
+                                                    <td class="text-center"><?= $dept['female_total'] ?></td>
+                                                    <td class="text-center"><?= $dept['lgbt_total'] ?></td>
+                                                    <td class="text-center"><?= $dept['retire_count'] ?></td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr style="font-weight:700; font-size: 18px;">
+                                                    <td class="text-start">Overall Total</td>
+                                                    <td class="text-center"><?= $sum_total_employees ?></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                 </div>
-
-            </div>
-        </div>
 
 
     </div>
@@ -312,10 +371,10 @@ $a
             responsive: true
         };
 
-        var ageData = [{
+        /* var ageData = [{
             x: ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"],
             y: [age18_24, age25_34, age35_44, age45_54, age55_64, age65_abv],
-            type: 'bar',
+            //type: 'bar',
         }];
 
         var ageDataLayout = {
@@ -366,7 +425,8 @@ $a
         //             }
         //         }
         //     }
-        // });
+        // }); */
+
 
         const totalMale = <?= $totalMale ?>;
         const totalFemale = <?= $totalFemale ?>;
