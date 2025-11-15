@@ -118,6 +118,14 @@ deleteItemInventory("deleteItem", $currentUser);
                             </div>
                         </div>`
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                            <span class="material-symbols-outlined">
+                                search
+                            </span>
+                            <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
+                        </div>
+                    </div>
                     <div class="row mt-2" style="max-height: 200px; overflow-y: auto;">
                         <div class="col">
                             <div class="table-responsive">
@@ -316,7 +324,7 @@ EOD;
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
             $('#filters').load("./reusableHTML/filters.php", function() {
                 $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
-                    filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+                    filterFunction("dashboard", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
                     resetFilterFunction(position);
 

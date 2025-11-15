@@ -1,5 +1,6 @@
 // ALL PARAMS ARE ID NG MGA NASA FORM
 function filterFunction(
+  location,
   searchBar,
   checkbox,
   campus,
@@ -21,6 +22,7 @@ function filterFunction(
       url: "../phpFunctions/filterFunction.php",
       method: "POST",
       data: {
+        currentPage: location,
         campusFilter: $(campus).val(),
         deptFilter: $(dept).val(),
         sizeFilter: $(size).val(),

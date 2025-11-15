@@ -67,9 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
     $marital_status = $_POST['inputMaritalStatus'] ?? '';
     $sex            = $_POST['inputSex'] ?? '';
 
-    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+') 
-                ? ($_POST['otherGender'] ?? '') 
-                : ($_POST['inputGender'] ?? '');
+    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+')
+        ? ($_POST['otherGender'] ?? '')
+        : ($_POST['inputGender'] ?? '');
 
     $size            = $_POST['inputSize'] ?? '';
     $income          = $_POST['inputIncome'] ?? '';
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
             (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt_info->bind_param(
-            "sssssssssssiis", 
+            "sssssssssssiis",
             $fname,
             $mname,
             $lname,
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
         echo "<script>alert('❌ Insert employee_tbl failed: " . addslashes($stmt_emp->error) . "');</script>";
     }
 }
-    
+
 ?>
 
 <!DOCTYPE html>
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 
 
 <body>
- 
+
     <!-- Left Sidebar -->
     <div class="row everything">
         <div class="col sidebar">
@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                                         <div class="col d-flex justify-content-end align-items-center gap-3">
                                             <a href="./employees.php"><button class="btn btn-outline-primary">View
                                                     More</button></a>
-                                                    <!-- <button type="button" class="btn btn-success" id="addEmployeeBtn">
+                                            <!-- <button type="button" class="btn btn-success" id="addEmployeeBtn">
                                                         Add Employee
                                                         <span class="material-symbols-outlined">add</span>
                                                     </button> -->
@@ -216,6 +216,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                                         <div class="row mt-2" id="filterButtons">
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                                    <span class="material-symbols-outlined">
+                                        search
+                                    </span>
+                                    <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
                                 </div>
                             </div>
                             <div class="row mt-2" style="max-height:200px; overflow-y: auto;">
@@ -289,7 +297,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
     </div>
 
     <!-- Add Employee Modal -->
-    
+
     <!-- addItemModal -->
     <!-- <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                     aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -369,106 +377,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
     crossorigin="anonymous"></script>
-
-<!-- SEARCH FUNCTION FOR EMPLOYEE SEARCH FUNCTION -->
-<script>
-    $(document).ready(function () {
-        $("#searchEmployeeInput").keyup(function () {
-            var employeeName = $(this).val();
-
-            console.log("Searching for: " + employeeName);
-
-            $.post("../searchFunction.php", {
-                employeeSearch: employeeName
-            }, function (data, status) {
-                $("#employeeTableBody").parent().html(data);
-            })
-        });
-    });
-</script>
-
 <!-- SAVE FILTER FUNCTION -->
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         const position = <?= json_encode($currentPosition) ?>;
         const campus = <?= json_encode($currentCampus) ?>;
         const dept = <?= json_encode($currentDepartment) ?>;
 
         // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
         $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
-        $('#filters').load("reusableHTML/filters.php", function () {
-            $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
+        $('#filters').load("reusableHTML/filters.php", function() {
+            $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
                 $('#department').prop('disabled', true);
                 $('#campus').prop('disabled', true);
-                filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+                filterFunction("dashboard", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                 resetFilterFunction(position);
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
             })
         })
 
     });
-
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Modal logic
-    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-    const modal = document.getElementById('modal');
-    const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal logic
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        const modal = document.getElementById('modal');
+        const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
-    if (addEmployeeBtn && modal) {
-        addEmployeeBtn.addEventListener('click', function() {
-            modal.classList.add('open');
-        });
-    }
-
-    closeBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            modal.classList.remove('open');
-          
-        });
-    });
-
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.remove('open');
-          
+        if (addEmployeeBtn && modal) {
+            addEmployeeBtn.addEventListener('click', function() {
+                modal.classList.add('open');
+            });
         }
-    });
 
-    // jQuery logic for gender and child options
-    $(function() {
-        const genderSelect = $("#inputGender");
-        const otherGender = $("#otherGender");
+        closeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                modal.classList.remove('open');
 
-        genderSelect.on("change", function () {
-            if ($(this).val() === "LGBTQIA+") {
-                otherGender.show().attr("required", true);
-            } else {
-                otherGender.hide().val("").removeAttr("required");
+            });
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+
             }
         });
 
-        function toggleChildOptions() {
-            const checkedChild = $('input[name="inputChildren"]:checked').val();
-            if (checkedChild === "No") {
-                $("#childrenNum").val("");
-                $("#childrenNumCol").hide();
-                $("#childConcern").val("");
-                $("#childConcernCol").hide();
-            } else {
-                $("#childrenNumCol").show();
-                $("#childConcernCol").show();
-            }
-        }
+        // jQuery logic for gender and child options
+        $(function() {
+            const genderSelect = $("#inputGender");
+            const otherGender = $("#otherGender");
 
-        toggleChildOptions();
-        $('input[name="inputChildren"]').on('change', function () {
+            genderSelect.on("change", function() {
+                if ($(this).val() === "LGBTQIA+") {
+                    otherGender.show().attr("required", true);
+                } else {
+                    otherGender.hide().val("").removeAttr("required");
+                }
+            });
+
+            function toggleChildOptions() {
+                const checkedChild = $('input[name="inputChildren"]:checked').val();
+                if (checkedChild === "No") {
+                    $("#childrenNum").val("");
+                    $("#childrenNumCol").hide();
+                    $("#childConcern").val("");
+                    $("#childConcernCol").hide();
+                } else {
+                    $("#childrenNumCol").show();
+                    $("#childConcernCol").show();
+                }
+            }
+
             toggleChildOptions();
+            $('input[name="inputChildren"]').on('change', function() {
+                toggleChildOptions();
+            });
         });
     });
-});
 </script>
 
 

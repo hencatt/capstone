@@ -19,7 +19,8 @@ $sql = "
         ei.employee_id AS emp_id,
         CONCAT(ei.fname, ' ', ei.lname) AS full_name,
         et.department,
-        et.campus
+        et.campus,
+        et.email
     FROM employee_info ei
     INNER JOIN employee_tbl et ON ei.employee_id = et.id
     WHERE et.status = 'active'
@@ -41,9 +42,10 @@ $result = $con->query($sql);
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['full_name']) ?></td>
+                        <td class="empName"><?= htmlspecialchars($row['full_name']) ?></td>
                         <td><?= htmlspecialchars($row['department']) ?></td>
                         <td><?= htmlspecialchars($row['campus']) ?></td>
+                        <td class="empEmail"><?= htmlspecialchars($row['email']) ?></td>
                         <td>
                             <button type="button" 
                                     class="btn btn-outline-primary btn-sm view-btn"

@@ -77,25 +77,25 @@ if (isset($_POST['btnGeneratePDF'])) {
                                 </label>
 
                                 <?php
-                                    if($currentPosition === "Director" || $currentPosition === "Technical Assistant"):
+                                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"):
                                 ?>
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
-                                    Inventory
-                                </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
+                                        Inventory
+                                    </label>
                                 <?php
-                                    endif;
+                                endif;
                                 ?>
 
 
                                 <?php
                                 if ($currentPosition === "Focal Person"):
-                                    ?>
+                                ?>
                                     <label class="btn btn-secondary">
                                         <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
                                         Received Item/s
                                     </label>
-                                    <?php
+                                <?php
                                 endif;
                                 ?>
                             </div>
@@ -258,13 +258,13 @@ if (isset($_POST['btnGeneratePDF'])) {
 
                             <?php
                             if ($currentPosition !== "Focal Person"):
-                                ?>
+                            ?>
                                 <div id="makeReceiptDIV">
                                     <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
                                     <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
                                         class="form-check-input">
                                 </div>
-                                <?php
+                            <?php
                             endif;
                             ?>
                             <div id="makeSummaryDIV">
@@ -299,16 +299,16 @@ if (isset($_POST['btnGeneratePDF'])) {
 
                                 <?php
                                 // na fix na dito yung issue ng inventory lumalabas kay director
-                                if ($currentPosition === "Focal Person"): ?> 
-                                <div id="receivedItemsDIV">
-                                    
+                                if ($currentPosition === "Focal Person"): ?>
+                                    <div id="receivedItemsDIV">
 
-                                    <!-- input fields here, same as preview -->
 
-                                    <!-- the generated result -->
-                                    <div id="receivedItemPrintTable"></div>
-                                    
-                                </div> '
+                                        <!-- input fields here, same as preview -->
+
+                                        <!-- the generated result -->
+                                        <div id="receivedItemPrintTable"></div>
+
+                                    </div> '
                                 <?php endif; ?>
 
 
@@ -358,12 +358,12 @@ if (isset($_POST['btnGeneratePDF'])) {
         const filter_size = $('#filterSize');
 
 
-        $(document).ready(function () {
+        $(document).ready(function() {
 
             $("#inventoryReport").hide();
             $("#inventoryTable").hide();
 
-            $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function () {
+            $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function() {
                 generateInventoryFilter(
                     position,
                     "#btnGeneratePDF",
@@ -375,13 +375,13 @@ if (isset($_POST['btnGeneratePDF'])) {
 
 
 
-            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function () {
+            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function() {
 
                 // ✅ Load available inventory items to dropdown
                 $.ajax({
                     url: "../phpFunctions/get_inventory_items.php",
                     type: "POST",
-                    success: function (res) {
+                    success: function(res) {
                         let items = JSON.parse(res);
                         let select = $("#inputItemName");
 
@@ -395,15 +395,17 @@ if (isset($_POST['btnGeneratePDF'])) {
                 });
 
                 // ✅ When user selects item, fetch its qty
-                $("#inputItemName").on("change", function () {
+                $("#inputItemName").on("change", function() {
                     let itemId = $(this).val();
                     if (!itemId) return;
 
                     $.ajax({
                         url: "../phpFunctions/get_item_stock.php",
                         type: "POST",
-                        data: { itemId },
-                        success: function (res) {
+                        data: {
+                            itemId
+                        },
+                        success: function(res) {
                             let data = JSON.parse(res);
                             $("#inputReceived").val(data.itemQuantity);
                             $("#dbRemaining").val(data.itemQuantity);
@@ -463,7 +465,7 @@ if (isset($_POST['btnGeneratePDF'])) {
             }
 
 
-            $('input[name="toggleOptions"]').change(function () {
+            $('input[name="toggleOptions"]').change(function() {
                 if ($('#employeeToggle').is(':checked')) {
                     showEmployeeSummary();
                     hideInventorySummary();
@@ -504,7 +506,7 @@ if (isset($_POST['btnGeneratePDF'])) {
             const marginSelect = $("#margin");
             const orientationSelect = $("#orientation");
 
-            $(document).on("click", "#btnGeneratePDF", function () {
+            $(document).on("click", "#btnGeneratePDF", function() {
 
                 // Hide input fields before PDF generation
                 $("#receivedItemsDIV").find("#inputFields").hide();

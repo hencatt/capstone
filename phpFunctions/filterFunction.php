@@ -1,7 +1,7 @@
 <?php
 require_once "gad_portal.php";
 
-if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
+if (isset($_POST['currentPage'], $_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
     $campus = $_POST['campusFilter'];
     $dept = $_POST['deptFilter'];
     $size = $_POST['sizeFilter'];
@@ -10,6 +10,7 @@ if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $receipt = $_POST['showReceipt'];
     $position = $_POST['currentPosition'];
     $generate = $_POST['whatGenerate'];
+    $location = $_POST['currentPage'];
 
     $search = $_POST['searchQuery'];
 
@@ -24,10 +25,11 @@ if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $noFilters = ($campus === "None" && $dept === "None" && $size === "None" && $gender === "None");
 
     // Dynamically build SELECT fields
-    $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name, ei.id AS emp_id";
+    // $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
+    $sql = "SELECT CONCAT(ei.fname, ' ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
 
     if ($noFilters) {
-        $sql .= ", et.campus, et.email, et.contact_no, et.department";
+        $sql .= ", et.campus, et.contact_no, et.department";
     } else {
         if ($campus !== "None")
             $sql .= ", et.campus";
@@ -173,7 +175,7 @@ if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $
         echo '<th>Signature</th>';
     }
 
-    if ($generate !== "report") {
+    if ($generate !== "report" && $location !== "dashboard") {
         // ==================================
         // ADD EXTRA HEADER HERE
         echo '<th>Actions</th>';
@@ -185,11 +187,13 @@ if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             echo '<tr>';
-            echo '<td>' . htmlspecialchars($row['full_name']) . '</td>';
+            echo '<td class="empName">' . htmlspecialchars($row['full_name']) . '</td>';
+            echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
 
             if ($noFilters) {
                 echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['department']) . '</td>';
+                echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
                 if ($generate === "report" && $position === "Focal Person") {
                     echo '<td></td>';
                 }
@@ -208,7 +212,7 @@ if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $
             }
 
 
-            if ($generate !== "report") {
+            if ($generate !== "report" && $location !== "dashboard") {
                 // ==================================
                 // ADD EXTRA BUTTONS / MORE HERE
                 $idAttr = htmlspecialchars($row['emp_id']);

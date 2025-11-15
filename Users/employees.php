@@ -462,14 +462,13 @@ if ($conn->connect_error) {
                         <input type="text" name="fname" placeholder="First Name" required>
                         <input type="text" name="lname" placeholder="Last Name" required>
                         <input type="email" name="email" placeholder="Email" required>
-                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="hidden" name="username" placeholder="Username" required>
                         <input type="password" name="pass" placeholder="Password" required>
                         <select name="pos" id="position" required>
                         ';
 
             if ($currentPosition === "Director") {
                 echo '
-                            <option value="Director">Director</option>
                             <option value="Technical Assistant">Technical Assistant</option>
                             <option value="Focal Person">Focal Person</option>
                             <option value="Panel">Panel</option>
@@ -542,139 +541,134 @@ if ($conn->connect_error) {
                         </div>
                     </form>'
             ?>
-            <?php
+            <?php if ($currentPosition === "Focal Person"): ?>
 
-            if ($currentPosition === "Focal Person") {
-                echo '
-                    
-                    <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                        aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+                <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                    aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
 
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h2 class="modal-title" id="addEmployeeModalLabel">Add Employee</h2>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" class="form_add_emp" novalidate>
-                                        <!-- Employee Info -->
-                                        <h5>Employee Information</h5>
-                                        <div class="mb-3">
-                                            <label for="fname" class="form-label">First Name</label>
-                                            <input type="text" name="fname" id="fname" class="form-control"
-                                                placeholder="Enter First Name" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="m_initial" class="form-label">Middle Initial</label>
-                                            <input type="text" name="m_initial" id="m_initial" class="form-control"
-                                                placeholder="Enter Middle Initial">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="lname" class="form-label">Last Name</label>
-                                            <input type="text" name="lname" id="lname" class="form-control"
-                                                placeholder="Enter Last Name" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="address" class="form-label">Address</label>
-                                            <input type="text" name="address" id="address" class="form-control"
-                                                placeholder="Enter Address" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="birthday" class="form-label">Date of Birth</label>
-                                            <input type="date" name="birthday" id="birthday" class="form-control"
-                                                pattern="\d{4}-\d{2}-\d{2}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="marital_status" class="form-label">Marital Status</label>
-                                            <select name="marital_status" id="marital_status" class="form-select" required>
-                                                <option value="" disabled selected>Select Marital Status</option>
-                                                <option value="Single">Single</option>
-                                                <option value="Married">Married</option>
-                                                <option value="Widowed">Widowed</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="sex" class="form-label">Sex</label>
-                                            <select name="sex" id="sex" class="form-select" required>
-                                                <option value="" disabled selected>Select Sex</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="gender" class="form-label">Gender</label>
-                                            <select name="gender" id="gender" class="form-select" required>
-                                                <option value="" disabled selected>Select Sex</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="LGBTQIA+">LGBTQIA+</option>
-                                                <option value="Others">Others</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="priority_status" class="form-label">Priority Status</label>
-                                            <select name="priority_status" id="priority_status" class="form-select">
-                                                <option value="" disabled selected>Select Priority Status</option>
-                                                <option value="PWD">PWD</option>
-                                                <option value="Senior Citizen">Senior Citizen</option>
-                                                <option value="None">None</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="size" class="form-label">Shirt size</label>
-                                            <select name="size" id="size" class="form-select">
-                                                <option value="" disabled selected>Select Size</option>
-                                                <option value="S">S</option>
-                                                <option value="M">M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                                <option value="2XL">2XL</option>
-                                                <option value="3XL">3XL</option>
-                                                <option value="4XL">4XL</option>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="addEmployeeModalLabel">Add Employee</h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" class="form_add_emp" novalidate>
+                                    <!-- Employee Info -->
+                                    <h5>Employee Information</h5>
+                                    <div class="mb-3">
+                                        <label for="fname" class="form-label">First Name</label>
+                                        <input type="text" name="fname" id="fname" class="form-control"
+                                            placeholder="Enter First Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="m_initial" class="form-label">Middle Initial</label>
+                                        <input type="text" name="m_initial" id="m_initial" class="form-control"
+                                            placeholder="Enter Middle Initial">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lname" class="form-label">Last Name</label>
+                                        <input type="text" name="lname" id="lname" class="form-control"
+                                            placeholder="Enter Last Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <input type="text" name="address" id="address" class="form-control"
+                                            placeholder="Enter Address" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="birthday" class="form-label">Date of Birth</label>
+                                        <input type="date" name="birthday" id="birthday" class="form-control"
+                                            pattern="\d{4}-\d{2}-\d{2}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="marital_status" class="form-label">Marital Status</label>
+                                        <select name="marital_status" id="marital_status" class="form-select" required>
+                                            <option value="" disabled selected>Select Marital Status</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Widowed">Widowed</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="sex" class="form-label">Sex</label>
+                                        <select name="sex" id="sex" class="form-select" required>
+                                            <option value="" disabled selected>Select Sex</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="gender" class="form-label">Gender</label>
+                                        <select name="gender" id="gender" class="form-select" required>
+                                            <option value="" disabled selected>Select Sex</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="LGBTQIA+">LGBTQIA+</option>
+                                            <option value="Others">Others</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="priority_status" class="form-label">Priority Status</label>
+                                        <select name="priority_status" id="priority_status" class="form-select">
+                                            <option value="" disabled selected>Select Priority Status</option>
+                                            <option value="PWD">PWD</option>
+                                            <option value="Senior Citizen">Senior Citizen</option>
+                                            <option value="None">None</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="size" class="form-label">Shirt size</label>
+                                        <select name="size" id="size" class="form-select">
+                                            <option value="" disabled selected>Select Size</option>
+                                            <option value="S">S</option>
+                                            <option value="M">M</option>
+                                            <option value="L">L</option>
+                                            <option value="XL">XL</option>
+                                            <option value="2XL">2XL</option>
+                                            <option value="3XL">3XL</option>
+                                            <option value="4XL">4XL</option>
 
-                                            </select>
-                                        </div>
+                                        </select>
+                                    </div>
 
-                                        <!-- Employee Table -->
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="contact_no" class="form-label">Contact No</label>
-                                            <input type="text" name="contact_no" id="contact_no" class="form-control"
-                                                placeholder="Enter Contact Number" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="department" class="form-label">Department</label>
-                                            <select name="department" id="department" class="form-select" required>
-                                                <option value="" disabled>Select Department</option>
-                                                <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?></option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="campus" class="form-label">Campus</label>
-                                            <select name="campus" id="campus" class="form-select" required>
-                                                <option value="" disabled>Select Campus</option>
-                                                <option value="<?= $currentCampus ?>" selected><?= $currentCampus ?></option>
-                                            </select>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" name="add_employee" class="btn btn-primary">Add
-                                                Employee</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                    <!-- Employee Table -->
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email"
+                                            required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="contact_no" class="form-label">Contact No</label>
+                                        <input type="text" name="contact_no" id="contact_no" class="form-control"
+                                            placeholder="Enter Contact Number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="department" class="form-label">Department</label>
+                                        <select name="department" id="department" class="form-select" required>
+                                            <option value="" disabled>Select Department</option>
+                                            <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?></option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="campus" class="form-label">Campus</label>
+                                        <select name="campus" id="campus" class="form-select" required>
+                                            <option value="" disabled>Select Campus</option>
+                                            <option value="<?= $currentCampus ?>" selected><?= $currentCampus ?></option>
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" name="add_employee" class="btn btn-primary">Add
+                                            Employee</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </div>    
-                    ';
-            }
+                    </div>
+                </div>
+            <?php endif; ?>
 
-            ?>
         </div>
     </div>
 
@@ -728,7 +722,7 @@ if ($conn->connect_error) {
                                 <label class="form-label">Position</label>
                                 <select class="form-select" id="acc_position" name="acc_position" required>
                                     <option value="" disabled selected>Select Position</option>
-                                    <option value="Director">Director</option>
+                                    <!-- <option value="Director">Director</option> -->
                                     <option value="Technical Assistant">Technical Assistant</option>
                                     <option value="Focal Person">Focal Person</option>
                                     <option value="Panel">Panel</option>
@@ -795,7 +789,7 @@ if ($conn->connect_error) {
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
 
                 setTimeout(() => {
-                    filterFunction("#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+                    filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
 
                 }, 50);
 
@@ -1044,7 +1038,10 @@ if ($conn->connect_error) {
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Modal logic
+
+        /* -------------------------------
+           EMPLOYEE INFO MODAL (your main modal)
+        -------------------------------- */
         const addEmployeeBtn = document.getElementById('addEmployeeBtn');
         const modal = document.getElementById('modal');
         const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
@@ -1070,7 +1067,56 @@ if ($conn->connect_error) {
             }
         });
 
-        // jQuery logic for gender and child options
+
+
+        /* -------------------------------
+           ADD ACCOUNT MODAL (Assign Button)
+        -------------------------------- */
+        const addAccountModal = document.getElementById('add_account_modal');
+
+        document.addEventListener("click", function(e) {
+            if (e.target.classList.contains("assignBtn")) {
+
+                // Open modal
+                addAccountModal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+
+                // Get the row
+                let row = e.target.closest("tr");
+
+                // Extract fields (update class selectors if yours differ)
+                let fullName = row.querySelector(".empName").innerText.trim();
+                let email = row.querySelector(".empEmail").innerText.trim();
+
+                // First/Last name split
+                let parts = fullName.split(" ");
+                let fname = parts[0];
+                let lname = parts.slice(1).join(" ");
+
+                // Autofill modal inputs
+                document.querySelector("input[name='fname']").value = fname;
+                document.querySelector("input[name='lname']").value = lname;
+                document.querySelector("input[name='email']").value = email;
+                document.querySelector("input[name='username']").value = email;
+                document.querySelector("input[name='pass']").value = email;
+
+                console.log("filled")
+            }
+        });
+
+        // Close add-account modal when clicking overlay  
+        addAccountModal.addEventListener("click", function(e) {
+            if (e.target === addAccountModal) {
+                addAccountModal.style.display = "none";
+                document.body.style.overflow = "";
+            }
+        });
+
+
+
+        /* -------------------------------
+           GENDER + CHILD OPTIONS (your jQuery logic)
+        -------------------------------- */
         $(function() {
             const genderSelect = $("#inputGender");
             const otherGender = $("#otherGender");
