@@ -410,11 +410,11 @@ if ($conn->connect_error) {
                                 Add Employee
                             </button>
                         </div>
-                        <div class="col-2">
+                        <!-- <div class="col-2">
                             <button id="add_account" class="btn btn-outline-success">
                                 Add Researcher
                             </button>
-                        </div>
+                        </div> -->
                     </div>
                 <?php
                 endif;
@@ -868,6 +868,23 @@ if ($conn->connect_error) {
         <script>
             console.log('script.js is loaded');
             document.addEventListener('DOMContentLoaded', () => {
+                let pos = <?php echo json_encode($currentPosition); ?>
+
+                console.log(pos);
+
+                if (pos === "Focal Person") {
+                    document.getElementById("position").addEventListener("mousedown", function(e) {
+                        e.preventDefault();
+                    })
+                    document.getElementById("campus").addEventListener("mousedown", function(e) {
+                        e.preventDefault();
+                    })
+                    document.getElementById("department").addEventListener("mousedown", function(e) {
+                        e.preventDefault();
+                    })
+                }
+
+
                 // Add Account Modal
                 const addAccountButton = document.querySelector('#add_account');
                 const addAccountModal = document.querySelector('#add_account_modal');
