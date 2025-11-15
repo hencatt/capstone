@@ -300,7 +300,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                                 <?php
                                 // na fix na dito yung issue ng inventory lumalabas kay director
                                 if ($currentPosition === "Focal Person"): ?>
-                                    <div id="receivedItemsDIV">
+                                    <div id="receivedItemsDIV" style="display: none;">
 
 
                                         <!-- input fields here, same as preview -->
@@ -308,7 +308,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                                         <!-- the generated result -->
                                         <div id="receivedItemPrintTable"></div>
 
-                                    </div> '
+                                    </div> 
                                 <?php endif; ?>
 
 
@@ -362,6 +362,7 @@ if (isset($_POST['btnGeneratePDF'])) {
 
             $("#inventoryReport").hide();
             $("#inventoryTable").hide();
+            $("receivedItemsDIV").hide();
 
             $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function() {
                 generateInventoryFilter(

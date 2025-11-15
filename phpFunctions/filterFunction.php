@@ -370,8 +370,7 @@ JS;
         echo '</table>';
 
         echo '</div>
-    </div>
-    ';
+    </div>';
     }
 
     if ($receipt === "yes") {
