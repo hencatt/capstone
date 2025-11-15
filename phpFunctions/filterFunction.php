@@ -1,7 +1,7 @@
 <?php
 require_once "gad_portal.php";
 
-if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
+if (isset($_POST['searchQuery'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
     $campus = $_POST['campusFilter'];
     $dept = $_POST['deptFilter'];
     $size = $_POST['sizeFilter'];
@@ -10,6 +10,9 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $receipt = $_POST['showReceipt'];
     $position = $_POST['currentPosition'];
     $generate = $_POST['whatGenerate'];
+
+    $search = $_POST['searchQuery'];
+
 
     $con = newCon();
 
@@ -39,6 +42,17 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $sql .= " FROM employee_info ei
           INNER JOIN employee_tbl et ON ei.id = et.id
           WHERE et.status = 'Active'";
+
+    if (!empty($search)) {
+        $search = $con->real_escape_string($search);
+        $sql .= " AND (
+        ei.fname LIKE '%$search%' OR
+        ei.m_initial LIKE '%$search%' OR
+        ei.lname LIKE '%$search%' OR
+        CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) LIKE '%$search%'
+    )";
+    }
+
 
     // Build WHERE conditions for specific filters (not Show All)
     if ($campus !== "None" && $campus !== "Show All") {
@@ -196,7 +210,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
 
             if ($generate !== "report") {
                 // ==================================
-// ADD EXTRA BUTTONS / MORE HERE
+                // ADD EXTRA BUTTONS / MORE HERE
                 $idAttr = htmlspecialchars($row['emp_id']);
                 echo '<td>
                     <button type="button" class="btn btn-outline-primary btn-sm view-btn me-1"
@@ -215,6 +229,11 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
                         data-id="' . $idAttr . '" title="Delete Record">
                         <i class="fas fa-trash"></i> Delete
                     </button>
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm assignBtn">
+                    Assign
+                    </button>
+
                 </td>';
 
 

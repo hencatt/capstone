@@ -116,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setSessionStatus("Error", "Email already exist", "error");
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
-
         } else {
             // Insert the new account
             $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, campus, date_created, is_active) 
@@ -392,7 +391,7 @@ if ($conn->connect_error) {
                                     </label>
                                 </div>
                             </div>
-                            <?php
+                        <?php
                         endif;
                         ?>
                         <div class="col-2">
@@ -417,7 +416,7 @@ if ($conn->connect_error) {
                             </button>
                         </div>
                     </div>
-                    <?php
+                <?php
                 endif;
                 ?>
                 <!-- FiltersHere -->
@@ -429,8 +428,17 @@ if ($conn->connect_error) {
                     <!-- FILTER BUTTONS HERE -->
                 </div>
 
+                <div class="row mt-3">
+                    <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                        <span class="material-symbols-outlined">
+                            search
+                        </span>
+                        <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
+                    </div>
+                </div>
+
                 <!-- TableHere -->
-                <div class="row mt-3 tableOverview">
+                <div class="row mt-2 tableOverview">
                     <div class="col" id="showEmployeeTable">
                         <!-- TABLES HERE -->
                     </div>
@@ -533,7 +541,7 @@ if ($conn->connect_error) {
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'
-                ?>
+            ?>
             <?php
 
             if ($currentPosition === "Focal Person") {
@@ -676,124 +684,124 @@ if ($conn->connect_error) {
 
 
     <!-- Edit Account Modal -->
-<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content shadow-lg rounded-3 border-0">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="editAccountModalLabel">
-          <i class="fas fa-user-edit me-2"></i> Edit Account
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-        <form id="editAccountForm">
-            <div class="modal-body">
-            <input type="hidden" name="acc_id" id="acc_id">
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control" id="acc_username" name="acc_username" required>
+    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded-3 border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editAccountModalLabel">
+                        <i class="fas fa-user-edit me-2"></i> Edit Account
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control" id="acc_password" name="acc_password" placeholder="Leave blank to keep current">
-                </div>
+                <form id="editAccountForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="acc_id" id="acc_id">
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">First Name</label>
-                <input type="text" class="form-control" id="acc_fname" name="acc_fname" required>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" id="acc_username" name="acc_username" required>
+                            </div>
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="acc_lname" name="acc_lname" required>
-                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="acc_password" name="acc_password" placeholder="Leave blank to keep current">
+                            </div>
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" id="acc_email" name="acc_email" required>
-                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="acc_fname" name="acc_fname" required>
+                            </div>
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Position</label>
-                <select class="form-select" id="acc_position" name="acc_position" required>
-                    <option value="" disabled selected>Select Position</option>
-                    <option value="Director">Director</option>
-                    <option value="Technical Assistant">Technical Assistant</option>
-                    <option value="Focal Person">Focal Person</option>
-                    <option value="Panel">Panel</option>
-                    <option value="RET Chair">RET Chair</option>
-                </select>
-                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="acc_lname" name="acc_lname" required>
+                            </div>
 
-                <div class="col-md-6 mb-3">
-                <label class="form-label">Department</label>
-                <select class="form-select" id="acc_department" name="acc_department" required>
-                    <option value="" disabled selected>Select Department</option>
-                    <option value="CPADM">CPADM</option>
-                    <option value="CMBT">CMBT - BA, HM</option>
-                    <option value="CoArch">CoArch</option>
-                    <option value="CoEd">CoEd</option>
-                    <option value="Crim">Crim</option>
-                    <option value="COE">COE</option>
-                    <option value="CICT">CICT</option>
-                    <option value="IPE">IPE</option>
-                    <option value="LHS">LHS</option>
-                    <option value="CIT">CIT</option>
-                    <option value="CAS">CAS</option>
-                    <option value="IOLL">IOLL</option>
-                    <option value="CON">CON</option>
-                    <option value="GS">GS</option>
-                </select>
-                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="acc_email" name="acc_email" required>
+                            </div>
 
-                <div class="col-md-12 mb-3">
-                <label class="form-label">Campus</label>
-                <select class="form-select" id="acc_campus" name="acc_campus" required>
-                    <option value="" disabled selected>Select Campus</option>
-                    <option value="Sumacab">Sumacab</option>
-                    <option value="GT">Gen. Tinio</option>
-                    <option value="San Isidro">San Isidro</option>
-                    <option value="Gabaldon">Gabaldon</option>
-                    <option value="Atate">Atate</option>
-                    <option value="Fort Magsaysay">Fort Magsaysay</option>
-                </select>
-                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Position</label>
+                                <select class="form-select" id="acc_position" name="acc_position" required>
+                                    <option value="" disabled selected>Select Position</option>
+                                    <option value="Director">Director</option>
+                                    <option value="Technical Assistant">Technical Assistant</option>
+                                    <option value="Focal Person">Focal Person</option>
+                                    <option value="Panel">Panel</option>
+                                    <option value="RET Chair">RET Chair</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Department</label>
+                                <select class="form-select" id="acc_department" name="acc_department" required>
+                                    <option value="" disabled selected>Select Department</option>
+                                    <option value="CPADM">CPADM</option>
+                                    <option value="CMBT">CMBT - BA, HM</option>
+                                    <option value="CoArch">CoArch</option>
+                                    <option value="CoEd">CoEd</option>
+                                    <option value="Crim">Crim</option>
+                                    <option value="COE">COE</option>
+                                    <option value="CICT">CICT</option>
+                                    <option value="IPE">IPE</option>
+                                    <option value="LHS">LHS</option>
+                                    <option value="CIT">CIT</option>
+                                    <option value="CAS">CAS</option>
+                                    <option value="IOLL">IOLL</option>
+                                    <option value="CON">CON</option>
+                                    <option value="GS">GS</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Campus</label>
+                                <select class="form-select" id="acc_campus" name="acc_campus" required>
+                                    <option value="" disabled selected>Select Campus</option>
+                                    <option value="Sumacab">Sumacab</option>
+                                    <option value="GT">Gen. Tinio</option>
+                                    <option value="San Isidro">San Isidro</option>
+                                    <option value="Gabaldon">Gabaldon</option>
+                                    <option value="Atate">Atate</option>
+                                    <option value="Fort Magsaysay">Fort Magsaysay</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
-            </div>
-
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-1"></i> Save Changes
-            </button>
-            </div>
-        </form>
         </div>
     </div>
-</div>
 
     <?php include('../phpFunctions/alerts.php'); ?>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
             // Load filters, table, buttons first
-            $('#filters').load("./reusableHTML/filters.php", function () {
+            $('#filters').load("./reusableHTML/filters.php", function() {
                 resetFilterFunction(position);
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
 
                 setTimeout(() => {
-                    filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+                    filterFunction("#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
 
                 }, 50);
 
-                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
+                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function() {
 
-                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
+                    $('#filterButton').load("./reusableHTML/filtersButton.php", function() {
                         // Now everything exists → safe to run
 
                     });
@@ -803,7 +811,7 @@ if ($conn->connect_error) {
     </script>
 
     <script>
-        window.addEventListener("pageshow", function (event) {
+        window.addEventListener("pageshow", function(event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
@@ -856,7 +864,7 @@ if ($conn->connect_error) {
             }
         });
     </script>
-    
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -911,12 +919,12 @@ if ($conn->connect_error) {
 
                         if (confirm('Are you sure you want to deactivate this user?')) {
                             fetch('../deactivate_user.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: `id=${userId}`,
-                            })
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: `id=${userId}`,
+                                })
                                 .then(response => response.text())
                                 .then(data => {
                                     alert(data);
@@ -982,52 +990,52 @@ if ($conn->connect_error) {
             });
         </script>
 
-<script>
-$(document).ready(function () {
-    const position = <?= json_encode($currentPosition) ?>;
-    const campus = <?= json_encode($currentCampus) ?>;
-    const dept = <?= json_encode($currentDepartment) ?>;
+        <script>
+            $(document).ready(function() {
+                const position = <?= json_encode($currentPosition) ?>;
+                const campus = <?= json_encode($currentCampus) ?>;
+                const dept = <?= json_encode($currentDepartment) ?>;
 
-    function initializeTable(selector) {
-        // Destroy existing DataTable if already initialized
-        if ($.fn.DataTable.isDataTable(selector)) {
-            $(selector).DataTable().destroy();
-        }
+                function initializeTable(selector) {
+                    // Destroy existing DataTable if already initialized
+                    if ($.fn.DataTable.isDataTable(selector)) {
+                        $(selector).DataTable().destroy();
+                    }
 
-        // Initialize again
-        setTimeout(() => {
-            $(selector).DataTable({
-                responsive: true,
-                autoWidth: false,
-                pageLength: 10
+                    // Initialize again
+                    setTimeout(() => {
+                        $(selector).DataTable({
+                            responsive: true,
+                            autoWidth: false,
+                            pageLength: 10
+                        });
+                    }, 200);
+                }
+
+                function loadEmployeeTable() {
+                    $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function() {
+                        initializeTable('#employee_table');
+                    });
+                }
+
+                function loadAccountsTable() {
+                    $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function() {
+                        initializeTable('#accounts_table');
+                    });
+                }
+
+                // Default: load employee table on page load
+                loadEmployeeTable();
+
+                $("input[name='toggleOptions']").change(function() {
+                    if ($("#employee_toggle").is(":checked")) {
+                        loadEmployeeTable();
+                    } else if ($("#account_toggle").is(":checked")) {
+                        loadAccountsTable();
+                    }
+                });
             });
-        }, 200);
-    }
-
-    function loadEmployeeTable() {
-        $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
-            initializeTable('#employee_table');
-        });
-    }
-
-    function loadAccountsTable() {
-        $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function () {
-            initializeTable('#accounts_table');
-        });
-    }
-
-    // Default: load employee table on page load
-    loadEmployeeTable();
-
-    $("input[name='toggleOptions']").change(function () {
-        if ($("#employee_toggle").is(":checked")) {
-            loadEmployeeTable();
-        } else if ($("#account_toggle").is(":checked")) {
-            loadAccountsTable();
-        }
-    });
-});
-</script>
+        </script>
 
 
 
@@ -1035,27 +1043,27 @@ $(document).ready(function () {
 
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Modal logic
         const addEmployeeBtn = document.getElementById('addEmployeeBtn');
         const modal = document.getElementById('modal');
         const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
         if (addEmployeeBtn && modal) {
-            addEmployeeBtn.addEventListener('click', function () {
+            addEmployeeBtn.addEventListener('click', function() {
                 modal.classList.add('open');
                 document.body.style.overflow = 'hidden';
             });
         }
 
-        closeBtns.forEach(function (btn) {
-            btn.addEventListener('click', function () {
+        closeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
             });
         });
 
-        modal.addEventListener('click', function (e) {
+        modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
@@ -1063,12 +1071,12 @@ $(document).ready(function () {
         });
 
         // jQuery logic for gender and child options
-        $(function () {
+        $(function() {
             const genderSelect = $("#inputGender");
             const otherGender = $("#otherGender");
             otherGender.hide();
 
-            genderSelect.on("change", function () {
+            genderSelect.on("change", function() {
                 if ($(this).val() === "LGBTQIA+") {
                     otherGender.show();
                 } else {
@@ -1091,7 +1099,7 @@ $(document).ready(function () {
             }
 
             toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function () {
+            $('input[name="inputChildren"]').on('change', function() {
                 toggleChildOptions();
             });
         });
@@ -1102,44 +1110,46 @@ $(document).ready(function () {
 <!-- Try lang -->
 <script>
     $(document).ready(function() {
-    // 🔹 Open Edit Account Modal
-    $(document).on('click', '.editAccountBtn', function() {
-        const id = $(this).data('id');
+        // 🔹 Open Edit Account Modal
+        $(document).on('click', '.editAccountBtn', function() {
+            const id = $(this).data('id');
 
-        $.post('../phpFunctions/getAccountDetails.php', { id }, function(resp) {
-            if (!resp || resp.error) {
-                alert(resp?.error || 'Failed to fetch account details.');
-                return;
-            }
+            $.post('../phpFunctions/getAccountDetails.php', {
+                id
+            }, function(resp) {
+                if (!resp || resp.error) {
+                    alert(resp?.error || 'Failed to fetch account details.');
+                    return;
+                }
 
-            $('#account_id').val(resp.id);
-            $('#edit_fname').val(resp.fname);
-            $('#edit_lname').val(resp.lname);
-            $('#edit_username').val(resp.username);
-            $('#edit_position').val(resp.position);
-            $('#edit_department').val(resp.department);
-            $('#edit_campus').val(resp.campus);
+                $('#account_id').val(resp.id);
+                $('#edit_fname').val(resp.fname);
+                $('#edit_lname').val(resp.lname);
+                $('#edit_username').val(resp.username);
+                $('#edit_position').val(resp.position);
+                $('#edit_department').val(resp.department);
+                $('#edit_campus').val(resp.campus);
 
-            $('#editAccountModal').modal('show');
-        }, 'json').fail(() => alert('Request failed while fetching account.'));
+                $('#editAccountModal').modal('show');
+            }, 'json').fail(() => alert('Request failed while fetching account.'));
+        });
+
+        // 🔹 Save Account Update
+        $('#editAccountForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.post('../phpFunctions/updateAccount.php', formData, function(resp) {
+                if (resp.success) {
+                    alert(resp.message);
+                    $('#editAccountModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert(resp.error || 'Update failed.');
+                }
+            }, 'json').fail(() => alert('Request failed while updating account.'));
+        });
     });
-
-    // 🔹 Save Account Update
-    $('#editAccountForm').on('submit', function(e) {
-        e.preventDefault();
-        const formData = $(this).serialize();
-
-        $.post('../phpFunctions/updateAccount.php', formData, function(resp) {
-            if (resp.success) {
-                alert(resp.message);
-                $('#editAccountModal').modal('hide');
-                location.reload();
-            } else {
-                alert(resp.error || 'Update failed.');
-            }
-        }, 'json').fail(() => alert('Request failed while updating account.'));
-    });
-});
 </script>
 
 </html>

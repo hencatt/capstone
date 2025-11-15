@@ -1,5 +1,6 @@
 // ALL PARAMS ARE ID NG MGA NASA FORM
 function filterFunction(
+  searchBar,
   checkbox,
   campus,
   dept,
@@ -10,55 +11,46 @@ function filterFunction(
   summary,
   generateWhat
 ) {
-  console.log("loaded");
-  var CBshowSummary = $(checkbox);
+  console.log("Filter system loaded.");
+
+  const hasSearch = searchBar !== null;
+  const CBshowSummary = $(checkbox);
 
   function filter() {
-    var campusFilter = $(campus).val();
-    var deptFilter = $(dept).val();
-    var sizeFilter = $(size).val();
-    var genderFilter = $(gender).val();
-    var showRec = summary;
-    var generate = generateWhat;
-    var pos = position;
-    var showSum = CBshowSummary.is(":checked") ? "yes" : "no";
-
-    console.log(
-      "currently posting: " +
-      campusFilter +
-      ", " +
-      deptFilter +
-      ", " +
-      sizeFilter
-    );
-    console.log("show summary?: " + showSum);
-
     $.ajax({
       url: "../phpFunctions/filterFunction.php",
       method: "POST",
       data: {
-        campusFilter: campusFilter,
-        deptFilter: deptFilter,
-        sizeFilter: sizeFilter,
-        genderFilter: genderFilter,
-        showSummary: showSum,
-        showReceipt: showRec,
-        whatGenerate: generate,
-        currentPosition: pos,
+        campusFilter: $(campus).val(),
+        deptFilter: $(dept).val(),
+        sizeFilter: $(size).val(),
+        genderFilter: $(gender).val(),
+        searchQuery: hasSearch ? $(searchBar).val() : "",
+        showSummary: CBshowSummary.is(":checked") ? "yes" : "no",
+        showReceipt: summary,
+        whatGenerate: generateWhat,
+        currentPosition: position,
       },
       success: function (data) {
         $(tableId).parent().html(data);
       },
-
     });
   }
+
+  // Attach listeners ONLY ONCE (outside filter)
   $(campus + ", " + dept + ", " + size + ", " + gender + ", " + checkbox).on(
     "change",
     filter
   );
 
+  if (hasSearch) {
+    $(searchBar).on("keyup", filter);
+  }
+
+  // Initial load
   filter();
 }
+
 
 function restrictDeptAndCampus(position, dept, campus, deptId, campusId) {
   console.log(position);
@@ -216,5 +208,5 @@ function generateReportFilter(
   $(filterCampus + ", " + filterDepartment + ", " + filterSize + ", " + filterGender + ", " + checkBoxSum + ", " + checkboxReceipt)
     .on("change", updateResult);
 
-    updateResult();
+  updateResult();
 }
