@@ -297,14 +297,19 @@ if (isset($_POST['btnGeneratePDF'])) {
                                     </table>
                                 </div>
 
+                                <?php
+                                // na fix na dito yung issue ng inventory lumalabas kay director
+                                if ($currentPosition === "Focal Person"): ?> 
                                 <div id="receivedItemsDIV">
+                                    
 
                                     <!-- input fields here, same as preview -->
 
                                     <!-- the generated result -->
                                     <div id="receivedItemPrintTable"></div>
-
-                                </div>
+                                    
+                                </div> '
+                                <?php endif; ?>
 
 
                             </div>

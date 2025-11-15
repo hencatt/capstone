@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Default: show only Proposal
+    // Default: show only Proposalt
     filterTable("Proposal");
 
     toggleButtons.forEach(btn => {
