@@ -382,7 +382,8 @@ if ($conn->connect_error) {
                             <div class="col">
                                 <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off" checked>
+                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
+                                            checked>
                                         Employees
                                     </label>
                                     <label class="btn btn-secondary">
@@ -391,7 +392,7 @@ if ($conn->connect_error) {
                                     </label>
                                 </div>
                             </div>
-                        <?php
+                            <?php
                         endif;
                         ?>
                         <div class="col-2">
@@ -416,7 +417,7 @@ if ($conn->connect_error) {
                             </button>
                         </div> -->
                     </div>
-                <?php
+                    <?php
                 endif;
                 ?>
                 <!-- FiltersHere -->
@@ -453,7 +454,17 @@ if ($conn->connect_error) {
     <div class="modals" id="add_account_modal" style="display: none;">
         <div class="modal_add_account">
             <div class="modal_title">
-                <h2>Add Account</h2>
+                <?php
+                if ($currentPosition !== "Focal Person"):
+                    ?>
+                    <h2>Add Account</h2>
+                    <?php
+                else:
+                    ?>
+                    <h2>Add Researcher</h2>
+                    <?php
+                endif;
+                ?>
             </div>
             <!-- position -->
             <?php
@@ -463,10 +474,16 @@ if ($conn->connect_error) {
                         <input type="text" name="lname" placeholder="Last Name" required>
                         <input type="email" name="email" placeholder="Email" required>
                         <input type="hidden" name="username" placeholder="Username" required>
-                        <input type="password" name="pass" placeholder="Password" required>
+                        <input type="password" name="pass" placeholder="Password" required>';
+            if ($currentPosition !== "Focal Person") {
+
+                echo '
                         <select name="pos" id="position" required>
                         ';
-
+            } else {
+                echo '
+                            <select name="pos" id="position" required style="display: none">';
+            }
             if ($currentPosition === "Director") {
                 echo '
                             <option value="Technical Assistant">Technical Assistant</option>
@@ -488,9 +505,15 @@ if ($conn->connect_error) {
             }
 
             echo '
-                        <!-- department -->
-                        <select name="dept" id="department" required>';
+                        <!-- department -->';
 
+            if ($currentPosition !== "Focal Person") {
+                echo '
+                        <select name="dept" id="department" required>';
+            } else {
+                echo '
+                        <select name="dept" id="department" required style="display: none;">';
+            }
 
             if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
                 echo '<option value="" disabled selected>Select Department</option>
@@ -514,10 +537,15 @@ if ($conn->connect_error) {
                 ';
             }
 
-            echo '
+            if ($currentPosition !== "Focal Person") {
+                echo '
                         </select>
                         <select name="campus" id="campus" required>';
-
+            } else {
+                echo '
+                        </select>
+                        <select name="campus" id="campus" required style="display:none;">';
+            }
             if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
                 echo '
                             <option value="" disabled selected>Select Campus</option>
@@ -540,7 +568,7 @@ if ($conn->connect_error) {
                             <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                         </div>
                     </form>'
-            ?>
+                ?>
             <?php if ($currentPosition === "Focal Person"): ?>
 
                 <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -635,8 +663,8 @@ if ($conn->connect_error) {
                                     <!-- Employee Table -->
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email"
-                                            required>
+                                        <input type="email" name="email" id="email" class="form-control"
+                                            placeholder="Enter Email" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="contact_no" class="form-label">Contact No</label>
@@ -647,7 +675,8 @@ if ($conn->connect_error) {
                                         <label for="department" class="form-label">Department</label>
                                         <select name="department" id="department" class="form-select" required>
                                             <option value="" disabled>Select Department</option>
-                                            <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?></option>
+                                            <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?>
+                                            </option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -658,7 +687,8 @@ if ($conn->connect_error) {
                                         </select>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
                                         <button type="submit" name="add_employee" class="btn btn-primary">Add
                                             Employee</button>
                                     </div>
@@ -678,14 +708,16 @@ if ($conn->connect_error) {
 
 
     <!-- Edit Account Modal -->
-    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-3 border-0">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="editAccountModalLabel">
                         <i class="fas fa-user-edit me-2"></i> Edit Account
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <form id="editAccountForm">
@@ -700,7 +732,8 @@ if ($conn->connect_error) {
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Password</label>
-                                <input type="password" class="form-control" id="acc_password" name="acc_password" placeholder="Leave blank to keep current">
+                                <input type="password" class="form-control" id="acc_password" name="acc_password"
+                                    placeholder="Leave blank to keep current">
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -779,12 +812,12 @@ if ($conn->connect_error) {
 
     <?php include('../phpFunctions/alerts.php'); ?>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
             // Load filters, table, buttons first
-            $('#filters').load("./reusableHTML/filters.php", function() {
+            $('#filters').load("./reusableHTML/filters.php", function () {
                 resetFilterFunction(position);
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
 
@@ -793,9 +826,9 @@ if ($conn->connect_error) {
 
                 }, 50);
 
-                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function() {
+                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
 
-                    $('#filterButton').load("./reusableHTML/filtersButton.php", function() {
+                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
                         // Now everything exists → safe to run
 
                     });
@@ -805,7 +838,7 @@ if ($conn->connect_error) {
     </script>
 
     <script>
-        window.addEventListener("pageshow", function(event) {
+        window.addEventListener("pageshow", function (event) {
             if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
                 window.location.reload();
             }
@@ -873,13 +906,13 @@ if ($conn->connect_error) {
                 console.log(pos);
 
                 if (pos === "Focal Person") {
-                    document.getElementById("position").addEventListener("mousedown", function(e) {
+                    document.getElementById("position").addEventListener("mousedown", function (e) {
                         e.preventDefault();
                     })
-                    document.getElementById("campus").addEventListener("mousedown", function(e) {
+                    document.getElementById("campus").addEventListener("mousedown", function (e) {
                         e.preventDefault();
                     })
-                    document.getElementById("department").addEventListener("mousedown", function(e) {
+                    document.getElementById("department").addEventListener("mousedown", function (e) {
                         e.preventDefault();
                     })
                 }
@@ -930,12 +963,12 @@ if ($conn->connect_error) {
 
                         if (confirm('Are you sure you want to deactivate this user?')) {
                             fetch('../deactivate_user.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                    },
-                                    body: `id=${userId}`,
-                                })
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: `id=${userId}`,
+                            })
                                 .then(response => response.text())
                                 .then(data => {
                                     alert(data);
@@ -1002,7 +1035,7 @@ if ($conn->connect_error) {
         </script>
 
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 const position = <?= json_encode($currentPosition) ?>;
                 const campus = <?= json_encode($currentCampus) ?>;
                 const dept = <?= json_encode($currentDepartment) ?>;
@@ -1024,13 +1057,13 @@ if ($conn->connect_error) {
                 }
 
                 function loadEmployeeTable() {
-                    $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function() {
+                    $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
                         initializeTable('#employee_table');
                     });
                 }
 
                 function loadAccountsTable() {
-                    $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function() {
+                    $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function () {
                         initializeTable('#accounts_table');
                     });
                 }
@@ -1038,7 +1071,7 @@ if ($conn->connect_error) {
                 // Default: load employee table on page load
                 loadEmployeeTable();
 
-                $("input[name='toggleOptions']").change(function() {
+                $("input[name='toggleOptions']").change(function () {
                     if ($("#employee_toggle").is(":checked")) {
                         loadEmployeeTable();
                     } else if ($("#account_toggle").is(":checked")) {
@@ -1054,7 +1087,7 @@ if ($conn->connect_error) {
 
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         /* -------------------------------
            EMPLOYEE INFO MODAL (your main modal)
@@ -1064,20 +1097,20 @@ if ($conn->connect_error) {
         const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
         if (addEmployeeBtn && modal) {
-            addEmployeeBtn.addEventListener('click', function() {
+            addEmployeeBtn.addEventListener('click', function () {
                 modal.classList.add('open');
                 document.body.style.overflow = 'hidden';
             });
         }
 
-        closeBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        closeBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
             });
         });
 
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 modal.classList.remove('open');
                 document.body.style.overflow = '';
@@ -1091,7 +1124,7 @@ if ($conn->connect_error) {
         -------------------------------- */
         const addAccountModal = document.getElementById('add_account_modal');
 
-        document.addEventListener("click", function(e) {
+        document.addEventListener("click", function (e) {
             if (e.target.classList.contains("assignBtn")) {
 
                 // Open modal
@@ -1122,7 +1155,7 @@ if ($conn->connect_error) {
         });
 
         // Close add-account modal when clicking overlay  
-        addAccountModal.addEventListener("click", function(e) {
+        addAccountModal.addEventListener("click", function (e) {
             if (e.target === addAccountModal) {
                 addAccountModal.style.display = "none";
                 document.body.style.overflow = "";
@@ -1134,12 +1167,12 @@ if ($conn->connect_error) {
         /* -------------------------------
            GENDER + CHILD OPTIONS (your jQuery logic)
         -------------------------------- */
-        $(function() {
+        $(function () {
             const genderSelect = $("#inputGender");
             const otherGender = $("#otherGender");
             otherGender.hide();
 
-            genderSelect.on("change", function() {
+            genderSelect.on("change", function () {
                 if ($(this).val() === "LGBTQIA+") {
                     otherGender.show();
                 } else {
@@ -1162,7 +1195,7 @@ if ($conn->connect_error) {
             }
 
             toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function() {
+            $('input[name="inputChildren"]').on('change', function () {
                 toggleChildOptions();
             });
         });
@@ -1172,14 +1205,14 @@ if ($conn->connect_error) {
 
 <!-- Try lang -->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // 🔹 Open Edit Account Modal
-        $(document).on('click', '.editAccountBtn', function() {
+        $(document).on('click', '.editAccountBtn', function () {
             const id = $(this).data('id');
 
             $.post('../phpFunctions/getAccountDetails.php', {
                 id
-            }, function(resp) {
+            }, function (resp) {
                 if (!resp || resp.error) {
                     alert(resp?.error || 'Failed to fetch account details.');
                     return;
@@ -1198,11 +1231,11 @@ if ($conn->connect_error) {
         });
 
         // 🔹 Save Account Update
-        $('#editAccountForm').on('submit', function(e) {
+        $('#editAccountForm').on('submit', function (e) {
             e.preventDefault();
             const formData = $(this).serialize();
 
-            $.post('../phpFunctions/updateAccount.php', formData, function(resp) {
+            $.post('../phpFunctions/updateAccount.php', formData, function (resp) {
                 if (resp.success) {
                     alert(resp.message);
                     $('#editAccountModal').modal('hide');
