@@ -3,7 +3,7 @@ require_once 'includes.php';
 
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("RET Chair");
 // Returns to login if not RET Chair
 
@@ -26,7 +26,7 @@ $currentCampus = $user['campus'];
 </head>
 
 <body>
-    <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
+  
 
     <div class="row everything">
         <div class="col sidebar" id="sidebar">

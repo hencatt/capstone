@@ -14,22 +14,10 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-
-
-// TAGA LOCATE KUNG ANONG ROLE MAPUPUNTA/DASHBOARD
-if ($currentPosition === "Technical Assistant") {
-    $dashboard = "TA.php";
-    echo " <script>console.log('Going TA')</script>";
-} else if ($currentPosition === "Focal Person") {
-    $dashboard = "focalPerson.php";
-} else if ($currentPosition === "Director") {
-    $dashboard = "director.php";
-}
-
 // UPDATE BUTTON FUNCTION
 if (isset($_POST["saveBtn"])) {
-    $newFn = $_POST["inputFn"];
-    $newLn = $_POST["inputLn"];
+    // $newFn = $_POST["inputFn"];
+    // $newLn = $_POST["inputLn"];
     $newEmail = $_POST["inputEmail"];
     $newUsername = $_POST["inputUsername"];
     $oldPassword = $_POST["inputOldPassword"];
@@ -44,16 +32,16 @@ if (isset($_POST["saveBtn"])) {
     $params = [];
 
     // Optional fields
-    if (!empty($newFn)) {
-        $fields[] = "fname = ?";
-        $types .= "s";
-        $params[] = $newFn;
-    }
-    if (!empty($newLn)) {
-        $fields[] = "lname = ?";
-        $types .= "s";
-        $params[] = $newLn;
-    }
+    // if (!empty($newFn)) {
+    //     $fields[] = "fname = ?";
+    //     $types .= "s";
+    //     $params[] = $newFn;
+    // }
+    // if (!empty($newLn)) {
+    //     $fields[] = "lname = ?";
+    //     $types .= "s";
+    //     $params[] = $newLn;
+    // }
     if (!empty($newEmail)) {
         $fields[] = "email = ?";
         $types .= "s";
@@ -83,12 +71,12 @@ if (isset($_POST["saveBtn"])) {
                     $types .= "s";
                     $params[] = $newHashedPassword;
                 } else {
-                    echo "<script>alert('Incorrect old password');</script>";
+                    alertError("Error", "Incorrect password");
                 }
             }
             $stmt->close();
         } else {
-            echo "<script>alert('New passwords do not match');</script>";
+            alertError("Confirm Password", "Password is not sa same");
         }
     }
 
@@ -103,17 +91,22 @@ if (isset($_POST["saveBtn"])) {
 
         if ($stmt->execute()) {
             insertLog($currentUser, "Profile Updated", date('Y-m-d H:i:s'));
-            echo '<script>alert("Update successful")</script>';
+            alertSuccess("Updated", "Account updated successfully");
         } else {
-            echo '<script>alert("Update failed")</script>';
+            alertError("Error", "Updated Failed");
         }
 
         $stmt->close();
     } else {
-        echo '<script>alert("No data to update")</script>';
+        alertError("Failed", "No data to update");
     }
 
     $con->close();
+
+    // sleep(2);
+
+    // header("Location: ../index.php");
+
 }
 
 
@@ -127,7 +120,7 @@ if (isset($_POST["saveBtn"])) {
 <head>
     <?= headerLinks("Modify Account") ?>
 </head>
-<?php addDelay("account", $currentUser, $currentPosition) ?>
+
 
 <!-- Left Sidebar -->
 <div class="row everything">
@@ -147,19 +140,29 @@ if (isset($_POST["saveBtn"])) {
                     <!-- FORM ROW -->
                     <form method="POST" class="form-inline">
                         <div class="form-group row">
-                            <h5>User's Information</h5>
-                            <div class="row">
+                            <div class="col">
+                                <h5>Account Information</h5>
+                            </div>
+                            <div class="col d-flex justify-content-end gap-3">
+                                <button type="button" name="personalInfoButton" id="personalInfoButton"
+                                    class="btn btn-outline-primary">Edit Personal Info</button>
+                                <button type="button" name="editBtn" id="editBtn" class="btn btn-outline-secondary">Edit
+                                </button>
+                            </div>
+
+                            <!-- <div class="row">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputFn" class="col-form-label col-sm-3">First Name:</label>
-                                    <input type="text" name="inputFn" id="inputFn" disabled placeholder="<?= $currentFname ?>"
-                                        class="form-control">
+                                    <input type="text" name="inputFn" id="inputFn" disabled
+                                        placeholder="<?= $currentFname ?>" class="form-control">
                                 </div>
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
                                     <label for="inputLn" class="col-form-label col-sm-3">Last Name:</label>
-                                    <input type="text" name="inputLn" id="inputLn" disabled placeholder="<?= $currentLname ?>"
-                                        class="form-control">
+                                    <input type="text" name="inputLn" id="inputLn" disabled
+                                        placeholder="<?= $currentLname ?>" class="form-control">
                                 </div>
-                            </div>
+                            </div> -->
+
                             <div class="row mt-2">
                                 <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
                                     <label for="inputUsername" class="col-form-label col-sm-3">Username:</label>
@@ -172,31 +175,24 @@ if (isset($_POST["saveBtn"])) {
                                         placeholder="<?= $currentEmail ?>" class="form-control">
                                 </div>
                             </div>
-                            <div class="row mt-3">
-                                <div class="col d-flex align-items-center justify-content-between">
-                                    <button type="button" name="personalInfoButton" id="personalInfoButton" class="btn btn-outline-primary">Personal Info</button>
-                                    <button type="button" name="editBtn" id="editBtn" class="btn btn-outline-secondary">Edit
-                                        <span class="material-symbols-outlined">
-                                            edit
-                                        </span></button>
-                                </div>
-                            </div>
                             <!-- <div class="row mt-5" style="background-color: black; height:2px; width:100%">
                             </div> -->
-                            <div class="row mt-lg-5">
+                            <div class="row mt-5">
                                 <h5>Change Password</h5>
                             </div>
                             <div class="row mt-2">
                                 <div class="row">
                                     <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
-                                        <label for="inputOldPassword" class="col-sm-3 col-form-control">Old Password:</label>
+                                        <label for="inputOldPassword" class="col-sm-3 col-form-control">Old
+                                            Password:</label>
                                         <input type="password" name="inputOldPassword" id="inputOldPassword"
                                             placeholder="Enter Old Password" class="form-control" disabled>
                                     </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
-                                        <label for="inputNewPassword" class="col-form-label col-sm-3">New Password:</label>
+                                        <label for="inputNewPassword" class="col-form-label col-sm-3">New
+                                            Password:</label>
                                         <input type="password" name="inputNewPassword" id="inputNewPassword"
                                             placeholder="Enter New Password" class="form-control" disabled>
                                     </div>
@@ -228,9 +224,7 @@ if (isset($_POST["saveBtn"])) {
                         <div class="col text-center">
                             <img src="
                             https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F005%2F544%2F718%2Foriginal%2Fprofile-icon-design-free-vector.jpg&f=1&nofb=1&ipt=a3a03e1e1c2a147e5b78c95b25acf2b7a4edf938f68908367342f6caf5625631
-                            "
-                                alt="Profile Photo"
-                                style="
+                            " alt="Profile Photo" style="
                             width :150px;
                             height :150px;
                             border-radius :50%;
@@ -238,7 +232,7 @@ if (isset($_POST["saveBtn"])) {
                             ">
                         </div>
                     </div>
-                    <div class="row mt-lg-3 d-flex align-items-center text-center">
+                    <div class="row mt-3 d-flex align-items-center text-center">
                         <div class="col" style="text-decoration: underline;">Edit</div>
                     </div>
                 </div>
@@ -247,31 +241,108 @@ if (isset($_POST["saveBtn"])) {
     </div>
 </div>
 
-</body>
-<!-- PANG TOGGLE NA BUTTON EDIT AND CANCEL -->
+<!-- MODAL -->
+<?php require('./reusableHTML/personalInfoModal.php') ?>
+<?php include('../phpFunctions/alerts.php'); ?>
+
 <script>
-    $('#editBtn').click(function() {
-        const isDisabled = $('#inputFn').prop('disabled');
+    $(document).ready(function () {
+        // $('#personalModal').load("./reusableHTML/personalInfoModal.php", function () {
 
-        // Toggle disabled state for inputs
-        $('#saveBtn, #inputFn, #inputLn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
+        const personalBtn = document.getElementById("personalInfoButton");
+        const modal = document.getElementById("modal");
+        const closeBtn = modal.querySelector(".close-btn");
+        const cancelBtn = document.getElementById("cancelInfo");
 
-        // Optional: Clear values when switching back to disabled (like a reset)
-        if (!isDisabled) {
-            $('#inputFn, #inputLn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
+        const childrenNum = $("#inputChildrenNum");
+        const childConcern = $("#inputConcern");
+        const childrenNumCol = $("#childrenNumCol");
+        const childConcernCol = $("#childConcernCol");
+
+
+        personalBtn.addEventListener("click", () => {
+            console.log("open");
+            modal.classList.add("open");
+        });
+
+        closeBtn.addEventListener("click", () => {
+            console.log("close");
+            modal.classList.remove("open");
+        });
+
+        modal.addEventListener("click", e => {
+            if (e.target === modal) modal.classList.remove("open");
+        });
+
+        cancelBtn.addEventListener("click", e => {
+            modal.classList.remove("open");
+        })
+
+        // Gender toggle
+        const genderSelect = $("#inputGender");
+        const otherGender = $("#otherGender");
+        otherGender.hide();
+
+        function toggleChildOptions() {
+            const checkedChild = $('input[name="inputChildren"]:checked').val();
+            if (checkedChild === "No") {
+                childrenNum.val("");
+                childrenNumCol.hide();
+                childConcern.val("");
+                childConcernCol.hide();
+            } else {
+                childrenNumCol.show();
+                childConcernCol.show();
+            }
         }
 
-        // Change button text to "Cancel" or "Edit"
-        $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');
-        $('#editBtn').prop(isDisabled ? $('#saveBtn').show() : $('#saveBtn').hide());
+
+        genderSelect.on("change", function () {
+            if ($(this).val() === "LGBTQIA+") {
+                otherGender.show();
+            } else {
+                otherGender.val("")
+                otherGender.hide();
+            }
+        });
+
+        toggleChildOptions();
+        $('input[name="inputChildren"]').on('change', function () {
+            toggleChildOptions();
+        })
+        // });
     });
 </script>
-<!-- SCRAP KO MUNA TO PANG RELOAD SANA KASI HINDI NAG A-UPDATE YUNG PLACEHOLDERS SA FORM -->
+<!-- PANG TOGGLE NA BUTTON EDIT AND CANCEL -->
 <script>
-    $('#saveBtn').click(function() {
-        location.reload();
+    $(document).ready(function () {
+        $('#editBtn').click(function () {
+            const isDisabled = $('#inputEmail').prop('disabled');
+
+            // Toggle disabled state for inputs
+            $('#saveBtn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').prop('disabled', !isDisabled);
+
+            // Optional: Clear values when switching back to disabled (like a reset)
+            if (!isDisabled) {
+                $('#inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
+            }
+
+            // Change button text to "Cancel" or "Edit"
+            $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');
+            $('#editBtn').prop(isDisabled ? $('#saveBtn').show() : $('#saveBtn').hide());
+
+        });
+
+        $('#saveBtn').click(function () {
+            location.reload();
+        });
+
     });
+
 </script>
 
+
+
+</body>
 
 </html>

@@ -80,7 +80,7 @@ switch ($explodeClosestDate[1]) {
 $formattedClosestDate = $explodeClosestDate[1] . ". " . $explodeClosestDate[2] . ", " . $explodeClosestDate[0];
 $formattedCurrentDate = $explodeCurrentDate[1] . ". " . $explodeCurrentDate[2] . ", " . $explodeCurrentDate[0];
 
-function topbar($user, $role, $location, $pageTitle = null)
+function topbar($user, $role, $location, $pageTitle = null, $previousTitle = null)
 {
     if ($GLOBALS['closestEventDate'] < $GLOBALS['date']) {
         $eventStatus = "<label>No upcoming events</label>";
@@ -93,9 +93,9 @@ function topbar($user, $role, $location, $pageTitle = null)
     $backgroundColor = "white";
 
     echo
-    <<<EOD
+        <<<EOD
         
-        <div class="row gap-5" id="topBar">
+        <div class="row gap-5 d-flex justify-content-between" id="topBar">
                     <div class="col-6 d-flex flex-row align-items-center">
     EOD;
 
@@ -115,7 +115,7 @@ function topbar($user, $role, $location, $pageTitle = null)
             $locationLabel = $pageTitle ?? "Event Details";
             break;
         case "researchDetails":
-            $category = "General";
+            $category = "Research";
             $locationLabel = $pageTitle ?? "Research Details";
             break;
         case "report":
@@ -123,11 +123,11 @@ function topbar($user, $role, $location, $pageTitle = null)
             $locationLabel = "Generate Report";
             break;
         case "researchSubmit":
-            $category = "General";
+            $category = "Research";
             $locationLabel = "Submit Research";
             break;
         case "researchView":
-            $category = "General";
+            $category = "Research";
             $locationLabel = "View Researches";
             break;
         case "announcement":
@@ -152,35 +152,45 @@ function topbar($user, $role, $location, $pageTitle = null)
             $locationLabel = "Inventory";
             break;
         case "approval":
-            $category = "General";
+            $category = "Research";
             $locationLabel = "Approval";
+            break;
+        case "researchGallery":
+            $category = "Research";
+            $locationLabel = "Research Gallery";
             break;
         default:
             $category = "";
             $locationLabel = "";
             break;
     }
+
+    $backResearchDetails = "";
+
+    if ($previousTitle === "Approval") {
+        $backResearchDetails = "researchApproval.php";
+    } else if ($previousTitle === "View Researches") {
+        $backResearchDetails = "researchView.php";
+    }
+
     if ($location === "eventDetails" && !is_null($pageTitle)) {
         echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="events.php" 
         style="cursor: pointer;"
         onmouseover="this.style.textDecoration=`underline`"
-        onmouseout="this.style.textDecoration=`none`">Events</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
+        onmouseout="this.style.textDecoration=`none`">' . $previousTitle . '</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     } else if ($location === "researchDetails" && !is_null($pageTitle)) {
-        echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="researchView.php" 
+        echo '<label>' . $category . ' ' . $separatorSymbol . ' <a href="' . $backResearchDetails . '" 
         style="cursor: pointer;"
         onmouseover="this.style.textDecoration=`underline`"
-        onmouseout="this.style.textDecoration=`none`">View Researches</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
+        onmouseout="this.style.textDecoration=`none`">' . $previousTitle . '</a> ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     } else {
         echo '<label>' . $category . ' ' . $separatorSymbol . ' <b style="text-decoration: underline;">' . $locationLabel . '</b></label>';
     }
 
     echo
-    <<<EOD
+        <<<EOD
                     </div>
                     <div class="col-1 d-flex flex-row align-items-center justify-content-center"
-                    style="
-                    
-                    "
                     >
                     
                         <div class="wrapper">
@@ -188,12 +198,14 @@ function topbar($user, $role, $location, $pageTitle = null)
                                     <span class="material-symbols-outlined">notifications</span>
                             </button>
                             <div class="notifications">
+                                <b>Notifications</b>
+                                <hr>
                                 $eventStatus
                             </div>
                         </div>
                         
                     </div>
-                    <div class="col-auto d-flex flex-row align-items-center justify-content-center" id="profile">
+                    <div class="col-auto d-flex justify-content-end align-items-center" id="profile">
                         <a href="/capstone/Users/modifyAccount.php">
                             <div class="row align-items-center justify-content-center gap-3">
                                 <div class="col-1">
@@ -210,8 +222,8 @@ function topbar($user, $role, $location, $pageTitle = null)
     EOD;
 }
 
-
-function sidebar($active, $role)
+// subPage = page title of said subpage
+function sidebar($active, $role, $currentPage = null, $subPage = null)
 {
     $dashboardOption = "";
     $employeeOption = "";
@@ -224,8 +236,11 @@ function sidebar($active, $role)
     $researchViewOption = "";
     $announcementOption = "";
     $viewLogsOption = "";
+    $approvalOption = "";
+    $researchGalleryOption = "";
 
     $sidebarHighlight = "background-color:rgba(145, 152, 255, 0.66); border-radius:10px;";
+
     $dashboardStyle = "";
     $eventStyle = "";
     $researchStyle = "";
@@ -236,8 +251,12 @@ function sidebar($active, $role)
     $researchViewStyle = "";
     $announcementStyle = "";
     $viewLogsStyle = "";
-    $approvalOption = "";
+    $approvalStyle = "";
+    $researchGalleryStyle = "";
 
+
+    $subOption = "";
+    $subOptionStyle = "";
     $destination = "#";
 
     switch ($active) {
@@ -259,7 +278,7 @@ function sidebar($active, $role)
             break;
         case "approval":
             $approvalOption = "active";
-            $eventStyle = $sidebarHighlight;
+            $approvalStyle = $sidebarHighlight;
             break;
         case "research";
             $researchOption = "active";
@@ -284,7 +303,32 @@ function sidebar($active, $role)
         case "viewLogs":
             $viewLogsOption = "active";
             $viewLogsStyle = $sidebarHighlight;
-    };
+            break;
+        case "researchGallery":
+            $researchGalleryOption = "active";
+            $researchGalleryStyle = $sidebarHighlight;
+    }
+    ;
+    if ($subPage !== null) {
+        $subOption = "active";
+        $subOptionStyle = $sidebarHighlight;
+    }
+
+    function ifSubPage($ifPage = null, $desiredPage = null, $subOption, $subOptionStyle, $subPage = null)
+    {
+        if (
+            $desiredPage !== null &&
+            $ifPage == $desiredPage &&
+            $subPage !== null
+        ) {
+            return '
+        <li class="categoryItem mb-2" id="' . $subOption . '" style="cursor: pointer; ' . $subOptionStyle . '">
+        <span class="material-symbols-outlined">
+        subdirectory_arrow_right
+        </span>
+        ' . $subPage . '</li>';
+        }
+    }
 
     if ($role === "Director") {
         $destination = "director.php";
@@ -354,7 +398,9 @@ function sidebar($active, $role)
                             <span class="material-symbols-outlined">event</span>
                             Events
                             </li></a>
-        ',
+        ' .
+            ifSubPage($currentPage, "eventDetails", $subOption, $subOptionStyle, $subPage)
+        ,
 
         "researchView" => '
         <a href="researchView.php" class="categoryItem" id="' . $researchViewOption . '" style="' . $researchViewStyle . '"><li>
@@ -362,7 +408,9 @@ function sidebar($active, $role)
                             visibility</span>
                             View Researches
                             </li></a>
-        ',
+        ' .
+            ifSubPage($currentPage, "researchDetails", $subOption, $subOptionStyle, $subPage)
+        ,
 
         "researchSubmit" => '
         <a href="submitResearch.php" class="categoryItem" id="' . $researchOption . '" style="' . $researchStyle . '"><li>
@@ -387,9 +435,18 @@ function sidebar($active, $role)
         ',
 
         "approval" => '
-        <a href="#" class="categoryItem" id="' . $approvalOption . '">
+        <a href="researchApproval.php" class="categoryItem" id="' . $approvalOption . '" style="' . $approvalStyle . '">
             <li><span class="material-symbols-outlined">check_circle</span>
             Approval
+            </li></a>
+        ' .
+            ifSubPage($currentPage, "researchDetails", $subOption, $subOptionStyle, $subPage)
+        ,
+
+        "researchGallery" => '
+        <a href="researchGallery.php" class="categoryItem" id="' . $researchGalleryOption . '" style="' . $researchGalleryStyle . '">
+            <li><span class="material-symbols-outlined">view_cozy</span>
+            Research Gallery
             </li></a>
         ',
 
@@ -418,19 +475,35 @@ function sidebar($active, $role)
         <label class="category">Settings</label>
         ',
 
+        "category.research" => '
+        <label class="category">Research</label>
+        ',
+
+
+
+        "subPage" => '
+        <li class="categoryItem" id="' . $subOption . '" style="' . $subOptionStyle . '">
+        ' . $subPage . '</li>
+        '
+
     ];
 
     // Focal Person Sidebar
     if ($role === "Focal Person") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
+
         echo $sidebar['category.home'];
         echo $sidebar['dashboard'];
+
         echo $sidebar['category.general'];
         echo $sidebar['employees'];
         echo $sidebar['inventory'];
         echo $sidebar['events'];
+
+        echo $sidebar['category.research'];
         echo $sidebar['researchView'];
+
         echo $sidebar['category.settings'];
         echo $sidebar['report'];
         echo $sidebar['logout'];
@@ -446,7 +519,12 @@ function sidebar($active, $role)
         // echo $sidebar['category.general'];
         echo $sidebar['announcement'];
         echo $sidebar['events'];
-        // echo $sidebar['researchView'];
+
+        echo $sidebar['category.research'];
+        echo $sidebar['researchView'];
+        echo $sidebar['researchGallery'];
+        // echo $sidebar['report'];
+
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
@@ -456,8 +534,10 @@ function sidebar($active, $role)
     if ($role === "Panel") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
-        echo $sidebar['category.general'];
+
+        echo $sidebar['category.research'];
         echo $sidebar['approval'];
+        echo $sidebar['researchGallery'];
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
@@ -468,15 +548,21 @@ function sidebar($active, $role)
     if ($role === "Director" || $role === "Technical Assistant") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
+
         echo $sidebar['category.home'];
         echo $sidebar['dashboard'];
+
         echo $sidebar['category.general'];
         echo $sidebar['announcement'];
         echo $sidebar['employees'];
         echo $sidebar['inventory'];
         echo $sidebar['events'];
-        echo $sidebar['researchView'];
         echo $sidebar['logs'];
+
+        echo $sidebar['category.research'];
+        echo $sidebar['researchView'];
+        echo $sidebar['researchGallery'];
+
         echo $sidebar['category.settings'];
         echo $sidebar['report'];
         echo $sidebar['logout'];
@@ -486,12 +572,17 @@ function sidebar($active, $role)
     if ($role === "Researcher") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
+
         echo $sidebar['category.general'];
         echo $sidebar['events'];
+
+        echo $sidebar['category.research'];
         echo $sidebar['researchSubmit'];
         echo $sidebar['researchView'];
+
         echo $sidebar['category.settings'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
     }
-};
+}
+;

@@ -2,7 +2,7 @@
 require_once 'includes.php';
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 
 // GEGET CURRENT USER PARA MAREADY KUNG SAAN IBABALIK NA DASHBOARD
 $user = getUser();
@@ -50,7 +50,7 @@ if (isset($_POST['btnGeneratePDF'])) {
         }
     </style>
 
-    <?php addDelay("report", $currentUser, $currentPosition) ?>
+
     <!-- Left Sidebar -->
     <div class="row everything">
         <div class="col sidebar">
@@ -62,111 +62,180 @@ if (isset($_POST['btnGeneratePDF'])) {
         <div class="col-lg-10 col-sm-8 col-xs-6 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "report") ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <h1>Generate Report <span class="material-symbols-outlined">
                             article
                         </span></h1>
+
+                    <!-- BUTTONS -->
                     <div class="row mt-3">
                         <div class="col">
-                            <h3>Employee</h3>
+                            <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="toggleOptions" id="employeeToggle" autocomplete="off"
+                                        checked> Employee
+                                </label>
+
+                                <?php
+                                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"):
+                                ?>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
+                                        Inventory
+                                    </label>
+                                <?php
+                                endif;
+                                ?>
+
+
+                                <?php
+                                if ($currentPosition === "Focal Person"):
+                                ?>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
+                                        Received Item/s
+                                    </label>
+                                <?php
+                                endif;
+                                ?>
+                            </div>
                         </div>
-                        <div class="col">
-                        </div>
-                        <!-- EMPLOYEE FILTERS COLUMN -->
+                    </div>
+
+                    <div id="inventoryReport">
                         <div class="row mt-3">
-                            <div class="col d-flex flex-row align-items-center justify-content-start gap-3">
-                                <div class="col" id="toggleFilterDepartment">
-                                    <div class="row">
-                                        <h6>Department</h6>
-                                        <div class="col">
-                                            <select name="filterDepartment" id="filterDepartment" class="form-select">
-                                                <option value="" disabled>Filter Department</option>
-                                                <option value="None" selected>None</option>
-                                                <option value="Show All">Show All</option>
-                                                <option value="CPADM">CPADM</option>
-                                                <option value="CMBT">CMBT - BA, HM</option>
-                                                <option value="CoArch">CoArch</option>
-                                                <option value="CoEd">CoEd</option>
-                                                <option value="Crim">Crim</option>
-                                                <option value="COE">COE</option>
-                                                <option value="CICT">CICT</option>
-                                                <option value="IPE">IPE</option>
-                                                <option value="LHS">LHS</option>
-                                                <option value="CIT">CIT</option>
-                                                <option value="CAS">CAS</option>
-                                                <option value="IOLL">IOLL</option>
-                                                <option value="CON">CON</option>
-                                                <option value="GS">GS</option>
-                                                <option value="NTP">NTP</option>
-                                            </select>
+                            <div class="col">
+                                <h3>Inventory</h3>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col" id="inventoryFilterButton">
+                                    <!-- FILTER HERE -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- EMPLOYEE REPORT DIV -->
+                    <div id="employeeReport">
+                        <div class="row mt-3">
+                            <div class="col">
+                                <h3>Employee</h3>
+                            </div>
+                            <!-- EMPLOYEE FILTERS COLUMN -->
+                            <div class="row mt-3">
+                                <div class="col d-flex flex-row align-items-center justify-content-start gap-3">
+                                    <div class="col" id="toggleFilterDepartment">
+                                        <div class="row">
+                                            <h6>Department</h6>
+                                            <div class="col">
+                                                <select name="filterDepartment" id="filterDepartment"
+                                                    class="form-select">
+                                                    <option value="" disabled>Filter Department</option>
+                                                    <option value="None" selected>None</option>
+                                                    <option value="Show All">Show All</option>
+                                                    <option value="CPADM">CPADM</option>
+                                                    <option value="CMBT">CMBT - BA, HM</option>
+                                                    <option value="CoArch">CoArch</option>
+                                                    <option value="CoEd">CoEd</option>
+                                                    <option value="Crim">Crim</option>
+                                                    <option value="COE">COE</option>
+                                                    <option value="CICT">CICT</option>
+                                                    <option value="IPE">IPE</option>
+                                                    <option value="LHS">LHS</option>
+                                                    <option value="CIT">CIT</option>
+                                                    <option value="CAS">CAS</option>
+                                                    <option value="IOLL">IOLL</option>
+                                                    <option value="CON">CON</option>
+                                                    <option value="GS">GS</option>
+                                                    <option value="NTP">NTP</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col" id="toggleFilterCampus">
-                                    <div class="row">
-                                        <h6>Campus</h6>
-                                        <div class="col">
-                                            <select name="filterCampus" id="filterCampus" class="form-select">
-                                                <option value="" disabled>Filter Campus</option>
-                                                <option value="None" selected>None</option>
-                                                <option value="Show All">Show All</option>
-                                                <option value="Sumacab">Sumacab</option>
-                                                <option value="Gen. Tinio">Gen. Tinio</option>
-                                                <option value="San Isidro">San Isidro</option>
-                                                <option value="Atate">Atate</option>
-                                                <option value="Fort Magsaysay">Fort Magsaysay</option>
-                                                <option value="Gabaldon">Gabaldon</option>
-                                            </select>
+                                    <div class="col" id="toggleFilterCampus">
+                                        <div class="row">
+                                            <h6>Campus</h6>
+                                            <div class="col">
+                                                <select name="filterCampus" id="filterCampus" class="form-select">
+                                                    <option value="" disabled>Filter Campus</option>
+                                                    <option value="None" selected>None</option>
+                                                    <option value="Show All">Show All</option>
+                                                    <option value="Sumacab">Sumacab</option>
+                                                    <option value="Gen. Tinio">Gen. Tinio</option>
+                                                    <option value="San Isidro">San Isidro</option>
+                                                    <option value="Atate">Atate</option>
+                                                    <option value="Fort Magsaysay">Fort Magsaysay</option>
+                                                    <option value="Gabaldon">Gabaldon</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col" id="toggleFilterGender">
-                                    <div class="row">
-                                        <h6>Gender</h6>
-                                        <div class="col">
-                                            <select name="filterGender" id="filterGender" class="form-select">
-                                                <option value="" disabled>Filter Gender</option>
-                                                <option value="None" selected>None</option>
-                                                <option value="Show All">Show All</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="LGBTQIA+">LGBTQIA+</option>
-                                                <option value="Other">Other</option>
-                                            </select>
+                                    <div class="col" id="toggleFilterGender">
+                                        <div class="row">
+                                            <h6>Gender</h6>
+                                            <div class="col">
+                                                <select name="filterGender" id="filterGender" class="form-select">
+                                                    <option value="" disabled>Filter Gender</option>
+                                                    <option value="None" selected>None</option>
+                                                    <option value="Show All">Show All</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="LGBTQIA+">LGBTQIA+</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col" id="toggleFilterSize">
-                                    <div class="row">
-                                        <h6>Size</h6>
-                                        <div class="col">
-                                            <select name="filterSize" id="filterSize" class="form-select">
-                                                <option value="" disabled>Filter Size</option>
-                                                <option value="None" selected>None</option>
-                                                <option value="Show All">Show All</option>
-                                                <option value="S">Small</option>
-                                                <option value="M">Medium</option>
-                                                <option value="L">Large</option>
-                                                <option value="XL">Extra Large</option>
-                                                <option value="XXL">Double XL</option>
-                                                <option value="XXXL">Triple XL</option>
-                                                <option value="4XL">4XL</option>
-                                            </select>
+                                    <div class="col" id="toggleFilterSize">
+                                        <div class="row">
+                                            <h6>Size</h6>
+                                            <div class="col">
+                                                <select name="filterSize" id="filterSize" class="form-select">
+                                                    <option value="" disabled>Filter Size</option>
+                                                    <option value="None" selected>None</option>
+                                                    <option value="Show All">Show All</option>
+                                                    <option value="S">Small</option>
+                                                    <option value="M">Medium</option>
+                                                    <option value="L">Large</option>
+                                                    <option value="XL">Extra Large</option>
+                                                    <option value="XXL">Double XL</option>
+                                                    <option value="XXXL">Triple XL</option>
+                                                    <option value="4XL">4XL</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-8 d-flex flex-row align-items-center justify-content-start gap-3">
+                            <div class="col-lg-8 d-flex flex-row align-items-center justify-content-start gap-3">
+                            </div>
                         </div>
                     </div>
+
                     <!-- DISPLAY FILTER BUTTON-->
                     <div class="row mt-4 d-flex flex-row justify-content-start align-items-center">
                         <div class="col-2">
                             <label for="orientation" id="orientationLabel" class="form-select-label">Orientation</label>
                             <select name="orientation" id="orientation" class="form-select">
                                 <option value="portrait">Portrait</option>
-                                <option value="landscape" selected>Landscpae</option>
+                                <option value="landscape" selected>Landscape</option>
+                            </select>
+                        </div>
+                        <div class="col-1">
+                            <label for="margin" id="marginLabel" class="form-select-label">Margin</label>
+                            <select name="margin" id="margin" class="form-select">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
                             </select>
                         </div>
                         <div class="col-1">
@@ -186,35 +255,71 @@ if (isset($_POST['btnGeneratePDF'])) {
                             </select>
                         </div>
                         <div class="col d-flex flex-row justify-content-end align-items-center gap-3">
-                            <div id="makeReceiptDIV">
-                                <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
-                                <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
-                                    class="form-check-input">
+
+                            <?php
+                            if ($currentPosition !== "Focal Person"):
+                            ?>
+                                <div id="makeReceiptDIV">
+                                    <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
+                                    <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
+                                        class="form-check-input">
+                                </div>
+                            <?php
+                            endif;
+                            ?>
+                            <div id="makeSummaryDIV">
+                                <label for="checkboxShowSummary" class="form-check-label">Show Summary</label>
+                                <input type="checkbox" name="checkboxShowSummary" id="checkboxShowSummary"
+                                    value="Show Summary" class="form-check-input">
                             </div>
-                            <label for="checkboxShowSummary" class="form-check-label">Show Summary</label>
-                            <input type="checkbox" name="checkboxShowSummary" id="checkboxShowSummary" value="Show Summary"
-                                class="form-check-input">
                         </div>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col-2">
-                            <button type="submit" id="btnGeneratePDF" name="btnGeneratePDF" class="btn btn-success">Generate
-                                PDF</button>
-                        </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-2">
+                        <button type="submit" id="btnGeneratePDF" name="btnGeneratePDF" class="btn btn-success">Generate
+                            PDF</button>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col">
-                            <form action="generateReport.php" id="dapatPrint">
-                                <div class="table-responsive" id="generatePDF">
-                                    <table id="employeeTable">
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+
+                        <form action="generateReport.php" id="dapatPrint">
+                            <div class="table-responsive" id="generatePDF">
+
+                                <table class="table table-striped table-sm" id="inventoryTable">
+                                    <!-- inventory table here -->
+                                </table>
+
+                                <div id="employeeTableMaster">
+                                    <table class="table table-striped table-sm" id="employeeTable">
+                                        <!-- employee table here -->
                                     </table>
                                 </div>
-                            </form>
-                        </div>
+
+                                <?php
+                                // na fix na dito yung issue ng inventory lumalabas kay director
+                                if ($currentPosition === "Focal Person"): ?>
+                                    <div id="receivedItemsDIV" style="display: none;">
+
+
+                                        <!-- input fields here, same as preview -->
+
+                                        <!-- the generated result -->
+                                        <div id="receivedItemPrintTable"></div>
+
+                                    </div> 
+                                <?php endif; ?>
+
+
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- filter toggles employee show -->
@@ -253,16 +358,134 @@ if (isset($_POST['btnGeneratePDF'])) {
         const filter_size = $('#filterSize');
 
 
-        function hideElement() {
-            if (filter_gender.val() === "None" && filter_dept.val() === "None" && filter_campus.val() === "None" && filter_size.val() === "None") {
-                $('#btnGeneratePDF').hide();
-                $('#generatePDF').hide();
-            }
-        }
-
-
         $(document).ready(function() {
+
+            $("#inventoryReport").hide();
+            $("#inventoryTable").hide();
+            $("receivedItemsDIV").hide();
+
+            $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function() {
+                generateInventoryFilter(
+                    position,
+                    "#btnGeneratePDF",
+                    "#generatePDF",
+                    "#inputCategory",
+                    "#inventoryTable"
+                );
+            });
+
+
+
+            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function() {
+
+                // ✅ Load available inventory items to dropdown
+                $.ajax({
+                    url: "../phpFunctions/get_inventory_items.php",
+                    type: "POST",
+                    success: function(res) {
+                        let items = JSON.parse(res);
+                        let select = $("#inputItemName");
+
+                        select.empty();
+                        select.append(`<option value="">Select Item</option>`);
+
+                        items.forEach(item => {
+                            select.append(`<option value="${item.id}">${item.itemName}</option>`);
+                        });
+                    }
+                });
+
+                // ✅ When user selects item, fetch its qty
+                $("#inputItemName").on("change", function() {
+                    let itemId = $(this).val();
+                    if (!itemId) return;
+
+                    $.ajax({
+                        url: "../phpFunctions/get_item_stock.php",
+                        type: "POST",
+                        data: {
+                            itemId
+                        },
+                        success: function(res) {
+                            let data = JSON.parse(res);
+                            $("#inputReceived").val(data.itemQuantity);
+                            $("#dbRemaining").val(data.itemQuantity);
+                        }
+                    });
+                });
+
+                receivedItemTable(
+                    "#inputName",
+                    "#inputItemName",
+                    "#inputReceived",
+                    "#inputDistributed",
+                    "#btnGeneratePDF",
+                    "#receivedItemsDIV",
+                    "#receivedItemTable"
+                );
+            });
+
+
+
+
+
+
+            function hideReceivedItems() {
+                $('#receivedItemsDIV').hide();
+                $('#receivedTable').empty();
+            }
+
+            function showReceivedItems() {
+                $('#receivedItemsDIV').show();
+            }
+
+            function hideEmployeeSummary() {
+                $('#employeeTableMaster').hide();
+                $('#makeReceiptDIV').hide();
+                $('#makeSummaryDIV').hide();
+                $('#employeeTable').hide();
+                $('#employeeReport').hide();
+            }
+
+            function showEmployeeSummary() {
+                $('#employeeReport').show();
+                $('#employeeTable').show();
+                $('#makeReceiptDIV').show();
+                $('#makeSummaryDIV').show();
+                $('#employeeTableMaster').show();
+            }
+
+            function hideInventorySummary() {
+                $('#inventoryReport').hide();
+                $('#inventoryTable').hide();
+            }
+
+            function showInventorySummary() {
+                $('#inventoryTable').show();
+                $('#inventoryReport').show();
+            }
+
+
+            $('input[name="toggleOptions"]').change(function() {
+                if ($('#employeeToggle').is(':checked')) {
+                    showEmployeeSummary();
+                    hideInventorySummary();
+                    hideReceivedItems();
+                } else if ($('#inventoryToggle').is(':checked')) {
+                    showInventorySummary();
+                    hideEmployeeSummary();
+                    hideReceivedItems();
+                } else if ($('#receivedItemToggle').is(':checked')) {
+                    showReceivedItems();
+                    hideEmployeeSummary();
+                    hideInventorySummary();
+                    $('#generatePDF').show();
+                }
+            });
+
             $('#btnGeneratePDF').hide();
+
+
             $('#generatePDF').hide();
             generateReportFilter(
                 position,
@@ -276,40 +499,52 @@ if (isset($_POST['btnGeneratePDF'])) {
                 "#checkboxReceipt",
                 "#employeeTable"
             );
-            hideElement();
-            filter_gender.add(filter_dept).add(filter_campus).add(filter_size).on("change", hideElement);
+
+            // ======================= PRINTING =========================
+
+            const sizeSelect = $("#size");
+            const scaleSelect = $("#scale");
+            const marginSelect = $("#margin");
+            const orientationSelect = $("#orientation");
+
+            $(document).on("click", "#btnGeneratePDF", function() {
+
+                // Hide input fields before PDF generation
+                $("#receivedItemsDIV").find("#inputFields").hide();
+
+                const element = $("#generatePDF")[0];
+
+                const opt = {
+                    margin: parseInt(marginSelect.val()), // ✅ proper integer
+                    filename: `Report.pdf`,
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    html2canvas: {
+                        scale: parseFloat(scaleSelect.val()),
+                        scrollY: 0
+                    },
+                    jsPDF: {
+                        unit: 'pt',
+                        format: sizeSelect.val(),
+                        orientation: orientationSelect.val()
+                    }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // ✅ Show input fields again after export
+                    $("#receivedItemsDIV").find("#inputFields").show();
+                });
+
+            });
+
         });
     </script>
 
 
     <script>
-        const sizeSelect = document.getElementById("size");
-        const scaleSelect = document.getElementById("scale");
-        const orientationSelect = document.getElementById("orientation");
 
-        document.getElementById('btnGeneratePDF').addEventListener('click', () => {
-            const element = document.getElementById('generatePDF');
-
-            const opt = {
-                margin: 0, // Remove all outer margins
-                filename: `Report.pdf`,
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: `${scaleSelect.value}`,
-                    scrollY: 0 // 🔥 Important: prevents scroll offset bug
-                },
-                jsPDF: {
-                    unit: 'pt',
-                    format: `${sizeSelect.value}`,
-                    orientation: `${orientationSelect.value}`
-                }
-            };
-
-            html2pdf().set(opt).from(element).save();
-        });
     </script>
 </body>
 

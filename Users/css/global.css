@@ -13,6 +13,18 @@ body {
   background-position: 400% 50%;
   background-size: cover;
   font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+}
+
+.dateText::before {
+  content: "- ";
+}
+
+.dateText{
+  color: gray;
+  font-style: italic;
+  font-size: small;
+  align-self: center;
 }
 
 .itemText {
@@ -40,7 +52,11 @@ body {
 }
 
 .everything {
-  height: 150vh;
+  padding-bottom: 30px;
+}
+
+#contents{
+  display: none;
 }
 
 .mainContent {
@@ -86,6 +102,11 @@ table tbody tr:hover td {
 
 select:hover,
 option:hover {
+  cursor: pointer;
+}
+
+.hover:hover{
+  background-color: #2c2c2c75;
   cursor: pointer;
 }
 

@@ -4,7 +4,7 @@ require_once 'includes.php';
 
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 doubleCheck("Technical Assistant");
 
 if ($_SESSION['user_position'] !== 'Technical Assistant') {
@@ -23,7 +23,6 @@ $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
-
 
 
 // // Prevent browser caching
@@ -50,7 +49,7 @@ deleteItemInventory("deleteItem", $currentUser);
 </head>
 
 <body>
-    <?php addDelay("dashboard", $currentUser, $currentPosition) ?>
+
 
     <!-- Left Sidebar -->
     <div class="row everything">
@@ -99,16 +98,33 @@ deleteItemInventory("deleteItem", $currentUser);
                                 <div class="col">
                                     <h1>Employee</h1>
                                 </div>
+                                <div class="col d-flex justify-content-end align-items-center gap-3">
+                                    <a href="./employees.php"><button class="btn btn-outline-primary">View
+                                            More</button></a>
+                                    <!-- <button id="add_account" class="btn btn-outline-success">
+                                        Add Account
+                                        <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                                    </button> -->
+                                </div>
                             </div>
                             <!-- SEARCH BARS, FILTERS ETC ROWS -->
                             <!-- FILTER ROW -->
                             <div class="row">
-                                <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
+                                <div class="col d-flex flex-row justify-content-end align-items-center gap-3"
+                                    id="filters">
                                 </div>
                             </div>
                             <div class="row mt-2" id="filterButtons">
                             </div>
                         </div>`
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                            <span class="material-symbols-outlined">
+                                search
+                            </span>
+                            <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
+                        </div>
                     </div>
                     <div class="row mt-2" style="max-height: 200px; overflow-y: auto;">
                         <div class="col">
@@ -151,17 +167,20 @@ deleteItemInventory("deleteItem", $currentUser);
                     </div>
                 </div>
                 <div class="row tableOverview">
-                    <div class="col-lg-9">
+                    <div class="col">
                         <!-- inventory overview -->
                         <h1>Inventory</h1>
                     </div>
-                    <div class="col d-flex align-items-center justify-content-end">
+                    <div class="col d-flex align-items-center gap-3 justify-content-end">
+                        <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addItem">Add
                             Item</button>
                     </div>
+
                     <div class="row mt-5 table-responsive">
                         <div style="max-height: 200px; overflow-y: auto;">
                             <div class="col" id="inventoryTable">
+                                <?php include("./reusableHTML/inventoryTable.php"); ?>
                             </div>
                         </div>
                     </div>
@@ -186,8 +205,8 @@ deleteItemInventory("deleteItem", $currentUser);
                 <div class="modal-body">
                     <form action="" method="POST" enctype="multipart/form-data">
                         <label for="itemName">Item Name:</label><br>
-                        <input type="text" name="name" id="itemName" placeholder="(e.g. T-shirt)"
-                            class="form-control" required>
+                        <input type="text" name="name" id="itemName" placeholder="(e.g. T-shirt)" class="form-control"
+                            required>
                         <br><br>
                         <label for="itemName">Item Quantity:</label><br>
                         <input type="number" name="quantity" id="itemQuantity" placeholder="(e.g. 100)"
@@ -245,7 +264,6 @@ deleteItemInventory("deleteItem", $currentUser);
             </div>
         </div>
     </div>
-    </div>
 
     <!-- editItemModal -->
 
@@ -301,10 +319,12 @@ EOD;
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
-            $('#inventoryTable').load("reusableHTML/inventoryTable.php");
-            $('#filters').load("reusableHTML/filters.php", function() {
-                $('#filterButtons').load("reusableHTML/filtersButton.php", function() {
-                    filterFunction("#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+
+            // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
+            $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php")
+            $('#filters').load("./reusableHTML/filters.php", function() {
+                $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
+                    filterFunction("dashboard", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
                     resetFilterFunction(position);
 

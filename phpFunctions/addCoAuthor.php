@@ -31,13 +31,14 @@ if (!isset($_SESSION['user_id'])) {
     <div class="col">
         <!-- loop here -->
         <?php
-        function structure($userFullName, $fname, $mname, $lname)
+        function structure($userFullName, $fname, $mname, $lname, $email)
         {
                         echo <<<EOD
                 <div class="row employeeRow" 
                     data-fname="$fname" 
                     data-mname="$mname" 
                     data-lname="$lname" 
+                    data-email="$email"
                     style="
                     cursor:pointer;
                     padding-top: 15px;
@@ -65,9 +66,10 @@ if (!isset($_SESSION['user_id'])) {
         // Query to join employee_info and employee_tbl with full name
         $sql = "SELECT
                 CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name,
-                fname,
-                m_initial,
-                lname
+                ei.fname,
+                ei.m_initial,
+                ei.lname,
+                et.email
             FROM employee_info ei
             INNER JOIN employee_tbl et ON ei.id = et.id";
         $result = $con->query($sql);
@@ -75,7 +77,13 @@ if (!isset($_SESSION['user_id'])) {
             // Fetch and display each row
             while ($row = $result->fetch_assoc()) {
 
-                structure(htmlspecialchars($row['full_name']), htmlspecialchars($row['fname']), htmlspecialchars($row['m_initial']), htmlspecialchars($row['lname']));
+                structure(
+                    htmlspecialchars($row['full_name']),
+                    htmlspecialchars($row['fname']),
+                    htmlspecialchars($row['m_initial']),
+                    htmlspecialchars($row['lname']),
+                    htmlspecialchars($row['email'])
+                );
             }
         }
         ?>

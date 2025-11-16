@@ -3,7 +3,7 @@ require_once 'includes.php';
 
 session_start();
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+checkUser($_SESSION['user_id']);
 
 $user = getUser();
 $currentUser = $user['fullname'];
@@ -28,7 +28,7 @@ if ($currentPosition !== "Director") {
 </head>
 
 <body>
-    <?php addDelay("viewLogs", $currentUser, $currentPosition) ?>
+  
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
             <?php sidebar("viewLogs", $currentPosition);
@@ -40,7 +40,7 @@ if ($currentPosition !== "Director") {
             <?= topbar($currentUser, $currentPosition, "logs") ?>
             <div id="contents">
 
-                <div class="row mt-5">
+                <div class="row mt-4">
                     <div class="col">
                         <h1>Logs <span class="material-symbols-outlined">overview</span></h1>
                         <p>Any user activity will be recorded here.</p>

@@ -32,6 +32,7 @@ $tables = [
       `campus` varchar(100) NOT NULL,
       `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
       `is_active` int(2) NOT NULL DEFAULT 1,
+      
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
@@ -50,22 +51,6 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "employee_info" => "
-    CREATE TABLE IF NOT EXISTS `employee_info` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `fname` varchar(100) NOT NULL,
-      `m_initial` varchar(10) NOT NULL,
-      `lname` varchar(100) NOT NULL,
-      `address` varchar(100) NOT NULL,
-      `birthday` date NOT NULL,
-      `marital_status` varchar(100) NOT NULL,
-      `sex` enum('Male','Female') NOT NULL,
-      `gender` varchar(100) NOT NULL,
-      `priority_status` varchar(20) DEFAULT NULL,
-      `size` varchar(50) NOT NULL,
-      PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-    ",
 
     "employee_tbl" => "
     CREATE TABLE IF NOT EXISTS `employee_tbl` (
@@ -75,7 +60,34 @@ $tables = [
       `department` varchar(100) NOT NULL,
       `campus` varchar(100) NOT NULL,
       `status` varchar(10) NOT NULL DEFAULT 'Active',
-      PRIMARY KEY (`id`)
+      `inactive_date` DATE NULL DEFAULT NULL,
+      `account_id` int(11) NULL,
+      PRIMARY KEY (`id`),
+      KEY `fk_accountTbl_employeeTbl` (`account_id`),
+      CONSTRAINT `fk_accountTbl_employeeTbl` FOREIGN KEY (`account_id`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    ",
+
+    "employee_info" => "
+    CREATE TABLE IF NOT EXISTS `employee_info` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `fname` varchar(100) NOT NULL,
+      `m_initial` varchar(10) NOT NULL,
+      `lname` varchar(100) NOT NULL,
+      `address` varchar(255) NOT NULL,
+      `birthday` date NOT NULL,
+      `marital_status` varchar(100) NOT NULL,
+      `sex` enum('Male','Female') NOT NULL,
+      `gender` varchar(100) NOT NULL,
+      `priority_status` varchar(20) DEFAULT NULL,
+      `size` varchar(50) NOT NULL,
+      `income` varchar(50) DEFAULT NULL,
+      `children_num` int DEFAULT NULL,
+      `concern` text DEFAULT NULL,
+      `employee_id` int(11) NULL,
+      PRIMARY KEY (`id`),
+      KEY `fk_employeeInfo_employeeTbl` (`employee_id`),
+      CONSTRAINT `fk_employeeInfo_employeeTbl` FOREIGN KEY (`employee_id`) REFERENCES `employee_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
@@ -111,18 +123,56 @@ $tables = [
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ",
 
-    "research_tbl" => "
-    CREATE TABLE IF NOT EXISTS `research_tbl` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `research_title` varchar(255) NOT NULL,
-      `author` varchar(100) NOT NULL,
-      `co_author` varchar(300) NOT NULL,
-      `date_started` date NOT NULL,
-      `date_completed` date NOT NULL,
-      `file` longblob NOT NULL,
-      `description` varchar(500) NOT NULL,
-      `status` enum('Completed','Approved','Pending','Rejected') NOT NULL,
-      PRIMARY KEY (`id`)
+  "research_tbl" => "
+  CREATE TABLE IF NOT EXISTS `research_tbl` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `research_title` varchar(255) NOT NULL,
+    `author` varchar(100) NOT NULL,
+    `research_email` VARCHAR(100) NOT NULL,
+    `co_author` varchar(300) NOT NULL,
+    `date_started` date NOT NULL,
+    `date_completed` date NOT NULL,
+    `file` longblob NOT NULL,
+    `description` varchar(500) NOT NULL,
+    `status` enum('Approved','Pending','Rejected') NOT NULL DEFAULT 'Pending',
+    `date_submitted` date DEFAULT NULL,
+    `research_agenda` varchar(100) DEFAULT NULL,
+    `research_sdg` varchar(100) DEFAULT NULL,
+    `research_category` enum('Proposal','Completed') NOT NULL DEFAULT 'Proposal',
+    `research_grant` enum('Yes','No') NOT NULL DEFAULT 'No',
+    `research_grant_times` int(2) NOT NULL DEFAULT 0,
+    `research_resubmission_status` enum('Yes', 'No') NOT NULL DEFAULT 'No',
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  ",
+
+    "comments_tbl" => "
+    CREATE TABLE IF NOT EXISTS `comments_tbl` (
+      `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+      `research_id` int(11) NOT NULL,
+      `comment` text NOT NULL,
+      `commentor_name` varchar(100) NOT NULL,
+      `comment_datetime` datetime NOT NULL,
+      PRIMARY KEY (`comment_id`),
+      CONSTRAINT `fk_research`
+        FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`)
+        ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    ",
+
+    "votes_tbl" => "
+      CREATE TABLE IF NOT EXISTS `votes_tbl` (
+      `vote_id` int(11) NOT NULL AUTO_INCREMENT,
+      `vote` ENUM('Approve','Reject') NOT NULL,
+      `voter_name` VARCHAR(45) NOT NULL,
+      `voter_datetime` DATETIME NOT NULL,
+      `research_id` INT(11) NOT NULL,
+      `panel_id` INT(11) NOT NULL,
+      PRIMARY KEY (`vote_id`),
+      KEY `fk_votes_research` (`research_id`),
+      KEY `fk_votes_panel` (`panel_id`),
+      CONSTRAINT `fk_votes_research` FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`) ON DELETE CASCADE,
+      CONSTRAINT `fk_votes_panel` FOREIGN KEY (`panel_id`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     "
 ];

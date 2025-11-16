@@ -1,7 +1,7 @@
 <?php
 require_once "gad_portal.php";
 
-if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
+if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_POST['genderFilter'], $_POST['showSummary'], $_POST['showReceipt'], $_POST['whatGenerate'], $_POST['currentPosition'])) {
     $campus = $_POST['campusFilter'];
     $dept = $_POST['deptFilter'];
     $size = $_POST['sizeFilter'];
@@ -10,6 +10,13 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $receipt = $_POST['showReceipt'];
     $position = $_POST['currentPosition'];
     $generate = $_POST['whatGenerate'];
+    $location = $_POST['currentPage'];
+    $search = null;
+    
+    if (isset($_POST['searchQuery'],)) {
+        $search = $_POST['searchQuery'];
+    }
+
 
     $con = newCon();
 
@@ -21,10 +28,11 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     $noFilters = ($campus === "None" && $dept === "None" && $size === "None" && $gender === "None");
 
     // Dynamically build SELECT fields
-    $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name";
+    // $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
+    $sql = "SELECT CONCAT(ei.fname, ' ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
 
     if ($noFilters) {
-        $sql .= ", et.email, et.contact_no, et.department";
+        $sql .= ", et.campus, et.contact_no, et.department";
     } else {
         if ($campus !== "None")
             $sql .= ", et.campus";
@@ -37,8 +45,19 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     }
 
     $sql .= " FROM employee_info ei
-              INNER JOIN employee_tbl et ON ei.id = et.id
-              WHERE 1=1";
+          INNER JOIN employee_tbl et ON ei.id = et.id
+          WHERE et.status = 'Active'";
+
+    if (!empty($search)) {
+        $search = $con->real_escape_string($search);
+        $sql .= " AND (
+        ei.fname LIKE '%$search%' OR
+        ei.m_initial LIKE '%$search%' OR
+        ei.lname LIKE '%$search%' OR
+        CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) LIKE '%$search%'
+    )";
+    }
+
 
     // Build WHERE conditions for specific filters (not Show All)
     if ($campus !== "None" && $campus !== "Show All") {
@@ -144,7 +163,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
     echo '<th>Full Name</th>';
 
     if ($noFilters) {
-        echo '<th>Email</th><th>Contact No</th><th>Department</th>';
+        echo '<th>Campus</th><th>Department</th>';
     } else {
         if ($campus !== "None")
             echo '<th>Campus</th>';
@@ -159,17 +178,25 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
         echo '<th>Signature</th>';
     }
 
+    if ($generate !== "report" && $location !== "dashboard") {
+        // ==================================
+        // ADD EXTRA HEADER HERE
+        echo '<th>Actions</th>';
+        // ==================================
+    }
+
     echo '</tr></thead><tbody id="employeeTableBody">';
 
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             echo '<tr>';
-            echo '<td>' . htmlspecialchars($row['full_name']) . '</td>';
+            echo '<td class="empName">' . htmlspecialchars($row['full_name']) . '</td>';
+            echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
 
             if ($noFilters) {
-                echo '<td>' . htmlspecialchars($row['email']) . '</td>';
-                echo '<td>' . htmlspecialchars($row['contact_no']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['department']) . '</td>';
+                echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
                 if ($generate === "report" && $position === "Focal Person") {
                     echo '<td></td>';
                 }
@@ -186,6 +213,98 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
             if ($generate === "report" && $position === "Focal Person") {
                 echo '<td></td>';
             }
+
+
+            if ($generate !== "report" && $location !== "dashboard") {
+                // ==================================
+                // ADD EXTRA BUTTONS / MORE HERE
+                $idAttr = htmlspecialchars($row['emp_id']);
+                echo '<td>
+                    <button type="button" class="btn btn-outline-primary btn-sm view-btn me-1"
+                        data-id="' . $idAttr . '" data-bs-toggle="modal" data-bs-target="#viewEmployeeModal"
+                        title="View Details">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+
+                    <button type="button"
+                                    class="btn btn-outline-success btn-sm editEmployeeBtn"
+                                    data-id="' . $idAttr . '" title="Edit Record">
+                                <i class="fas fa-edit"></i> Edit
+                    </button>
+
+                    <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
+                        data-id="' . $idAttr . '" title="Delete Record">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+
+                    <button type="button" class="btn btn-outline-secondary btn-sm assignBtn">
+                    Assign
+                    </button>
+
+                </td>';
+
+
+                echo file_get_contents(__DIR__ . '/../Users/reusableHTML/viewEmployeeModal.php');
+
+                echo <<<JS
+<script>
+$(document).off('click', '.view-btn').on('click', '.view-btn', function() {
+    const id = $(this).data('id');
+    if (!id) {
+        alert('No employee ID found');
+        return;
+    }
+
+    $.post('../phpFunctions/getEmployeeDetails.php', { id: id }, function(resp) {
+        console.log("Server Response:", resp);
+
+        if (!resp || resp.error) {
+            alert(resp ? resp.error : 'Failed to load details');
+            return;
+        }
+
+        // Populate fields
+        $('#v_full_name').text((resp.fname || '') + ' ' + (resp.m_initial ? resp.m_initial + '. ' : '') + (resp.lname || ''));
+        $('#v_email').text(resp.email || '');
+        $('#v_contact').text(resp.contact_no || '');
+        $('#v_department').text(resp.department || '');
+        $('#v_campus').text(resp.campus || '');
+        $('#v_address').text(resp.address || '');
+        $('#v_birthday').text(resp.birthday || '');
+        $('#v_marital_status').text(resp.marital_status || '');
+        $('#v_sex').text(resp.sex || '');
+        $('#v_gender').text(resp.gender || '');
+        $('#v_priority_status').text(resp.priority_status || '');
+        $('#v_size').text(resp.size || '');
+        $('#v_income').text(resp.income || '');
+        $('#v_children_num').text(resp.children_num || '');
+        $('#v_concern').text(resp.concern || '');
+    }, 'json').fail(function() {
+        alert('Request failed');
+    });
+});
+
+$(document).off('click', '.delete-btn').on('click', '.delete-btn', function() {
+    const id = $(this).data('id');
+    if (!id) return;
+
+    if (!confirm('Delete this record?')) return;
+
+    $.post('../phpFunctions/deleteEmployee.php', { id: id }, function(resp) {
+        if (resp && resp.success) {
+            alert(resp.message);
+            // Instead of reloading, remove the row:
+            $(`button.delete-btn[data-id='\${id}']`).closest('tr').fadeOut(300, function(){ $(this).remove(); });
+        } else {
+            alert(resp && resp.error ? resp.error : 'Delete failed');
+        }
+    }, 'json').fail(() => alert('Delete request failed'));
+});
+</script>
+JS;
+            }
+
+
 
             echo '</tr>';
         }
@@ -251,8 +370,7 @@ if (isset($_POST['campusFilter'], $_POST['deptFilter'], $_POST['sizeFilter'], $_
         echo '</table>';
 
         echo '</div>
-    </div>
-    ';
+    </div>';
     }
 
     if ($receipt === "yes") {

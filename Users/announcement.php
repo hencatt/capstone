@@ -1,4 +1,5 @@
 <?php
+require_once '../phpFunctions/email.php';
 require_once 'includes.php';
 
 session_start();
@@ -8,6 +9,8 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: 0");
 
+// Always validate login BEFORE fetching user
+checkUser($_SESSION['user_id']);
 
 $user = getUser();
 $currentUser = $user['fullname'];
@@ -15,19 +18,42 @@ $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 
-checkUser($_SESSION['user_id'], $_SESSION['user_username']);
+$conn = con();
 
-if ($currentPosition !== "Director") {
-    if ($currentPosition !== "Technical Assistant") {
-        if ($currentPosition !== "RET Chair") {
-            header("Location: ../index.php");
-        }
-    }
+// Allowed positions
+$allowed = ["Director", "Technical Assistant", "RET Chair"];
+if (!in_array($currentPosition, $allowed)) {
+    header("Location: ../index.php");
+    exit();
 }
 
 createAnnouncements("announcementBtn", $currentUser);
 
+if (isset($_POST['announcementBtn'])) {
+
+    $title = $_POST['inputAnnouncementTitle'];
+    $desc = $_POST['inputAnnouncementDescription'];
+    $date = $_POST['inputAnnouncementDate'];
+    $category = $_POST['inputCategory'];
+
+    $proposal = $_POST['inputProposal'] ?? null;
+    $acceptance = $_POST['inputAcceptance'] ?? null;
+    $presentation = $_POST['inputPresentationDate'] ?? null;
+
+    // After inserting into announcement_tbl
+    sendAnnouncementEmail(
+        $conn, 
+        $title, 
+        $desc, 
+        $date, 
+        $category, 
+        $proposal, 
+        $acceptance, 
+        $presentation
+    );
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -36,7 +62,7 @@ createAnnouncements("announcementBtn", $currentUser);
 </head>
 
 <body>
-    <?= addDelay("announcement", $currentUser, $currentPosition); ?>
+   
     <div class="row everything">
         <div class="col sidebar">
             <?php sidebar("announcement", $currentPosition) ?>
@@ -65,7 +91,7 @@ createAnnouncements("announcementBtn", $currentUser);
                         <div class="col"></div>
                         <div class="col-3">
                             <label for="inputAnnouncementDate" class="form-label">Date:</label>
-                            <input type="date" name="inputAnnouncementDate" id="inputAnnouncementDate" class="form-control" pattern="\d{4}-\d{2}-\d{2}">
+                            <input type="date" name="inputAnnouncementDate" id="inputAnnouncementDate" class="form-control" pattern="\d{4}-\d{2}-\d{2}" required>
                         </div>
                         <div class="col">
                             <label for="inputCategory" class="form-label">Category</label>
@@ -128,6 +154,7 @@ createAnnouncements("announcementBtn", $currentUser);
     </div>
     </div>
 
+    <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
         const currentPos = "<?php echo $currentPosition ?>";

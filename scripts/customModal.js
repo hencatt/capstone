@@ -5,6 +5,8 @@ const editModal = document.getElementById("editModal");
 const deleteButton = document.querySelectorAll(".deleteBtn");
 const cancelButton = document.querySelectorAll(".cancelBtn");
 
+const personalBtn = document.getElementById("personalInfoButton");
+
 // Open modal
 document.querySelectorAll(".editBtn").forEach(btn => {
   btn.addEventListener("click", () => {

@@ -25,7 +25,9 @@ function createAnnouncements($announceId, $currentUser)
         $stmt->bind_param("sssssss", $announceTitle, $announceDescription, $announceDate, $announceCategory, $announceProposal, $announceAcceptance, $announcePresentation);
         if ($stmt->execute()) {
             insertLog($currentUser, "Announced", date('Y-m-d H:i:s'));
-            echo "<script> alert('Announced!') </script>";
+            alertSuccess("Announced!", $announceTitle . " announced successfully!");
+        } else {
+            alertError("Error", "There's been an error announcing");
         }
     }
 }
@@ -55,7 +57,7 @@ function createItemInventory($addItemId, $currentUser)
         function addItem($con, $itemName, $itemQuant, $itemDesc, $itemSize, $itemCategory, $itemCheck, $itemImg, $currentUser, $scanResult)
         {
             if ($scanResult->num_rows > 0) {
-                echo "<script>alert('Item Already Exist!')</script>";
+                alertError("Already Exist", "This item already exists!");
             } else {
                 $sql = "INSERT INTO inventory_tbl (itemName, itemDesc, itemImage, itemQuantity, itemSize, itemCategory) 
                         VALUES ('$itemName','$itemDesc','$itemImg','$itemQuant','$itemSize','$itemCategory')";
@@ -63,9 +65,9 @@ function createItemInventory($addItemId, $currentUser)
                 if ($con->query($sql)) {
                     //insert log
                     insertLog($currentUser, "Added (" . $itemName . ") Item", date('Y-m-d H:i:s'));
-                    echo "<script>alert('Item Added!')</script>";
+                    alertSuccess("Added", "Successfully added this item!");
                 } else {
-                    echo "Error: " . $con->error;
+                    alertError("Error", "Please try again");
                 }
             }
         }
@@ -83,7 +85,7 @@ function createItemInventory($addItemId, $currentUser)
             $itemImg = "";
             addItem($con, $itemName, $itemQuant, $itemDesc, $itemSize, $itemCategory, $itemCheck, $itemImg, $currentUser, $scanResult);
         } else {
-            echo "<script>alert('Error Uploading File')</script>";
+            alertError("Error", "Error uploading file");
         }
 
         $con->close();
@@ -123,9 +125,9 @@ function editItemInventory($updateId, $currentUser)
 
         if ($stmt->execute()) {
             insertLog($currentUser, "Updated (" . $newName . ") Item", date('Y-m-d H:i:s'));
-            echo "<script>alert('Item updated successfully!');</script>";
+            alertSuccess("Success", "Item Updated Successfully!");
         } else {
-            echo "<script>alert('Failed to update item.');</script>";
+            alertError("Error", "Failed to update item");
         }
 
         $stmt->close();
@@ -146,9 +148,9 @@ function deleteItemInventory($deleteId, $currentUser)
 
         if ($stmt->execute()) {
             insertLog($currentUser, "Deleted " . $itemName . " Item", date('Y-m-d H:i:s'));
-            echo "<script>alert('Delete Successful')</script>";
+            alertSuccess("Deleted", "Item deleted successfully");
         } else {
-            echo "<script>alert('Error deleting: Please try again')</script>";
+            alertError("Error", "Failed deleting item");
         }
 
         $stmt->close();
@@ -192,9 +194,9 @@ function updateItemInventory($updateId, $currentUser)
             //insert log
             insertLog($currentUser, "Updated (" . $newName . ") Item", date('Y-m-d H:i:s'));
 
-            echo "<script>alert('Item updated successfully!');</script>";
+            alertSuccess("Success", "Item Updated Successfully!");
         } else {
-            echo "<script>alert('Failed to update item.');</script>";
+            alertError("Error", "Failed to update item");
         }
 
         $stmt->close();
@@ -244,7 +246,7 @@ function createEmployeeFocalPerson($addEmployeeId, $currentUser)
 
             if ($stmt_tbl->execute()) {
                 insertLog($currentUser, "Added New Employee", date('Y-m-d H:i:s'));
-                echo "<script>alert('Employee added successfully!');</script>";
+                alertSuccess("Added", "Employee Added!");
                 header("Location: " . $_SERVER['PHP_SELF']);
                 $stmt_tbl->close();
                 $stmt_info->close();
