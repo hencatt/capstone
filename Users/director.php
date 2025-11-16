@@ -172,7 +172,7 @@ $age45_54 = getAge(35, 44);
 $age55_64 = getAge(35, 44);
 $age65_abv = getAge(65, 125);
 
-function getDepartmentBreakdown(): mixed
+    function getDepartmentBreakdown()
 {
     $con = newCon();
     $sql = "SELECT
