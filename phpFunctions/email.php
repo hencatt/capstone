@@ -146,7 +146,7 @@ if (!function_exists('sendResearchApprovalEmail')) {
             $mail->Body    = "
                 <p>Dear Researcher,</p>
                 <p>We are pleased to inform you that your research titled 
-                <b>\"{$researchTitle}\"</b> ahs been approved by the panel.</p> <br>
+                <b>\'{$researchTitle}\'</b> has been approved.</p> <br>
                 <p>You may now proceed to the next phase as instructed by the GAD Office.</p>
                 <br>
                 <p>Congratulations!</p>
@@ -216,6 +216,94 @@ if (!function_exists('sendResearchRejectionEmail')) {
 
         } catch (Exception $e) {
             error_log('Mailer Error (Rejection): ' . $mail->ErrorInfo);
+            return false;
+        }
+    }
+}
+
+
+// Send announcement email to all users
+if (!function_exists('sendAnnouncementEmail')) {
+    function sendAnnouncementEmail($conn, $title, $desc, $date, $category, $proposalDate = null, $acceptanceDate = null, $presentationDate = null) {
+
+        $mail = new PHPMailer(true);
+
+        try {
+            // Collect emails
+            $emails = [];
+
+            $q1 = $conn->query("SELECT email FROM accounts_tbl WHERE email != '' ");
+            while ($row = $q1->fetch_assoc()) {
+                $emails[$row['email']] = true;
+            }
+
+            $q2 = $conn->query("SELECT email FROM employee_tbl WHERE email != '' ");
+            while ($row = $q2->fetch_assoc()) {
+                $emails[$row['email']] = true;
+            }
+
+            if (empty($emails)) {
+                return false;
+            }
+
+            // SMTP
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'genderanddevelopment.neust@gmail.com';
+            $mail->Password   = 'fxso coyx cjiz cpzz';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+
+            $mail->setFrom('genderanddevelopment.neust@gmail.com', 'NEUST GAD Portal');
+
+            // Make the email hidden by using only BCC
+            $mail->addAddress('genderanddevelopment.neust@gmail.com'); // dummy main recipient
+
+            // Add all recipients as BCC (hidden)
+            foreach ($emails as $email => $v) {
+                $mail->addBCC($email);
+            }
+
+            // Format date
+            $formattedDate = date("F d, Y", strtotime(str_replace('/', '-', $date)));
+
+            // Build email body
+            $mail->isHTML(true);
+            $mail->Subject = "Announcement";
+
+            $body = "
+                <p>Greetings from NEUST GAD Portal</p><br>
+                <p>We are pleased to announce that there will be a <b>$category</b>.</p>
+                <p>Scheduled on <b>$formattedDate</b></p>
+                <p>Title: <b>\"{$title}\"</b></p>
+                <p>Description:<br>$desc</p>
+            ";
+
+            if ($category === "Research Event") {
+                $body .= "
+                    <p>Here are the important research event dates:</p>
+                    <p>
+                        <b>Proposal Submission:</b> $proposalDate <br>
+                        <b>Acceptance Notification:</b> $acceptanceDate <br>
+                        <b>Presentation Date:</b> $presentationDate
+                    </p>
+                ";
+            }
+
+            $body .= "
+                <p>We encourage everyone to stay informed and participate accordingly.</p>
+                <p>Thank you, and have a great day!</p>
+                <p>Regards,<br>NEUST GAD Portal</p>
+            ";
+
+            $mail->Body = $body;
+
+            $mail->send();
+            return true;
+
+        } catch (Exception $e) {
+            error_log("Announcement Mail Error: " . $mail->ErrorInfo);
             return false;
         }
     }
