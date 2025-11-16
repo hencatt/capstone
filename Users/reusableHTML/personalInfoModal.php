@@ -1,5 +1,5 @@
 <div id="modal" class="modalInfo">
-  <div class="modalInfo-content" style="width: 90%;">
+  <div class="modalInfo-content" style="width: 90%; height: 80vh; overflow-y:auto;">
     <div class="row">
       <div class="col">
         <h4>Personal Info</h4>
