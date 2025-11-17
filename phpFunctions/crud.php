@@ -210,11 +210,12 @@ function updateItemInventory($updateId, $currentUser)
 // =====================================================================
 //                             EMPLOYEE FUNCTIONS
 // =====================================================================
-
 function createEmployeeFocalPerson($addEmployeeId, $currentUser)
 {
     $con = con();
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["$addEmployeeId"])) {
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST[$addEmployeeId])) {
+        // Sanitize input
         $fname = htmlspecialchars($_POST['fname']);
         $m_initial = htmlspecialchars($_POST['m_initial']);
         $lname = htmlspecialchars($_POST['lname']);
@@ -231,31 +232,48 @@ function createEmployeeFocalPerson($addEmployeeId, $currentUser)
         $department = htmlspecialchars($_POST['department']);
         $status = htmlspecialchars($_POST['status']);
 
-        $sql_info = "INSERT INTO employee_info (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt_info = $con->prepare($sql_info);
-        $stmt_info->bind_param("ssssssssss", $fname, $m_initial, $lname, $address, $birthday, $marital_status, $sex, $gender, $priority_status, $size);
+        // 1️⃣ Insert into employee_tbl first
+        $sql_tbl = "INSERT INTO employee_tbl (email, contact_no, department, campus, status) 
+                    VALUES (?, ?, ?, ?, ?)";
+        $stmt_tbl = $con->prepare($sql_tbl);
+        $stmt_tbl->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
 
-        if ($stmt_info->execute()) {
-            $employee_id = $con->insert_id;
+        if ($stmt_tbl->execute()) {
+            $employee_id = $con->insert_id; // get the new employee ID
 
-            $sql_tbl = "INSERT INTO employee_tbl (id, email, contact_no, department, campus, status) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt_tbl = $con->prepare($sql_tbl);
-            $stmt_tbl->bind_param("isssss", $employee_id, $email, $contact_no, $department, $campus, $status);
+            // 2️⃣ Insert into employee_info
+            $sql_info = "INSERT INTO employee_info (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, employee_id) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt_info = $con->prepare($sql_info);
+            $stmt_info->bind_param(
+                "ssssssssssi",
+                $fname,
+                $m_initial,
+                $lname,
+                $address,
+                $birthday,
+                $marital_status,
+                $sex,
+                $gender,
+                $priority_status,
+                $size,
+                $employee_id
+            );
 
-            if ($stmt_tbl->execute()) {
+            if ($stmt_info->execute()) {
                 insertLog($currentUser, "Added New Employee", date('Y-m-d H:i:s'));
                 alertSuccess("Added", "Employee Added!");
                 header("Location: " . $_SERVER['PHP_SELF']);
-                $stmt_tbl->close();
-                $stmt_info->close();
                 exit();
             } else {
-                die("Error executing statement for employee_tbl: " . $stmt_tbl->error);
+                die("Error inserting into employee_info: " . $stmt_info->error);
             }
         } else {
-            die("Error executing statement for employee_info: " . $stmt_info->error);
+            die("Error inserting into employee_tbl: " . $stmt_tbl->error);
         }
+
+        // Close statements
+        if (isset($stmt_info))
+            $stmt_info->close();
     }
 }
