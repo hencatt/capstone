@@ -518,20 +518,21 @@ if ($conn->connect_error) {
 
             if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
                 echo '<option value="" disabled selected>Select Department</option>
-                            <option value="CPADM">CPADM</option>
-                            <option value="CMBT">CMBT - BA, HM</option>
-                            <option value="CoArch">CoArch</option>
-                            <option value="CoEd">CoEd</option>
-                            <option value="Crim">Crim</option>
-                            <option value="COE">COE</option>
-                            <option value="CICT">CICT</option>
-                            <option value="IPE">IPE</option>
-                            <option value="LHS">LHS</option>
-                            <option value="CIT">CIT</option>
-                            <option value="CAS">CAS</option>
-                            <option value="IOLL">IOLL</option>
-                            <option value="CON">CON</option>
-                            <option value="GS">GS</option>';
+                            <option value="CPADM">College of Public Administration and Disaster Management</option>
+                            <option value="CMBT">College of Management and Business Technology</option>
+                            <option value="CoArch">College of Architecture</option>
+                            <option value="CoEd">College of Education</option>
+                            <option value="Crim">Criminology</option>
+                            <option value="COE">College of Engineering</option>
+                            <option value="CICT">College of Infomations and Communications Technology</option>
+                            <option value="IPE">Interprofessional Education</option>
+                            <option value="LHS">Laboratory High School</option>
+                            <option value="CIT">College of Industrial Technology</option>
+                            <option value="CAS">College of Arts and Science</option>
+                            <option value="IOLL">Institute of Linguistics and Literature</option>
+                            <option value="CON">College Of Nursing</option>
+                            <option value="GS">Graduate School</option>';
+                            
             } else {
                 echo '
                 <option value=' . $currentDepartment . ' selected>' . $currentDepartment . '</option>

@@ -7,7 +7,7 @@
             <option value="None" selected>None</option>
             <option value="Show All">Show All</option>
             <option value="CPADM">CPADM</option>
-            <option value="CMBT">CMBT - BA, HM</option>
+            <option value="CMBT">CMBT</option>
             <option value="CoArch">CoArch</option>
             <option value="CoEd">CoEd</option>
             <option value="Crim">Crim</option>
