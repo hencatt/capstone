@@ -20,7 +20,7 @@ body {
   content: "- ";
 }
 
-.dateText{
+.dateText {
   color: gray;
   font-style: italic;
   font-size: small;
@@ -55,7 +55,7 @@ body {
   padding-bottom: 30px;
 }
 
-#contents{
+#contents {
   display: none;
 }
 
@@ -105,7 +105,7 @@ option:hover {
   cursor: pointer;
 }
 
-.hover:hover{
+.hover:hover {
   background-color: #2c2c2c75;
   cursor: pointer;
 }
@@ -116,8 +116,8 @@ option:hover {
   border-radius: 20px;
 }
 
-.relative{
-  position: relative
+.relative {
+  position: relative;
 }
 
 /* EVENTS */
@@ -156,4 +156,42 @@ option:hover {
   to {
     transform: rotate(1turn);
   }
+}
+
+.date-badge {
+  width: 84px;
+  min-width: 84px;
+  height: 94px;
+  border-radius: 10px;
+  background: #766df4;
+  color: #f8f8f8;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-badge .year {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.date-badge .day {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.date-badge .month {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.announcement-list .card {
+  border: 0;
+}
+
+.announcement-list .card + .card {
+  margin-top: 0.75rem;
 }
