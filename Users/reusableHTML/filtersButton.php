@@ -1,8 +1,8 @@
 <div class="col-3 d-flex align-items-center justify-content-start gap-1">
     <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
-    <button type="button" class="btn btn-secondary"><span class="material-symbols-outlined">
-            search
-        </span></button>
+    <button type="button" id="searchBtn" class="btn btn-secondary">
+        <span class="material-symbols-outlined">search</span>
+    </button>
 </div>
 <div class="col d-flex flex-row justify-content-end gap-3 align-items-center">
     <label for="checkboxShowSummary" class="form-check-label">Show Summary</label>

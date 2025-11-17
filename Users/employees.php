@@ -826,7 +826,7 @@ if ($conn->connect_error) {
 
                     $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
                         // Now everything exists → safe to run
-                        filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
+                        filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
 
                     });
                 });
