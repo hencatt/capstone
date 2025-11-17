@@ -468,7 +468,14 @@ if ($conn->connect_error) {
                         <input type="text" name="lname" placeholder="Last Name" required>
                         <input type="email" name="email" placeholder="Email" required>
                         <input type="hidden" name="username" placeholder="Username" required>
-                        <input type="password" name="pass" placeholder="Password" required>';
+                        <input type="password"
+                                    name="pass"
+                                    id="password"
+                                    placeholder="Password (atleast 8 characters with uppercase, lowercase, and a number)"
+                                    required
+                                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}"
+                                    maxlength="64"
+                                    title="Password must be 8–20 characters, with uppercase, lowercase, and a number.">';
             if ($currentPosition !== "Focal Person") {
 
                 echo '
@@ -1236,6 +1243,31 @@ if ($conn->connect_error) {
             }, 'json').fail(() => alert('Request failed while updating account.'));
         });
     });
+</script>
+
+<script>
+document.querySelector("input[name='email']").addEventListener("input", function() {
+    let email = this.value;
+    let passField = document.getElementById("password");
+
+    // Only autofill if user has NOT manually edited password yet
+    if (!passField.dataset.edited) {
+        passField.value = generatePassword(email);
+    }
+});
+
+function generatePassword(email) {
+    if (!email) return "";
+
+    // Example: capitalize first letter + add "123"
+    let base = email.charAt(0).toUpperCase() + email.slice(1);
+    return base + "123";
+}
+
+// Mark password as "edited" when user manually changes it
+document.getElementById("password").addEventListener("input", function() {
+    this.dataset.edited = true;
+});
 </script>
 
 </html>

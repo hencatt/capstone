@@ -230,7 +230,7 @@ $(document).ready(function() {
             } else {
                 alert(resp.error || 'Failed to update employee.');
             }   
-        }, 'json').fail(() => alert('Request failed 4 bobo.'));
+        }, 'json').fail(() => alert('Request failed 4'));
             
     });
 });
