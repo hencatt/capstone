@@ -528,7 +528,7 @@ if ($conn->connect_error) {
             <input type="text" name="fname" placeholder="First Name" required>
             <input type="text" name="lname" placeholder="Last Name" required>
             <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="username" placeholder="Username" required style="display:none;">
             <input type="password"
                    name="pass"
                    id="password"
