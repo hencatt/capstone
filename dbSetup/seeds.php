@@ -4,151 +4,54 @@ require_once "../phpFunctions/gad_portal.php";
 $con = con();
 
 //
-// ✅ ACCOUNTS SEED
+// ✅ EMPLOYEE SEED (1–40)
 //
-$accounts = [
-    [
-        "email" => "admin@sumacab.cict.edu.ph",
-        "username" => "admin",
-        "pass" => password_hash("admin", PASSWORD_DEFAULT),
-        "fname" => "Juan",
-        "lname" => "Dela Cruz",
-        "position" => "Director",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-    [
-        "email" => "focal@sumacab.cict.edu.ph",
-        "username" => "focal",
-        "pass" => password_hash("focal", PASSWORD_DEFAULT),
-        "fname" => "Maria",
-        "lname" => "Santos",
-        "position" => "Focal Person",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-    [
-        "email" => "ret@sumacab.cict.edu.ph",
-        "username" => "ret",
-        "pass" => password_hash("ret", PASSWORD_DEFAULT),
-        "fname" => "Jose",
-        "lname" => "Ramos",
-        "position" => "RET Chair",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-    [
-        "email" => "res@sumacab.cict.edu.ph",
-        "username" => "res",
-        "pass" => password_hash("res", PASSWORD_DEFAULT),
-        "fname" => "Ana",
-        "lname" => "Lopez",
-        "position" => "Researcher",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-    [
-        "email" => "ta@sumacab.cict.edu.ph",
-        "username" => "ta",
-        "pass" => password_hash("ta", PASSWORD_DEFAULT),
-        "fname" => "Mark",
-        "lname" => "Villanueva",
-        "position" => "Technical Assistant",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-    [
-        "email" => "panel@sumacab.cict.edu.ph",
-        "username" => "panel",
-        "pass" => password_hash("panel", PASSWORD_DEFAULT),
-        "fname" => "Carla",
-        "lname" => "Reyes",
-        "position" => "Panel",
-        "department" => "CICT",
-        "campus" => "Sumacab"
-    ],
-];
-
-$stmt = $con->prepare("INSERT INTO accounts_tbl 
-    (email, username, pass, fname, lname, position, department, campus) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-
-foreach ($accounts as $acc) {
-    $check = $con->prepare("SELECT id FROM accounts_tbl WHERE email = ? OR username = ?");
-    $check->bind_param("ss", $acc['email'], $acc['username']);
-    $check->execute();
-    $check->store_result();
-
-    if ($check->num_rows == 0) {
-        $stmt->bind_param(
-            "ssssssss",
-            $acc['email'],
-            $acc['username'],
-            $acc['pass'],
-            $acc['fname'],
-            $acc['lname'],
-            $acc['position'],
-            $acc['department'],
-            $acc['campus']
-        );
-        $stmt->execute();
-        echo "✅ Account `{$acc['username']}` inserted.<br>";
-    } else {
-        echo "⚠️ Account `{$acc['username']}` already exists.<br>";
-    }
-
-    $check->close();
-}
-$stmt->close();
-
-
-//
-// ✅ EMPLOYEE SEED (1–15)
-//
-
-// employee_tbl
 $employees_tbl = [
-    [1, "jaysonrivera@gmail.com", "09123456789", "CICT", "Sumacab", "Active"],
-    [2, "ashleybathan@gmail.com", "09876454321", "CICT", "Sumacab", "Active"],
-    [3, "henreichcatig@gmail.com", "0987123456", "CICT", "Sumacab", "Active"],
-    [4, "ivankylesmaniego@gmail.com", "09123876548", "CICT", "Sumacab", "Active"],
-    [5, "almagalang@gmail.com", "0998653231", "COE", "Fort Magsaysay", "Active"],
-    [6, "kobegarcia@gmail.com", "09123456781", "NTP", "Fort Magsaysay", "Active"],
-    [7, "mariaclara@gmail.com", "09112223344", "CICT", "Sumacab", "Active"],
-    [8, "juancruz@gmail.com", "09998887766", "CICT", "Sumacab", "Active"],
-    [9, "pedrosantos@gmail.com", "09115556677", "CICT", "Sumacab", "Active"],
-    [10, "ana.delacruz@gmail.com", "09223334455", "CICT", "Sumacab", "Active"],
-    [11, "roberto.diaz@gmail.com", "09331112222", "CICT", "Sumacab", "Active"],
-    [12, "katrina.luz@gmail.com", "09117778899", "CICT", "Sumacab", "Active"],
-    [13, "mark.estrada@gmail.com", "09887776655", "CICT", "Sumacab", "Active"],
-    [14, "sofia.mendoza@gmail.com", "09112227788", "CICT", "Sumacab", "Active"],
-    [15, "angelo.santos@gmail.com", "09995554433", "CICT", "Sumacab", "Active"],
-    [16, "angelo.santos@gmail.com", "09995554433", "CICT", "Sumacab", "Active"],
-    [17, "marie.delacruz@gmail.com", "09178889900", "CoEd", "Gen. Tinio", "Active"],
-    [18, "carl.mendoza@yahoo.com", "09223334455", "Crim", "San Isidro", "Inactive"],
-    [19, "jessica.ramos@outlook.com", "09776665544", "CIT", "Atate", "Active"],
-    [20, "patrick.garcia@gmail.com", "09457778822", "CPADM", "Gabaldon", "Active"],
-    [21, "daniel.lopez@gmail.com", "09351234567", "CMBT", "Fort Magsaysay", "Active"],
-    [22, "samantha.cruz@yahoo.com", "09681234567", "CON", "Sumacab", "Active"],
-    [23, "john.reyes@outlook.com", "09991231234", "GS", "Gen. Tinio", "Active"],
-    [24, "kristine.hernandez@gmail.com", "09778889911", "LHS", "Gabaldon", "Inactive"],
-    [25, "andrew.flores@yahoo.com", "09556667788", "CAS", "Atate", "Active"],
-    [26, "michelle.gonzales@gmail.com", "09442223344", "COE", "San Isidro", "Active"],
-    [27, "vincent.rodriguez@outlook.com", "09192221100", "IOLL", "Fort Magsaysay", "Active"],
-    [28, "charlotte.morales@gmail.com", "09221113322", "IPE", "Sumacab", "Active"],
-    [29, "miguel.torres@yahoo.com", "09998887766", "CoArch", "Gen. Tinio", "Active"],
-    [30, "angelica.navarro@gmail.com", "09773334455", "NTP", "Gabaldon", "Active"],
-    [31, "justin.martinez@outlook.com", "09669998877", "CICT", "Atate", "Inactive"],
-    [32, "rebecca.villanueva@gmail.com", "09334445566", "CAS", "Sumacab", "Active"],
-    [33, "rafael.dominguez@yahoo.com", "09115556677", "COE", "San Isidro", "Active"],
-    [34, "melissa.padilla@outlook.com", "09558889900", "CIT", "Fort Magsaysay", "Active"],
-    [35, "gabriel.rivera@gmail.com", "09226667788", "CPADM", "Gabaldon", "Active"],
-    [36, "isabella.santiago@yahoo.com", "09779990011", "CON", "Sumacab", "Active"],
-    [37, "nathaniel.ortega@gmail.com", "09117778899", "CMBT", "Gen. Tinio", "Active"],
-    [38, "camille.castillo@outlook.com", "09661112233", "LHS", "San Isidro", "Inactive"],
-    [39, "edward.mercado@gmail.com", "09337778855", "IOLL", "Fort Magsaysay", "Active"],
-    [40, "trisha.fernandez@yahoo.com", "09225554433", "CoArch", "Atate", "Active"],
+    // Accounts users first (IDs 1–6)
+    [1, "admin@sumacab.cict.edu.ph", "09123456780", "CICT", "Sumacab", "Active"],
+    [2, "focal@sumacab.cict.edu.ph", "09123456781", "CICT", "Sumacab", "Active"],
+    [3, "ret@sumacab.cict.edu.ph", "09123456782", "CICT", "Sumacab", "Active"],
+    [4, "res@sumacab.cict.edu.ph", "09123456783", "CICT", "Sumacab", "Active"],
+    [5, "ta@sumacab.cict.edu.ph", "09123456784", "CICT", "Sumacab", "Active"],
+    [6, "panel@sumacab.cict.edu.ph", "09123456785", "CICT", "Sumacab", "Active"],
+
+    // Rest of employees
+    [7, "jaysonrivera@gmail.com", "09123456789", "CICT", "Sumacab", "Active"],
+    [8, "ashleybathan@gmail.com", "09876454321", "CICT", "Sumacab", "Active"],
+    [9, "henreichcatig@gmail.com", "0987123456", "CICT", "Sumacab", "Active"],
+    [10, "ivankylesmaniego@gmail.com", "09123876548", "CICT", "Sumacab", "Active"],
+    [11, "almagalang@gmail.com", "0998653231", "COE", "Fort Magsaysay", "Active"],
+    [12, "kobegarcia@gmail.com", "09123456781", "NTP", "Fort Magsaysay", "Active"],
+    [13, "mariaclara@gmail.com", "09112223344", "CICT", "Sumacab", "Active"],
+    [14, "juancruz@gmail.com", "09998887766", "CICT", "Sumacab", "Active"],
+    [15, "pedrosantos@gmail.com", "09115556677", "CICT", "Sumacab", "Active"],
+    [16, "ana.delacruz@gmail.com", "09223334455", "CICT", "Sumacab", "Active"],
+    [17, "roberto.diaz@gmail.com", "09331112222", "CICT", "Sumacab", "Active"],
+    [18, "katrina.luz@gmail.com", "09117778899", "CICT", "San Isidro", "Active"],
+    [19, "mark.estrada@gmail.com", "09887776655", "CICT", "Sumacab", "Active"],
+    [20, "sofia.mendoza@gmail.com", "09112227788", "CICT", "Sumacab", "Active"],
+    [21, "angelo.santos@gmail.com", "09995554433", "CICT", "Sumacab", "Active"],
+    [22, "angelo.santos@gmail.com", "09995554433", "CICT", "Sumacab", "Active"],
+    [23, "marie.delacruz@gmail.com", "09178889900", "CoEd", "Gen. Tinio", "Active"],
+    [24, "carl.mendoza@yahoo.com", "09223334455", "Crim", "San Isidro", "Inactive"],
+    [25, "jessica.ramos@outlook.com", "09776665544", "CIT", "Atate", "Active"],
+    [26, "patrick.garcia@gmail.com", "09457778822", "CPADM", "Gabaldon", "Active"],
+    [27, "daniel.lopez@gmail.com", "09351234567", "CMBT", "Fort Magsaysay", "Active"],
+    [28, "samantha.cruz@yahoo.com", "09681234567", "CON", "Sumacab", "Active"],
+    [29, "john.reyes@outlook.com", "09991231234", "GS", "Gen. Tinio", "Active"],
+    [30, "kristine.hernandez@gmail.com", "09778889911", "LHS", "Gabaldon", "Inactive"],
+    [31, "andrew.flores@yahoo.com", "09556667788", "CAS", "Atate", "Active"],
+    [32, "michelle.gonzales@gmail.com", "09442223344", "COE", "San Isidro", "Active"],
+    [33, "vincent.rodriguez@outlook.com", "09192221100", "IOLL", "Fort Magsaysay", "Active"],
+    [34, "charlotte.morales@gmail.com", "09221113322", "IPE", "Sumacab", "Active"],
+    [35, "miguel.torres@yahoo.com", "09998887766", "CoArch", "Gen. Tinio", "Active"],
+    [36, "angelica.navarro@gmail.com", "09773334455", "NTP", "Gabaldon", "Active"],
+    [37, "justin.martinez@outlook.com", "09669998877", "CICT", "Atate", "Inactive"],
+    [38, "rebecca.villanueva@gmail.com", "09334445566", "CAS", "Sumacab", "Active"],
+    [39, "rafael.dominguez@yahoo.com", "09115556677", "COE", "San Isidro", "Active"],
+    [40, "melissa.padilla@outlook.com", "09558889900", "CIT", "Fort Magsaysay", "Active"],
 ];
+
 
 $stmt_emp_tbl = $con->prepare("INSERT INTO employee_tbl 
     (id, email, contact_no, department, campus, status) VALUES (?, ?, ?, ?, ?, ?)");
@@ -172,49 +75,161 @@ foreach ($employees_tbl as $emp) {
 $stmt_emp_tbl->close();
 
 
-// employee_info
-$employees_info = [
-    [1, "Jayson", "R", "Rivera", "Mabini, Cabanatuan City", "1999-10-10", "Single", "Male", "LGBTQIA+", "PWD", "L", "Below 10000", 1, 0, "No concern"],
-    [2, "Ashley", "A", "Bathan", "Bathan Street", "1998-04-01", "Single", "Female", "Female", "None", "M", "10000 - 30000", 2, 0, "N/A"],
-    [3, "Henreich", "L", "Catig", "Kapitan Pepe", "1995-04-09", "Widowed", "Male", "Male", "Senior Citizen", "M", "15000 - 25000", 3, 2, "Needs medical assistance"],
-    [4, "Ivan Kyle", "S", "Samaniego", "Zulueta", "1994-04-25", "Married", "Male", "Male", "Senior Citizen", "M", "40000 - 50000", 4, 1, "Wants training program"],
-    [5, "Alma", "G", "Galang", "Gen. Tinio", "1993-04-28", "Married", "Female", "Female", "None", "4XL", "30000 - 40000", 5, 3, "Looking for livelihood support"],
-    [6, "Kobe", "A", "Garcia", "Santa Rosa, Nueva Ecija", "2000-12-12", "Single", "Male", "LGBTQIA+", "PWD", "2XL", "Below 10000", 6, 0, "No concern"],
-    [7, "Maria", "D", "Clara", "Bayanihan, Cabanatuan City", "1998-03-15", "Single", "Female", "Female", "None", "S", "10000 - 30000", 7, 0, "N/A"],
-    [8, "Juan", "P", "Cruz", "Barangay Sumacab", "1997-07-20", "Married", "Male", "Male", "None", "L", "30000 - 40000", 8, 2, "Child support assistance"],
-    [9, "Pedro", "M", "Santos", "Quezon District", "1995-11-05", "Single", "Male", "Male", "PWD", "XL", "Below 10000", 9, 0, "Medical needs"],
-    [10, "Ana", "D", "Cruz", "Nueva Ecija", "1996-08-14", "Single", "Female", "Female", "None", "M", "Below 10000", 10, 0, "No concern"],
-    [11, "Roberto", "C", "Diaz", "Palayan City", "1992-02-19", "Married", "Male", "Male", "Senior Citizen", "L", "40000 - 50000", 11, 2, "Healthcare support"],
-    [12, "Katrina", "L", "Luz", "San Isidro", "1999-06-23", "Single", "Female", "Female", "None", "S", "15000 - 25000", 12, 0, "N/A"],
-    [13, "Mark", "E", "Estrada", "Sta. Rosa", "1998-09-30", "Single", "Male", "Male", "PWD", "M", "Below 10000", 13, 0, "Looking for job"],
-    [14, "Sofia", "M", "Mendoza", "Cabanatuan City", "2001-01-15", "Single", "Female", "Female", "None", "S", "15000 - 25000", 14, 0, "N/A"],
-    [15, "Angelo", "S", "Santos", "Talavera", "1997-12-02", "Single", "Male", "Male", "None", "XL", "40000 - 50000", 15, 0, "N/A"],
-    [16, "Angelo", "S", "Santos", "Talavera", "1997-12-02", "Single", "Male", "Male", "None", "XL", "40000 - 50000", 16, 0, "Duplicate test data"],
-    [17, "Marie", "D", "Dela Cruz", "Cabanatuan", "1996-05-14", "Married", "Female", "Female", "None", "M", "30000 - 40000", 17, 1, "Looking for livelihood support"],
-    [18, "Carl", "M", "Mendoza", "San Jose", "1995-09-20", "Single", "Male", "Male", "None", "L", "10000 - 30000", 18, 0, "N/A"],
-    [19, "Jessica", "R", "Ramos", "Aliaga", "1998-11-02", "Single", "Female", "Female", "None", "S", "Below 10000", 19, 0, "N/A"],
-    [20, "Patrick", "G", "Garcia", "Palayan", "1994-07-18", "Married", "Male", "Male", "None", "XL", "Above 65000", 20, 2, "Education support for children"],
-    [21, "Daniel", "L", "Lopez", "Pantabangan", "1993-04-10", "Single", "Male", "Male", "PWD", "L", "Below 10000", 21, 0, "Medical needs"],
-    [22, "Samantha", "C", "Cruz", "Rizal", "1999-01-22", "Single", "Female", "Female", "None", "M", "Below 10000", 22, 0, "No concern"],
-    [23, "John", "R", "Reyes", "San Leonardo", "1992-03-30", "Married", "Male", "Male", "None", "XL", "40000 - 50000", 23, 3, "Needs livelihood training"],
-    [24, "Kristine", "H", "Hernandez", "Peñaranda", "1996-06-11", "Single", "Female", "Female", "None", "S", "15000 - 25000", 24, 0, "N/A"],
-    [25, "Andrew", "F", "Flores", "Guimba", "1997-08-05", "Single", "Male", "Male", "None", "M", "10000 - 30000", 25, 0, "N/A"],
-    [26, "Michelle", "G", "Gonzales", "Laur", "1995-10-25", "Married", "Female", "Female", "None", "L", "40000 - 50000", 26, 2, "Financial aid request"],
-    [27, "Vincent", "R", "Rodriguez", "Cuyapo", "1993-12-19", "Single", "Male", "Male", "None", "M", "10000 - 30000", 27, 0, "N/A"],
-    [28, "Charlotte", "M", "Morales", "Nampicuan", "1998-02-09", "Single", "Female", "Female", "None", "S", "15000 - 25000", 28, 0, "N/A"],
-    [29, "Miguel", "T", "Torres", "Sto. Domingo", "1994-09-07", "Married", "Male", "Male", "None", "XL", "30000 - 40000", 29, 1, "Housing assistance"],
-    [30, "Angelica", "N", "Navarro", "Gabaldon", "1996-11-23", "Single", "Female", "Female", "None", "M", "15000 - 25000", 30, 0, "N/A"],
-    [31, "Justin", "M", "Martinez", "San Antonio", "1997-03-16", "Single", "Male", "Male", "None", "L", "10000 - 30000", 31, 0, "N/A"],
-    [32, "Rebecca", "V", "Villanueva", "Zaragoza", "1998-12-28", "Single", "Female", "Female", "None", "S", "Below 10000", 32, 0, "N/A"],
-    [33, "Rafael", "D", "Dominguez", "Jaen", "1993-08-14", "Married", "Male", "Male", "None", "XL", "40000 - 50000", 33, 2, "Looking for scholarship support"],
-    [34, "Melissa", "P", "Padilla", "Gen. Tinio", "1999-04-27", "Single", "Female", "Female", "None", "M", "10000 - 30000", 34, 0, "N/A"],
-    [35, "Gabriel", "R", "Rivera", "Carranglan", "1995-06-06", "Single", "Male", "Male", "None", "L", "40000 - 50000", 35, 0, "N/A"],
-    [36, "Isabella", "S", "Santiago", "Bongabon", "1997-07-19", "Married", "Female", "Female", "None", "M", "Above 65000", 36, 2, "Needs child care support"],
-    [37, "Nathaniel", "O", "Ortega", "Talugtug", "1992-02-03", "Single", "Male", "Male", "None", "XL", "30000 - 40000", 37, 0, "N/A"],
-    [38, "Camille", "C", "Castillo", "Llanera", "1996-10-15", "Single", "Female", "Female", "None", "S", "15000 - 25000", 38, 0, "N/A"],
-    [39, "Edward", "M", "Mercado", "Pantabangan", "1994-01-08", "Single", "Male", "Male", "None", "L", "40000 - 50000", 39, 0, "N/A"],
-    [40, "Trisha", "F", "Fernandez", "Licab", "1999-09-30", "Single", "Female", "Female", "None", "M", "Below 10000", 40, 0, "N/A"],
+//
+// ✅ ACCOUNTS SEED (Fixed with employee_tbl IDs)
+//
+$accounts = [
+    [
+        "id" => 1,
+        "email" => "admin@sumacab.cict.edu.ph",
+        "username" => "admin",
+        "pass" => password_hash("admin", PASSWORD_DEFAULT),
+        "fname" => "Juan",
+        "lname" => "Dela Cruz",
+        "position" => "Director",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
+    [
+        "id" => 2,
+        "email" => "focal@sumacab.cict.edu.ph",
+        "username" => "focal",
+        "pass" => password_hash("focal", PASSWORD_DEFAULT),
+        "fname" => "Maria",
+        "lname" => "Santos",
+        "position" => "Focal Person",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
+    [
+        "id" => 3,
+        "email" => "ret@sumacab.cict.edu.ph",
+        "username" => "ret",
+        "pass" => password_hash("ret", PASSWORD_DEFAULT),
+        "fname" => "Jose",
+        "lname" => "Ramos",
+        "position" => "RET Chair",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
+    [
+        "id" => 4,
+        "email" => "res@sumacab.cict.edu.ph",
+        "username" => "res",
+        "pass" => password_hash("res", PASSWORD_DEFAULT),
+        "fname" => "Ana",
+        "lname" => "Lopez",
+        "position" => "Researcher",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
+    [
+        "id" => 5,
+        "email" => "ta@sumacab.cict.edu.ph",
+        "username" => "ta",
+        "pass" => password_hash("ta", PASSWORD_DEFAULT),
+        "fname" => "Mark",
+        "lname" => "Villanueva",
+        "position" => "Technical Assistant",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
+    [
+        "id" => 6,
+        "email" => "panel@sumacab.cict.edu.ph",
+        "username" => "panel",
+        "pass" => password_hash("panel", PASSWORD_DEFAULT),
+        "fname" => "Carla",
+        "lname" => "Reyes",
+        "position" => "Panel",
+        "department" => "CICT",
+        "campus" => "Sumacab"
+    ],
 ];
+
+$stmt = $con->prepare("INSERT INTO accounts_tbl 
+    (id, email, username, pass, fname, lname, position, department, campus) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+foreach ($accounts as $acc) {
+    $check = $con->prepare("SELECT id FROM accounts_tbl WHERE email = ? OR username = ?");
+    $check->bind_param("ss", $acc['email'], $acc['username']);
+    $check->execute();
+    $check->store_result();
+
+    if ($check->num_rows == 0) {
+        $stmt->bind_param(
+            "issssssss",
+            $acc['id'],
+            $acc['email'],
+            $acc['username'],
+            $acc['pass'],
+            $acc['fname'],
+            $acc['lname'],
+            $acc['position'],
+            $acc['department'],
+            $acc['campus']
+        );
+        $stmt->execute();
+        echo "✅ Account `{$acc['username']}` inserted.<br>";
+    } else {
+        echo "⚠️ Account `{$acc['username']}` already exists.<br>";
+    }
+
+    $check->close();
+}
+$stmt->close();
+
+//
+// ✅ EMPLOYEE INFO SEED (Full, 1–40)
+//
+$employees_info = [
+    // IDs 1–6 (also in accounts_tbl)
+    [1, "Juan", "D", "Dela Cruz", "Mabini, Cabanatuan City", "1985-01-15", "Married", "Male", "Male", "None", "L", "40000-50000", 1, 2, "No concern"],
+    [2, "Maria", "S", "Santos", "Santos Street, Cabanatuan City", "1990-05-22", "Single", "Female", "Female", "None", "M", "30000-40000", 2, 0, "N/A"],
+    [3, "Jose", "R", "Ramos", "Ramos Avenue, Cabanatuan City", "1988-09-10", "Married", "Male", "Male", "PWD", "XL", "Below 10000", 3, 1, "Medical support needed"],
+    [4, "Ana", "L", "Lopez", "Lopez Street, Cabanatuan City", "1992-12-05", "Single", "Female", "Female", "Senior Citizen", "M", "10000-30000", 4, 0, "N/A"],
+    [5, "Mark", "V", "Villanueva", "Villanueva St., Sumacab", "1987-07-18", "Married", "Male", "Male", "None", "L", "30000-40000", 5, 2, "Needs training support"],
+    [6, "Carla", "R", "Reyes", "Reyes Ave., Sumacab", "1991-03-30", "Single", "Female", "Female", "None", "S", "Below 10000", 6, 0, "N/A"],
+
+    // IDs 7–40 (only employee_info_tbl)
+    [7, "Jayson", "R", "Rivera", "Sumacab St., Cabanatuan City", "1999-10-10", "Single", "Male", "Male", "PWD", "L", "Below 10000", 7, 0, "No concern"],
+    [8, "Ashley", "A", "Bathan", "Bathan Street, Sumacab", "1998-04-01", "Single", "Female", "Female", "None", "M", "10000-30000", 8, 0, "N/A"],
+    [9, "Henreich", "L", "Catig", "Kapitan Pepe St., Sumacab", "1995-04-09", "Widowed", "Male", "Male", "Senior Citizen", "M", "10000-30000", 9, 2, "Needs medical assistance"],
+    [10, "Ivan Kyle", "S", "Samaniego", "Zulueta St., Sumacab", "1994-04-25", "Married", "Male", "Male", "Senior Citizen", "L", "40000-50000", 10, 1, "Wants training program"],
+    [11, "Alma", "G", "Galang", "Gen. Tinio, Nueva Ecija", "1993-04-28", "Married", "Female", "Female", "None", "4XL", "30000-40000", 11, 3, "Looking for livelihood support"],
+    [12, "Kobe", "A", "Garcia", "Santa Rosa, Nueva Ecija", "2000-12-12", "Single", "Male", "Male", "PWD", "2XL", "Below 10000", 12, 0, "No concern"],
+    [13, "Maria Clara", "D", "Del Rosario", "Fort Magsaysay", "1997-07-07", "Single", "Female", "Female", "None", "M", "10000-30000", 13, 0, "N/A"],
+    [14, "Juan Cruz", "R", "Reyes", "Sumacab", "1995-01-12", "Married", "Male", "Male", "None", "L", "30000-40000", 14, 1, "N/A"],
+    [15, "Pedro Santos", "M", "Santos", "Atate", "1996-02-14", "Single", "Male", "Male", "PWD", "M", "Below 10000", 15, 0, "Medical concern"],
+    [16, "Ana Delacruz", "G", "Delacruz", "Gabaldon", "1998-03-21", "Single", "Female", "Female", "None", "S", "10000-30000", 16, 0, "N/A"],
+    [17, "Roberto Diaz", "L", "Diaz", "Fort Magsaysay", "1993-05-10", "Married", "Male", "Male", "Senior Citizen", "XL", "40000-50000", 17, 2, "Needs livelihood support"],
+    [18, "Katrina Luz", "S", "Luz", "Sumacab", "1994-06-23", "Single", "Female", "Female", "None", "M", "10000-30000", 18, 0, "N/A"],
+    [19, "Mark Estrada", "A", "Estrada", "Atate", "1995-07-15", "Married", "Male", "Male", "None", "L", "30000-40000", 19, 2, "No concern"],
+    [20, "Sofia Mendoza", "G", "Mendoza", "Gabaldon", "1996-08-19", "Single", "Female", "Female", "None", "S", "10000-30000", 20, 0, "N/A"],
+    [21, "Angelo Santos", "D", "Santos", "Fort Magsaysay", "1997-09-25", "Married", "Male", "Male", "PWD", "L", "Below 10000", 21, 1, "Medical assistance needed"],
+    [22, "Marie Delacruz", "S", "Delacruz", "Sumacab", "1998-10-30", "Single", "Female", "Female", "None", "M", "10000-30000", 22, 0, "N/A"],
+    [23, "Carl Mendoza", "P", "Mendoza", "Gen. Tinio", "1995-11-05", "Married", "Male", "Male", "Senior Citizen", "XL", "40000-50000", 23, 3, "Needs livelihood support"],
+    [24, "Jessica Ramos", "R", "Ramos", "Atate", "1994-12-12", "Single", "Female", "Female", "None", "S", "10000-30000", 24, 0, "N/A"],
+    [25, "Patrick Garcia", "L", "Garcia", "Gabaldon", "1993-01-15", "Married", "Male", "Male", "None", "L", "30000-40000", 25, 2, "N/A"],
+    [26, "Daniel Lopez", "G", "Lopez", "Fort Magsaysay", "1992-02-20", "Single", "Male", "Male", "PWD", "XL", "Below 10000", 26, 0, "Medical concern"],
+    [27, "Samantha Cruz", "M", "Cruz", "Sumacab", "1990-03-25", "Married", "Female", "Female", "None", "M", "30000-40000", 27, 1, "N/A"],
+    [28, "John Reyes", "A", "Reyes", "Gen. Tinio", "1989-04-18", "Married", "Male", "Male", "None", "L", "40000-50000", 28, 2, "N/A"],
+    [29, "Kristine Hernandez", "L", "Hernandez", "Gabaldon", "1991-05-22", "Single", "Female", "Female", "Senior Citizen", "M", "10000-30000", 29, 0, "N/A"],
+    [30, "Andrew Flores", "G", "Flores", "Atate", "1993-06-10", "Married", "Male", "Male", "PWD", "XL", "Below 10000", 30, 1, "Medical assistance"],
+    [31, "Michelle Gonzales", "R", "Gonzales", "San Isidro", "1994-07-14", "Single", "Female", "Female", "None", "M", "10000-30000", 31, 0, "N/A"],
+    [32, "Vincent Rodriguez", "T", "Rodriguez", "Fort Magsaysay", "1995-08-19", "Married", "Male", "Male", "None", "L", "30000-40000", 32, 2, "N/A"],
+    [33, "Charlotte Morales", "M", "Morales", "Sumacab", "1996-09-22", "Single", "Female", "Female", "PWD", "S", "Below 10000", 33, 0, "Medical concern"],
+    [34, "Miguel Torres", "L", "Torres", "Gen. Tinio", "1997-10-05", "Married", "Male", "Male", "None", "L", "30000-40000", 34, 1, "N/A"],
+    [35, "Angelica Navarro", "D", "Navarro", "Gabaldon", "1998-11-11", "Single", "Female", "Female", "None", "M", "10000-30000", 35, 0, "N/A"],
+    [36, "Justin Martinez", "R", "Martinez", "Atate", "1999-12-02", "Married", "Male", "Male", "Senior Citizen", "XL", "40000-50000", 36, 2, "Needs livelihood support"],
+    [37, "Rebecca Villanueva", "S", "Villanueva", "Sumacab", "2000-01-19", "Single", "Female", "Female", "None", "M", "10000-30000", 37, 0, "N/A"],
+    [38, "Rafael Dominguez", "A", "Dominguez", "San Isidro", "1998-02-14", "Married", "Male", "Male", "PWD", "L", "Below 10000", 38, 1, "Medical assistance"],
+    [39, "Melissa Padilla", "G", "Padilla", "Fort Magsaysay", "1997-03-07", "Single", "Female", "Female", "None", "S", "10000-30000", 39, 0, "N/A"],
+    [40, "Gabriel Rivera", "R", "Rivera", "Gabaldon", "1996-04-21", "Married", "Male", "Male", "None", "L", "30000-40000", 40, 2, "N/A"],
+];
+
+
 $stmt_emp_info = $con->prepare("
     INSERT INTO employee_info 
     (id, fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern) 
@@ -230,21 +245,8 @@ foreach ($employees_info as $emp) {
     if ($check->num_rows == 0) {
         $stmt_emp_info->bind_param(
         "issssssssssiiis", 
-        $emp[0],  // id
-        $emp[1],  // fname
-        $emp[2],  // m_initial
-        $emp[3],  // lname
-        $emp[4],  // address
-        $emp[5],  // birthday
-        $emp[6],  // marital_status
-        $emp[7],  // sex
-        $emp[8],  // gender
-        $emp[9],  // priority_status
-        $emp[10], // size
-        $emp[11], // income
-        $emp[12], // children_num
-        $emp[13], // concern
-        $emp[14]  // employee_id
+        $emp[0], $emp[1], $emp[2], $emp[3], $emp[4], $emp[5], $emp[6], $emp[7], $emp[8],
+        $emp[9], $emp[10], $emp[11], $emp[12], $emp[13], $emp[14]
     );
         $stmt_emp_info->execute();
         echo "✅ Employee {$emp[1]} inserted into employee_info.<br>";
@@ -256,21 +258,15 @@ foreach ($employees_info as $emp) {
 }
 $stmt_emp_info->close();
 
-
 //
 // ✅ EVENTS SEED
 //
 $events = [
-    // Holidays
     ["Independence Day", "Celebration of Philippine Independence.", "2025-06-12", "Holiday", null, null, null],
     ["Christmas Break", "Christmas holiday break for all campuses.", "2027-12-24", "Holiday", null, null, null],
-
-    // Regular Events
     ["CICT General Assembly", "Annual assembly for CICT faculty and staff.", "2025-07-05", "Event", null, null, null],
     ["Wellness Program", "Campus-wide wellness and fitness activity.", "2027-07-19", "Event", null, null, null],
     ["CICT Foundation Day", "Celebration of the CICT department’s foundation.", "2025-09-01", "Event", null, null, null],
-
-    // Research Events
     ["Research Colloquium 2027", "Presentation of completed research works.", "2027-11-10", "Research Event", "2027-10-01", "2027-10-15", "2027-11-10"],
     ["Thesis Proposal Defense", "Defense for incoming 4th year students’ proposals.", "2025-08-15", "Research Event", "2025-08-01", "2025-08-10", "2025-08-15"],
     ["Capstone Final Defense", "Final presentation for graduating students.", "2027-10-20", "Research Event", "2027-09-15", "2027-10-01", "2027-10-20"],
@@ -318,26 +314,25 @@ $inventory = [
 ];
 
 $stmt_inventory = $con->prepare("INSERT INTO inventory_tbl 
-    (itemName, itemDesc, itemImage, itemQuantity, itemSize, itemCategory) 
-    VALUES (?, ?, ?, ?, ?, ?)");
+    (itemName, itemDesc, itemImage, itemQuantity, itemSize) VALUES (?, ?, ?, ?, ?)");
 
-foreach ($inventory as $item) {
+foreach ($inventory as $inv) {
     $check = $con->prepare("SELECT id FROM inventory_tbl WHERE itemName = ?");
-    $check->bind_param("s", $item[0]);
+    $check->bind_param("s", $inv[0]);
     $check->execute();
     $check->store_result();
 
     if ($check->num_rows == 0) {
-        $stmt_inventory->bind_param("sssiss", $item[0], $item[1], $item[2], $item[3], $item[4], $item[5]);
+        $stmt_inventory->bind_param("sssis", $inv[0], $inv[1], $inv[2], $inv[3], $inv[4]);
         $stmt_inventory->execute();
-        echo "✅ Inventory item `{$item[0]}` inserted.<br>";
+        echo "✅ Inventory item `{$inv[0]}` inserted.<br>";
     } else {
-        echo "⚠️ Inventory item `{$item[0]}` already exists.<br>";
+        echo "⚠️ Inventory item `{$inv[0]}` already exists.<br>";
     }
 
     $check->close();
 }
+
 $stmt_inventory->close();
 
-
-$con->close();
+echo "<br>✅ All seeds executed successfully!";

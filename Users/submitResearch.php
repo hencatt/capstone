@@ -372,7 +372,7 @@ if (isset($_POST['submitResearch'])) {
                             <div class="row mt-5">
                                 <div class="col">
                                     <label for="researchEvent" class="form-label">Select Event</label>
-                                    <select name="researchEvent" id="researchEvent" class="form-control">
+                                    <select name="researchEvent" id="researchEvent" class="form-control" required>
                                         <?php
                                         $category = "Research Event";
                                         $sql = "SELECT announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";

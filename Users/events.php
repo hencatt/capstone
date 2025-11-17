@@ -110,12 +110,12 @@ if (isset($_POST["deleteBtn"])) {
                             </span></h1>
                     </div>
                     <div class="col-auto d-flex align-items-center justify-content-end gap-2">
-                        <select name="inputCategory" id="inputCategory" class="form-select" style="width: 200px;">
+                        <!-- <select name="inputCategory" id="inputCategory" class="form-select" style="width: 200px;">
                             <option value="all_category" default>All Category</option>
                             <option value="Holiday">Holiday</option>
                             <option value="Event">Event</option>
                             <option value="Research Event">Research</option>
-                        </select>
+                        </select> -->
                         <button class="btn btn-primary" id="createAnnouncementBtn" name="createAnnouncementBtn"><a
                                 href="announcement.php" style="text-decoration: none; color:white;">Create
                                 Announcement</a></button>

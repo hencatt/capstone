@@ -3,7 +3,7 @@
 }
 
 .sidebar {
-  border-radius: 0% 16px 16px 0%;
+
   color: #f5f5f5;
   background-color: #0a7afa;
   position: fixed;
@@ -14,7 +14,7 @@
 }
 
 .sidebarHide {
-  border-radius: 0% 4% 4% 0%;
+
   color: #f5f5f5;
   background-color: #0a7afa;
   top: 0;

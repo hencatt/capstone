@@ -13,6 +13,7 @@ $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
+$currentUserId = $user['id'];
 
 // UPDATE BUTTON FUNCTION
 if (isset($_POST["saveBtn"])) {
@@ -219,7 +220,7 @@ if (isset($_POST["saveBtn"])) {
                         </div>
                     </form>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4" style="border: black solid 1px; padding: 10px; border-radius: 10px;">
                     <div class="row">
                         <div class="col text-center">
                             <img src="
@@ -234,6 +235,77 @@ if (isset($_POST["saveBtn"])) {
                     </div>
                     <div class="row mt-3 d-flex align-items-center text-center">
                         <div class="col" style="text-decoration: underline;">Edit</div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col">
+                            <?php
+                            $conn = newCon();
+                            $sql = "SELECT * FROM employee_info AS ei INNER JOIN employee_tbl AS et ON et.id = ei.id WHERE ei.id = $currentUserId";
+                            $stmt = $conn->query($sql);
+                            $row = $stmt->fetch_assoc();
+                            ?>
+
+                            <div class="row">
+                                <div class="col">
+                                    <!-- NAME -->
+                                    <div class="row">
+                                        <div class="col-6 text-end">
+                                            <label for="">Name:</label>
+                                            
+                                        </div>
+                                        <div class="col">
+                                            <?=
+                                                $row["fname"], " ", $row["lname"];
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <!-- NAME -->
+
+                                    <!-- CAMPUS -->
+                                    <div class="row mt-2">
+                                        <div class="col-6 text-end">
+                                            <label for="">Campus:</label>
+                                            
+                                        </div>
+                                        <div class="col">
+                                            <?=
+                                                $row["campus"];
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <!-- CAMPUS -->
+
+                                    <!-- DEPT -->
+                                    <div class="row mt-2">
+
+                                        <div class="col-6 text-end">
+                                            <label for="">Department:</label>
+                                            
+                                        </div>
+                                        <div class="col">
+                                            <?=
+                                                $row["department"];
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <!-- DEPT -->
+
+                                    <div class="row mt-2">
+                                        <div class="col-6 text-end">
+                                            <label for="">Birthday:</label>
+                                        </div>  
+                                        <div class="col">
+                                            <?=
+                                                $row["birthday"];
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
