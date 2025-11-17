@@ -95,7 +95,8 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
     echo
         <<<EOD
         
-        <div class="row gap-5 d-flex justify-content-between" id="topBar">
+        <div class="row gap-5 d-flex justify-content-between" id="topBar" 
+        style="background-color:white; padding:10px; border-radius:20px; filter: drop-shadow(0 0 0.15rem);">
                     <div class="col-6 d-flex flex-row align-items-center">
     EOD;
 
@@ -192,18 +193,22 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
                     </div>
                     <div class="col-1 d-flex flex-row align-items-center justify-content-center"
                     >
-                    
+
+                    <!--
                         <div class="wrapper">
                             <button id="notifyBtn" class="btn btn-outline">
                                     <span class="material-symbols-outlined">notifications</span>
                             </button>
+                            
                             <div class="notifications">
                                 <b>Notifications</b>
                                 <hr>
                                 $eventStatus
                             </div>
+                            
                         </div>
-                        
+                        -->
+
                     </div>
                     <div class="col-auto d-flex justify-content-end align-items-center" id="profile">
                         <a href="/capstone/Users/modifyAccount.php">
@@ -219,6 +224,7 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
                         </a>
                     </div>
             </div>
+            <hr>
     EOD;
 }
 

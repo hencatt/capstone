@@ -30,7 +30,7 @@ deleteItemInventory("deleteItem", $currentUser);
 </head>
 
 <body>
-   
+
     <div class="row everything">
         <div class="col sidebar" id="sidebar">
             <?php sidebar("inventory", $currentPosition);
@@ -51,12 +51,21 @@ deleteItemInventory("deleteItem", $currentUser);
                         <!-- BUTTONS HERE -->
                     </div>
                 </div>
-                <div class="row mt-2 d-flex justify-content-end">
-                    <div class="col-2" id="inventoryFilters">
-                        <!-- TODO CATEGORY FUNCTION -->
-
+                <div class="row mt-2 d-flex justify-content-between align-items-center">
+                    <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                        <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
+                        <button type="button" class="btn btn-secondary" name="searchBtn" id="searchBtn">  <span class="material-symbols-outlined">
+                            search
+                        </span></button>
                     </div>
+                    <!-- <div class="col-2" id="inventoryFilters">
+          
+
+                    </div> -->
                 </div>
+                
+                
+
                 <div class="row mt-3 tableOverview">
                     <div class="col" id="inventoryTable">
                         <?php include("./reusableHTML/inventoryTable.php"); ?>
@@ -71,7 +80,7 @@ deleteItemInventory("deleteItem", $currentUser);
         crossorigin="anonymous"></script>
 
     <?php include('../phpFunctions/alerts.php'); ?>
-        
+
 
     <script>
         $(document).ready(function () {
@@ -79,17 +88,23 @@ deleteItemInventory("deleteItem", $currentUser);
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
 
+            const searchBtn = $("#searchBtn");
+
             const inventoryButtonRow = $("#inventoryButtonsRow");
 
             // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
             $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
             if (position === "Technical Assistant") {
-                $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function(){
+                $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function () {
                     $("#viewMoreBtn").hide();
                 });
-            }else{
+            } else {
                 inventoryButtonRow.hide();
             }
+
+            searchBtn.on("click", ()=>{
+                
+            })
         })
     </script>
 

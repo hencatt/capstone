@@ -60,6 +60,7 @@ body {
 }
 
 .mainContent {
+  max-width: 84vw;
   margin-left: 19rem;
   padding-left: 3rem;
   padding-right: 3rem;

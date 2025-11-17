@@ -148,11 +148,19 @@ if ($stmt->execute()) {
                 </div>
             </div>
 
-            <div class="row mt-5">
-                <div class="col">
-                    <button class="btn btn-outline-primary" id="coAuthorBtn">Assign Panel</button>
+            <?php
+            if ($eventCategory === "Research Event"):
+                ?>
+                <div class="row mt-5">
+                    <div class="col">
+
+                        <button class="btn btn-outline-primary" id="coAuthorBtn">Assign Panel</button>
+
+                    </div>
                 </div>
-            </div>
+                <?php
+            endif;
+            ?>
 
 
             <!-- CO AUTHORS MODAL -->

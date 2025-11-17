@@ -34,7 +34,7 @@
                 echo '<td style="text-align: center;">' . htmlspecialchars($row['itemQuantity']) . '</td>';
                 echo '<td style="text-align: center;">' . htmlspecialchars($row['itemSize']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['itemDesc']) . '</td>';
-                echo '<td style="text-align: center;"><img src="' . $row['itemImage'] . '" width="30" alt="Item image"></td>';
+                echo '<td style="text-align: center;"><img src="' . $row['itemImage'] . '" width="30" alt="-"></td>';
                 echo '<td style="text-align: center;">' . $itemStatus . '</td>';
                 echo '<td style="text-align: center;">' . htmlspecialchars($row['itemCategory']) . '</td>';
                 echo '<td colspan="2"
@@ -125,7 +125,7 @@
                                         <br>
 
                                         <label>Image:</label><br>
-                                        <img src="' . htmlspecialchars($row['itemImage']) . '" alt="Item Image" width="100"><br>
+                                        <img src="' . htmlspecialchars($row['itemImage']) . '" alt="itemImage" width="100"><br>
                                         <label>Change Image</label>
                                         <input type="file" name="UpdateFileToUpload" class="form-control">
                                         <input type="hidden" name="itemID" value="' . htmlspecialchars($row['id']) . '">
