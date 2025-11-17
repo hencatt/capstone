@@ -2,7 +2,7 @@
 function headerLinks($title)
 {
     echo
-    <<<EOD
+        <<<EOD
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- bootstrap -->
@@ -16,7 +16,11 @@ function headerLinks($title)
         <!-- Chart/Graph Link -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <!-- plotly link -->
+
+        <!--
         <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
+        -->
+
         <!-- font link -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

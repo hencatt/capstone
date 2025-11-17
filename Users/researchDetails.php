@@ -234,7 +234,8 @@ if (isset($_POST['confirmBtnReject'])) {
                         <?php
                         if ($currentPosition === "RET Chair" || $currentPosition === "Researcher"):
                             ?>
-                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd" style="display: none;">Re-submit
+                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd"
+                                style="display: none;">Re-submit
                                 PDF</button>
                             <?php
                         endif;
@@ -447,7 +448,7 @@ if (isset($_POST['confirmBtnReject'])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-
+            console.log("aaaaaaaaaaaaaaaaaaaaa");
             const grantBtn = document.getElementById("changeGrantStatus");
             const resubmitBtn = document.getElementById("changeResubmissionStatus");
 
@@ -501,7 +502,7 @@ if (isset($_POST['confirmBtnReject'])) {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             action: "grant",
-                            research_id: <?= json_encode($researchId) ?>,
+                            research_id: <?= json_encode($researchId ?? null) ?>,
                             research_grant: grant,
                             research_grant_times: times
                         })
@@ -548,7 +549,7 @@ if (isset($_POST['confirmBtnReject'])) {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             action: "resubmit",
-                            research_id: <?= json_encode($researchId) ?>,
+                            research_id: <?= json_encode($researchId ?? null) ?>,
                             research_resubmission_status: status
                         })
                     })
@@ -571,7 +572,7 @@ if (isset($_POST['confirmBtnReject'])) {
             if (section) section.style.display = (status === "Yes") ? "block" : "none";
 
             function displayApproval() {
-                const currentPos = <?php echo json_encode($currentPosition); ?>;
+                const currentPos = <?php echo json_encode($currentPosition ?? null); ?>;
                 const isVoted = <?php echo checkVoters($currentResearch, $currentUserId) ? 'true' : 'false'; ?>;
 
                 if (currentPos === "Panel") {
@@ -590,7 +591,9 @@ if (isset($_POST['confirmBtnReject'])) {
             const cancelBtnReject = document.getElementById("cancelBtnReject")
             const confirmModal = document.querySelectorAll(".modalConfirmation");
             const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
-            const pos = <?php echo json_encode($currentPosition); ?>
+            const pos = <?php echo json_encode($currentPosition ?? null); ?>
+
+            console.log("Panel Line reached");
 
 
             if (pos === "Panel") {

@@ -172,33 +172,100 @@ $age45_54 = getAge(35, 44);
 $age55_64 = getAge(35, 44);
 $age65_abv = getAge(65, 125);
 
-    function getDepartmentBreakdown()
+// Get overall retirement count for the summary box
+function getRetirementCount()
+{
+    $con = newCon();
+    $stmt = $con->prepare("SELECT COUNT(DISTINCT t.id) AS retire_count FROM employee_tbl t 
+                          LEFT JOIN employee_info ei ON ei.employee_id = t.id 
+                          WHERE TIMESTAMPDIFF(YEAR, ei.birthday, CURDATE()) >= 60");
+    if ($stmt === false) {
+        error_log("getRetirementCount prepare error: " . $con->error);
+        return 0;
+    }
+    if (!$stmt->execute()) {
+        error_log("getRetirementCount execute error: " . $stmt->error);
+        $stmt->close();
+        return 0;
+    }
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return (int) ($row['retire_count'] ?? 0);
+}
+$totalRetireCount = getRetirementCount();
+
+function getDepartmentBreakdown()
 {
     $con = newCon();
     $sql = "SELECT
-        COALESCE(t.department, 'Unknown') AS department,
-        COUNT(DISTINCT t.id) AS total_employees,
-        SUM(CASE WHEN ei.gender = 'Male' THEN 1 ELSE 0 END) AS male_total,
-        SUM(CASE WHEN ei.gender = 'Female' THEN 1 ELSE 0 END) AS female_total,
-        SUM(CASE WHEN ei.gender = 'LGBTQIA+' THEN 1 ELSE 0 END) AS lgbt_total,
-        SUM(CASE WHEN TIMESTAMPDIFF(YEAR, ei.birthday, CURDATE()) >= 60 THEN 1 ELSE 0 END) AS retire_count
-    FROM employee_tbl t
-    LEFT JOIN employee_info ei ON ei.employee_id = t.id
-    GROUP BY department
-    ORDER BY total_employees DESC";
+    COALESCE(t.department, 'Unknown') AS department,
+    COUNT(DISTINCT t.id) AS total_employees,
+    SUM(CASE WHEN ei.gender = 'Male' THEN 1 ELSE 0 END) AS male_total,
+    SUM(CASE WHEN ei.gender = 'Female' THEN 1 ELSE 0 END) AS female_total,
+    SUM(CASE WHEN ei.gender = 'LGBTQIA+' THEN 1 ELSE 0 END) AS lgbt_total,
+    SUM(CASE WHEN TIMESTAMPDIFF(YEAR, ei.birthday, CURDATE()) >= 60 THEN 1 ELSE 0 END) AS retire_count
+FROM employee_tbl t
+LEFT JOIN employee_info ei ON ei.employee_id = t.id
+GROUP BY department
+ORDER BY total_employees DESC";
 
-    $result = $con->query($sql);
-    $departments = [];
-
-    if ($result === false) {
-        error_log("getDepartmentBreakdown SQL error: " . $con->error . " -- SQL: " . $sql);
-    } else {
-        $departments = $result->fetch_all(MYSQLI_ASSOC);
+    // Use prepared statement for consistency and safety (even though there
+    // are no dynamic params here). This allows safer extension later.
+    $stmt = $con->prepare($sql);
+    if ($stmt === false) {
+        error_log("getDepartmentBreakdown prepare error: " . $con->error . " -- SQL: " . $sql);
+        return false;
     }
 
-    return $departments;
+    if (!$stmt->execute()) {
+        error_log("getDepartmentBreakdown execute error: " . $stmt->error . " -- SQL: " . $sql);
+        $stmt->close();
+        return false;
+    }
+
+    // fetch result set
+    $result = $stmt->get_result();
+    if ($result === false) {
+        error_log("getDepartmentBreakdown get_result error: " . $stmt->error . " -- SQL: " . $sql);
+        $stmt->close();
+        return false;
+    }
+
+    
+    $stmt->close();
+    return $result;
 }
 $departmentData = getDepartmentBreakdown();
+
+function getEvent(){
+$con = newCon();
+$currentDate = date("Y-m-d");
+$stmt = $con->prepare("SELECT announceTitle, announceDesc, announceDate, category FROM announcement_tbl WHERE announceDate >= '$currentDate' ORDER BY announceDate DESC LIMIT 3");
+    if ($stmt === false) {
+        error_log('getEvent prepare error: ' . $con->error);
+        return '';
+    }
+
+    if (!$stmt->execute()) {
+        error_log('getEvent execute error: ' . $stmt->error);
+        $stmt->close();
+        return '';
+    }
+
+    $result = $stmt->get_result();
+    if ($result === false) {
+        error_log('getEvent get_result error: ' . $stmt->error);
+        $stmt->close();
+        return '';
+    }
+
+    $stmt->close();
+    return $result;
+
+    
+}
+$eventLists = getEvent();
 ?>
 
 <!DOCTYPE html>
@@ -223,11 +290,11 @@ $departmentData = getDepartmentBreakdown();
                 <div class="row d-flex flex-row align-items-center justify-content-center gap-3 mt-3">
                     <div class="col summaryOverview">
                         <h6>Total Employees</h6><br>
-                        <h6 class="itemText"><?= $age18_24 ?></h6>
+                        <h6 class="itemText"><?= $totalEmployee ?></h6>
                     </div>
                     <div class="col summaryOverview">
                         <h6>Total Retirees</h6><br>
-                        <h6 class="itemText"><?= $age25_34 ?></h6>
+                        <h6 class="itemText"><?= $totalRetireCount ?></h6>
                     </div>
                     <!--<div class="col summaryOverview">
                         <h6>New Hires</h6><br>
@@ -241,57 +308,118 @@ $departmentData = getDepartmentBreakdown();
                         <div id="genderChart"></div>
                     </div>
                     <div class="col d-flex justify-content-center" style="background-color:white; border-radius: 10px;">
-                        <!-- <h4>Age Distribution</h4> -->
+                        <h4 style="margin-top: 1rem">Events</h4><br />
                         <!-- <canvas height="300px" id="ageGraph"></canvas> -->
-                        <div id="ageChart"></div>
-                        <div>
-                            <!-- <h4>Events</h4> -->
-                            <!-- <canvas height="300px" id="ageGraph"></canvas> -->
+                            <div class="announcement-list">
+                                <br />
+                                <div >
+                                    <?php
+                                    $max = 5;
+                                    $shown = 0;
+
+                                if (is_string($eventLists)) {
+                                    echo '<div class="alert alert-info">' . $eventLists . '</div>';
+                                } elseif ($eventLists && $eventLists instanceof mysqli_result) {
+                                    while ($row = $eventLists->fetch_assoc()) {
+                                        if ($shown >= $max) break;
+                                        $shown++;
+
+                                        $id    = (int)($row['id'] ?? 0);
+                                        $title = htmlspecialchars($row['announceTitle'] ?? 'No title');
+                                        $desc  = htmlspecialchars($row['announceDesc'] ?? '');
+                                        $rawDate = $row['announceDate'] ?? null;
+                                        $date  = $rawDate ? date('j F Y', strtotime($rawDate)) : '';
+                                        $tag   = htmlspecialchars($row['category'] ?? 'Event');
+                                ?>
+
+                                <div class="card  mb-2 " style="margin-top: 1rem; left: -5rem; width: auto;">
+                                    <div class="row g-0 align-items-center">
+                                        <div class="col-auto p-2">
+                                            <div class="date-badge text-center">
+                                                <div class="year"><?= date('Y', strtotime($rawDate ?: 'now')) ?></div>
+                                                <div class="day"><?= date('j', strtotime($rawDate ?: 'now')) ?></div>
+                                                <div class="month"><?= date('F', strtotime($rawDate ?: 'now')) ?></div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card-body py-3 w-100">
+                                                <div class="d-flex">
+                                                    <div class="flex-grow-1">
+                                                        <h5 class="card-title mb-1"><?= $title ?></h5>
+                                                        <p class="card-text mb-1 text-muted"><?= $desc ?></p>
+                                                        <span class="badge bg-secondary rounded-pill"><?= $tag ?></span>
+                                                    </div>
+                                                    <div class="ms-3 align-self-start">
+                                                        <a href="events.php?id=<?= $id ?>" class="text-primary text-decoration-none">View More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php
+                                    }
+                                }
+                                ?>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col" style="background-color:white; border-radius: 10px; padding:1rem;">
                   <h2 class="w-100 mb-3">Department Breakdown</h2>
-                
-                                    <div class="table-responsive">
-                                        <?php
-                
-                                        $sum_total_employees = 0;
-                                        foreach ($departmentData as $d) {
-                                                $sum_total_employees += (int) ($d['total_employees'] ?? 0);
-                                        }
-                                        ?>
-                                        <table class="table table-sm table-striped ">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-start">Department</th>
-                                                    <th class="text-center">Total Employees</th>
-                                                    <th class="text-center">Male</th>
-                                                    <th class="text-center">Female</th>
-                                                    <th class="text-center">LGBT</th>
-                                                    <th class="text-center">Retirees</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody style="font-size: 17px;">
-                                                <?php foreach ($departmentData as $dept): ?>
-                                                <tr>
-                                                    <td class="text-start"><?= htmlspecialchars($dept['department']) ?></td>
-                                                    <td class="text-center"><?= $dept['total_employees'] ?></td>
-                                                    <td class="text-center"><?= $dept['male_total'] ?></td>
-                                                    <td class="text-center"><?= $dept['female_total'] ?></td>
-                                                    <td class="text-center"><?= $dept['lgbt_total'] ?></td>
-                                                    <td class="text-center"><?= $dept['retire_count'] ?></td>
-                                                </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr style="font-weight:700; font-size: 18px;">
-                                                    <td class="text-start">Overall Total</td>
-                                                    <td class="text-center"><?= $sum_total_employees ?></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
+                    <div class="table-responsive">
+                        <?php
+
+                            $sum_total_employees = 0;
+                            $sum_male = 0;
+                            $sum_female = 0;
+                            $sum_lgbt = 0;
+                            $sum_retiree = 0;
+                            $departments = [];
+                                while ($dept = $departmentData->fetch_assoc()) {
+                                    $departments[] = $dept;
+                                    $sum_total_employees += (int) ($dept['total_employees'] ?? 0);
+                                    $sum_male += (int) ($dept['male_total'] ?? 0);
+                                    $sum_female += (int) ($dept['female_total'] ?? 0);
+                                    $sum_lgbt += (int) ($dept['lgbt_total'] ?? 0);
+                                    $sum_retiree += (int) ($dept['retire_count'] ?? 0);
+                                }
+                                ?>
+                                <table class="table table-sm table-striped ">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-start">Department</th>
+                                            <th class="text-center">Total Employees</th>
+                                            <th class="text-center">Male</th>
+                                            <th class="text-center">Female</th>
+                                            <th class="text-center">LGBT</th>
+                                            <th class="text-center">Retirees</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size: 17px;">
+                                        <?php foreach ($departments as $dept): ?>
+                                        <tr>
+                                            <td class="text-start"><?= htmlspecialchars($dept['department']) ?></td>
+                                            <td class="text-center"><?= $dept['total_employees'] ?></td>
+                                            <td class="text-center"><?= $dept['male_total'] ?></td>
+                                            <td class="text-center"><?= $dept['female_total'] ?></td>
+                                            <td class="text-center"><?= $dept['lgbt_total'] ?></td>
+                                            <td class="text-center"><?= $dept['retire_count'] ?></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="font-weight:700; font-size: 18px;">
+                                            <td class="text-start">Overall Total</td>
+                                            <td class="text-center"><?= $sum_total_employees ?></td>
+                                            <td class="text-center"><?= $sum_male ?></td>
+                                            <td class="text-center"><?= $sum_female ?></td>
+                                            <td class="text-center"><?= $sum_lgbt ?></td>
+                                            <td class="text-center"><?= $sum_retiree ?></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                 </div>
 
 

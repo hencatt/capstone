@@ -69,7 +69,7 @@ if ($stmt->execute()) {
 </head>
 
 <body>
-    
+
 
     <div class="row everything">
         <div class="col sidebar">
@@ -147,8 +147,124 @@ if ($stmt->execute()) {
                     ?>
                 </div>
             </div>
+
+            <div class="row mt-5">
+                <div class="col">
+                    <button class="btn btn-outline-primary" id="coAuthorBtn">Assign Panel</button>
+                </div>
+            </div>
+
+
+            <!-- CO AUTHORS MODAL -->
+            <div class="modal fade" id="coauthorModal" tabindex="-1" aria-labelledby="coauthorModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="coauthorModalLabel">Panel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="coauthor_lastname" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="coauthor_lastname" name="coauthor_lastname"
+                                    placeholder="Last Name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="coauthor_firstname" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="coauthor_firstname"
+                                    name="coauthor_firstname" placeholder="First Name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="coauthor_middlename" class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" id="coauthor_middlename"
+                                    name="coauthor_middlename" placeholder="Middle Name">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="addCoauthorsBtn">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ---------------- -->
         </div>
     </div>
+
+
+
+    <script>
+        let coauthors = []; // global array
+
+        $(document).ready(function () {
+            const coAuthButton = $('#coAuthorBtn');
+            $('#coAuthorsModal').hide();
+
+            // Make updateCoauthorsList globally accessible
+            window.updateCoauthorsList = function () {
+                const tbody = document.querySelector('#coauthorsTable tbody');
+                tbody.innerHTML = '';
+                coauthors.forEach((c, idx) => {
+                    tbody.innerHTML += `
+                    <tr>
+                        <td><input type="hidden" name="coauthors[${idx}][lname]" value="${c.lname}">${c.lname}</td>
+                        <td><input type="hidden" name="coauthors[${idx}][fname]" value="${c.fname}">${c.fname}</td>
+                        <td><input type="hidden" name="coauthors[${idx}][mname]" value="${c.mname}">${c.mname}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeCoauthor(${idx})">Remove</button></td>
+                    </tr>`;
+                });
+            };
+
+            window.removeCoauthor = function (idx) {
+                coauthors.splice(idx, 1);
+                updateCoauthorsList();
+            }
+
+            // Load modal content
+            $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function () {
+                // Delegate click event to dynamically added employee rows
+                $('#coAuthorsModal').on('click', '.employeeRow', function () {
+                    const fname = $(this).data('fname');
+                    const mname = $(this).data('mname');
+                    const lname = $(this).data('lname');
+                    const email = $(this).data('email');
+
+                    // Prevent duplicate co-authors in the table
+                    if (!coauthors.some(c => c.lname === lname && c.fname === fname)) {
+                        coauthors.push({ lname, fname, mname, email });
+                        updateCoauthorsList();
+                    }
+
+                    // Add email to dropdown (NO DUPLICATE OPTIONS)
+                    if ($("#inputEmail option[value='" + email + "']").length === 0) {
+                        $("#inputEmail").append(`<option value="${email}">${email}</option>`);
+                    }
+                });
+
+                // Close modal button inside loaded content
+                $('#closeCoAuthorModal').on('click', function () {
+                    $('#coAuthorsModal').hide();
+                    coAuthButton.text("Assign Panel");
+                });
+            });
+
+            // Toggle modal
+            coAuthButton.on("click", function () {
+                $('#coAuthorsModal').toggle();
+                const isVisible = $('#coAuthorsModal').is(":visible");
+                coAuthButton.text(isVisible ? ">>>" : "Assign Panel");
+            });
+
+            // Click outside to close
+            $('body').on("click", function (e) {
+                if (!$(e.target).closest('#coAuthorsModal, #coAuthorBtn').length && $('#coAuthorsModal').is(':visible')) {
+                    $('#coAuthorsModal').hide();
+                    coAuthButton.text("Add Co-Authors");
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

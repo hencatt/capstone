@@ -11,7 +11,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
-$currentEmail = $user['email']; 
+$currentEmail = $user['email'];
 $id = $user['id'];
 
 if ($currentPosition === "Director") {
@@ -41,7 +41,7 @@ if (isset($_POST['submitResearch'])) {
     $checkEmail->execute();
     $checkEmail->store_result();
 
-    
+
 
 
     $checkEmail->close();
@@ -72,7 +72,7 @@ if (isset($_POST['submitResearch'])) {
                 research_agenda, research_sdg, research_category
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-       $stmt->bind_param("ssssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $inputEmail, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
+        $stmt->bind_param("ssssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $inputEmail, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
         $result = $stmt->execute();
         $stmt->close();
 
@@ -128,7 +128,7 @@ if (isset($_POST['submitResearch'])) {
             }
         }
     </style>
-  
+
     <div class="row">
         <div class="col sidebar">
             <?php echo sidebar("research", $currentPosition) ?>
@@ -267,7 +267,7 @@ if (isset($_POST['submitResearch'])) {
                                     <label for="inputEmail" class="form-label">Email</label>
                                     <select name="inputEmail" id="inputEmail" class="form-select" required>
                                         <option value="<?= $currentEmail ?>"><?= $currentEmail ?></option>
-                                    </select>                                  
+                                    </select>
                                     <!-- note -->
                                     <br>
                                     <figcaption class="blockquote-footer d-flex align-items-end">(Note: Only primary
@@ -369,9 +369,39 @@ if (isset($_POST['submitResearch'])) {
                                         style="height: 400px;" required></textarea>
                                 </div>
                             </div>
+                            <div class="row mt-5">
+                                <div class="col">
+                                    <label for="researchEvent" class="form-label">Select Event</label>
+                                    <select name="researchEvent" id="researchEvent" class="form-control">
+                                        <?php
+                                        $category = "Research Event";
+                                        $sql = "SELECT announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";
+                                        $stmt = $con->prepare($sql);
+                                        $stmt->bind_param("s", $category);
+
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+
+                                        if ($result && $result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+
+                                                echo '<option 
+                        value="' . htmlspecialchars($row['announceTitle']) . '" 
+                        data-deadline="' . htmlspecialchars($row['proposalDate']) . '">
+                        ' . htmlspecialchars($row['announceTitle']) . '
+                      </option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+
+                            </div>
                             <div class="row mt-5 mb-3">
                                 <div class="col d-flex justify-content-end">
-                                    <button type="submit" name="submitResearch" class="btn btn-primary">Submit</button>
+                                    <button type="submit" name="submitResearch" id="submitResearch"
+                                        class="btn btn-primary">Submit</button>
                                 </div>
                             </div>
                         </div>
@@ -384,6 +414,29 @@ if (isset($_POST['submitResearch'])) {
     <?php include('../phpFunctions/alerts.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('researchEvent').addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            const deadline = new Date(selected.getAttribute('data-deadline'));
+            const today = new Date();
+            const submitBtn = document.getElementById('submitResearch');
+
+            console.log("deadline: ", deadline);
+            console.log("today: ", today);
+            console.log(today > deadline);
+
+            if (today > deadline) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Submission Closed";
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit";
+            }
+        });
+
+        // Trigger on page load for default selection
+        document.getElementById('researchEvent').dispatchEvent(new Event('change'));
+    </script>
     <script>
         let coauthors = []; // global array
 
@@ -414,7 +467,7 @@ if (isset($_POST['submitResearch'])) {
             // Load modal content
             $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function () {
                 // Delegate click event to dynamically added employee rows
-               $('#coAuthorsModal').on('click', '.employeeRow', function () {
+                $('#coAuthorsModal').on('click', '.employeeRow', function () {
                     const fname = $(this).data('fname');
                     const mname = $(this).data('mname');
                     const lname = $(this).data('lname');
