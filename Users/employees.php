@@ -89,112 +89,181 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['fname'])) {
+    if (isset($_POST['fname']) && isset($_POST['lname']) && !isset($_POST['add_employee'])) {
         // Add Account Logic
-        $fname = $_POST['fname'];
-        $lname = $_POST['lname'];
-        $email = $_POST['email'];
-        $username = $_POST['username'];
-        $plainPassword = $_POST['pass'];
-        $password = password_hash($plainPassword, PASSWORD_DEFAULT);
-        $position = $_POST['pos'];
-        $department = $_POST['dept'];
-        $campus = $_POST['campus'];
+        $fname = trim($_POST['fname'] ?? '');
+        $lname = trim($_POST['lname'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $username = trim($_POST['username'] ?? '');
+        $plainPassword = $_POST['pass'] ?? '';
+        $position = $_POST['pos'] ?? '';
 
-        $conn = new mysqli('localhost', 'root', '', 'gad_portal');
-        // header("Location: " . $_SERVER['PHP_SELF']);
-        // exit();
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
+        // Use null coalescing to handle undefined dept/campus
+        // If not set, use current user's department/campus
+        $department = $_POST['dept'] ?? $currentDepartment;
+        $campus = $_POST['campus'] ?? $currentCampus;
+
+        $status = 'Active';
+
+        // Validate required fields
+        if (empty($fname) || empty($lname) || empty($email) || empty($username) || empty($plainPassword)) {
+            alertError("Error", "All fields are required");
+            exit();
         }
 
-        // Check if the email already exists
-        $checkEmailQuery = "SELECT email FROM accounts_tbl WHERE email = '$email'";
-        $result = $conn->query($checkEmailQuery);
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            alertError("Error", "Invalid email format");
+            exit();
+        }
 
-        if ($result->num_rows > 0) {
-            setSessionStatus("Error", "Email already exist", "error");
+        // Validate position
+        if (empty($position)) {
+            alertError("Error", "Position is required");
+            exit();
+        }
+
+        // Hash password
+        $password = password_hash($plainPassword, PASSWORD_DEFAULT);
+
+        // Check if the email already exists in accounts_tbl
+        $checkEmailQuery = $con->prepare("SELECT email FROM accounts_tbl WHERE email = ?");
+        $checkEmailQuery->bind_param("s", $email);
+        $checkEmailQuery->execute();
+        $checkEmailQuery->store_result();
+
+        if ($checkEmailQuery->num_rows > 0) {
+            $checkEmailQuery->close();
+            alertError("Error", "Email already exists in accounts");
+            exit();
+        }
+        $checkEmailQuery->close();
+
+        // Start transaction for data integrity
+        $con->begin_transaction();
+
+        try {
+            // STEP 1: Check if employee exists with this email
+            $checkEmployee = $con->prepare("SELECT id FROM employee_tbl WHERE email = ?");
+            $checkEmployee->bind_param("s", $email);
+            $checkEmployee->execute();
+            $checkEmployee->bind_result($employee_id);
+            $checkEmployee->fetch();
+            $checkEmployee->close();
+
+            // STEP 2: If employee doesn't exist, create one first
+            if (!$employee_id) {
+                // Insert into employee_tbl first
+                $insertEmployee = $con->prepare("INSERT INTO employee_tbl (email, contact_no, department, campus, status) VALUES (?, '', ?, ?, ?)");
+                $insertEmployee->bind_param("ssss", $email, $department, $campus, $status);
+
+                if (!$insertEmployee->execute()) {
+                    throw new Exception("Failed to create employee record: " . $insertEmployee->error);
+                }
+
+                $employee_id = $con->insert_id;
+                $insertEmployee->close();
+
+                // Insert basic info into employee_info
+                $insertInfo = $con->prepare("INSERT INTO employee_info (fname, lname, employee_id) VALUES (?, ?, ?)");
+                $insertInfo->bind_param("ssi", $fname, $lname, $employee_id);
+
+                if (!$insertInfo->execute()) {
+                    throw new Exception("Failed to create employee info: " . $insertInfo->error);
+                }
+                $insertInfo->close();
+            }
+
+            // STEP 3: Now insert into accounts_tbl with the employee_id
+            $insertAccount = $con->prepare("INSERT INTO accounts_tbl (id, fname, lname, email, username, pass, position, department, campus, date_created, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)");
+            $insertAccount->bind_param("issssssss", $employee_id, $fname, $lname, $email, $username, $password, $position, $department, $campus);
+
+            if (!$insertAccount->execute()) {
+                throw new Exception("Failed to create account: " . $insertAccount->error);
+            }
+            $insertAccount->close();
+
+            // Commit transaction
+            $con->commit();
+
+            alertSuccess("Done", "Account Created Successfully");
+
+            // Send credentials email to the new user
+            sendUserCredentials($email, $username, $plainPassword, $fname, $lname);
+
+            // Redirect to prevent form resubmission
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
-        } else {
-            // Insert the new account
-            $sql = "INSERT INTO accounts_tbl (fname, lname, email, username, pass, position, department, campus, date_created, is_active) 
-                        VALUES ('$fname', '$lname', '$email', '$username', '$password', '$position' , '$department', '$campus', NOW(), 1)";
 
-            if ($conn->query($sql)) {
-                alertSuccess("Done", "Account Created");
-
-                // Send credentials email to the new user
-                sendUserCredentials($email, $username, $plainPassword, $fname, $lname);
-            } else {
-                alertError("Error", "Please try again");
-            }
+        } catch (Exception $e) {
+            // Rollback on error
+            $con->rollback();
+            alertError("Error", $e->getMessage());
+            error_log("Add Account Error: " . $e->getMessage());
         }
+    }
+} elseif (isset($_POST['id'])) {
+    // Deactivate User Logic
+    $userId = $_POST['id'];
 
-        $conn->close();
-    } elseif (isset($_POST['id'])) {
-        // Deactivate User Logic
-        $userId = $_POST['id'];
+    $conn = new mysqli('localhost', 'root', '', 'gad_portal');
 
-        $conn = new mysqli('localhost', 'root', '', 'gad_portal');
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+    $sql = "UPDATE accounts_tbl SET is_active = 0 WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
 
-        $sql = "UPDATE accounts_tbl SET is_active = 0 WHERE id = ?";
+    if ($stmt->execute()) {
+        alertSuccess("Activated", "User account is activated");
+    } else {
+        alertError("Error", "Please Try Again");
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+// Update Account Logic
+if (isset($_POST['update_account'])) {
+    $userId = $_POST['edit_id'];
+    $fname = $_POST['edit_fname'];
+    $lname = $_POST['edit_lname'];
+    $username = $_POST['edit_username'];
+    $email = $_POST['edit_email'];
+    $password = !empty($_POST['edit_password']) ? password_hash($_POST['edit_password'], PASSWORD_DEFAULT) : null;
+    $position = $_POST['edit_position'];
+    $department = $_POST['edit_department'];
+
+    $conn = new mysqli('localhost', 'root', '', 'gad_portal');
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    if ($password) {
+        $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, pass = ?, position = ?, department = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-
-        if ($stmt->execute()) {
-            alertSuccess("Activated", "User account is activated");
-        } else {
-            alertError("Error", "Please Try Again");
-        }
-
-        $stmt->close();
-        $conn->close();
+        $stmt->bind_param("sssssssi", $fname, $lname, $username, $email, $password, $position, $department, $userId);
+    } else {
+        $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, position = ?, department = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssi", $fname, $lname, $username, $email, $position, $department, $userId);
     }
-    // Update Account Logic
-    if (isset($_POST['update_account'])) {
-        $userId = $_POST['edit_id'];
-        $fname = $_POST['edit_fname'];
-        $lname = $_POST['edit_lname'];
-        $username = $_POST['edit_username'];
-        $email = $_POST['edit_email'];
-        $password = !empty($_POST['edit_password']) ? password_hash($_POST['edit_password'], PASSWORD_DEFAULT) : null;
-        $position = $_POST['edit_position'];
-        $department = $_POST['edit_department'];
 
-        $conn = new mysqli('localhost', 'root', '', 'gad_portal');
-
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        if ($password) {
-            $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, pass = ?, position = ?, department = ? WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssssssi", $fname, $lname, $username, $email, $password, $position, $department, $userId);
-        } else {
-            $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, position = ?, department = ? WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssssssi", $fname, $lname, $username, $email, $position, $department, $userId);
-        }
-
-        if ($stmt->execute()) {
-            alertSuccess("Updated", "Account updated successfully!");
-        } else {
-            alertError("Error", "There has been an error updating account");
-        }
-
-        $stmt->close();
-        $conn->close();
-
-        // Redirect to the same page to prevent form resubmission
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+    if ($stmt->execute()) {
+        alertSuccess("Updated", "Account updated successfully!");
+    } else {
+        alertError("Error", "There has been an error updating account");
     }
+
+    $stmt->close();
+    $conn->close();
+
+    // Redirect to the same page to prevent form resubmission
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 
 $conn = new mysqli('localhost', 'root', '', 'gad_portal');
@@ -376,59 +445,59 @@ if ($conn->connect_error) {
                 </div>
                 <?php
                 if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                        <div class="col d-flex justify-content-end">
-                            <button id="add_account" class="btn btn-outline-success">
-                                Add Account
-                                <ion-icon name="add-outline" class="add-icon"></ion-icon>
-                            </button>
-                        </div>
+                    <div class="col d-flex justify-content-end">
+                        <button id="add_account" class="btn btn-outline-success">
+                            Add Account
+                            <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                        </button>
                     </div>
+                </div>
 
-                <?php elseif ($currentPosition === "Focal Person"): ?>
+            <?php elseif ($currentPosition === "Focal Person"): ?>
 
-                    <div class="row mt-2">
-                        <div class="col d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
-                                Add Employee
-                            </button>
-                        </div>
-                        <!-- <div class="col-2">
+                <div class="row mt-2">
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
+                            Add Employee
+                        </button>
+                    </div>
+                    <!-- <div class="col-2">
                             <button id="add_account" class="btn btn-outline-success">
                                 Add Researcher
                             </button>
                         </div> -->
-                    </div>
-                    <?php
+                </div>
+                <?php
                 endif;
                 ?>
-                <!-- FiltersHere -->
-                <div class="row mt-3">
-                    <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
-                    </div>
+            <!-- FiltersHere -->
+            <div class="row mt-3">
+                <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
                 </div>
-                <div class="row mt-3 justify-content-between" id="filterButton">
+            </div>
+            <div class="row mt-3 justify-content-between" id="filterButton">
 
-                    <!-- FILTER BUTTONS HERE -->
-                </div>
-                <div class="row">
-                      <div class="row mt-3 d-flex justify-content-end">
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <div class="col">
-                                <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
-                                            checked>
-                                        Employees
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
-                                        Accounts
-                                    </label>
-                                </div>
+                <!-- FILTER BUTTONS HERE -->
+            </div>
+            <div class="row">
+                <div class="row mt-3 d-flex justify-content-end">
+                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                        <div class="col">
+                            <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
+                                        checked>
+                                    Employees
+                                </label>
+                                <label class="btn btn-secondary">
+                                    <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
+                                    Accounts
+                                </label>
                             </div>
-                            <?php
-                        endif;
-                        ?>
+                        </div>
+                        <?php
+                    endif;
+                    ?>
                 </div>
 
 
@@ -445,263 +514,90 @@ if ($conn->connect_error) {
 
 
     <!-- Modals -->
-    <div class="modals" id="add_account_modal" style="display: none;">
-        <div class="modal_add_account">
-            <div class="modal_title">
-                <?php
-                if ($currentPosition !== "Focal Person"):
-                    ?>
-                    <h2>Add Account</h2>
-                    <?php
-                else:
-                    ?>
-                    <h2>Add Researcher</h2>
-                    <?php
-                endif;
-                ?>
-            </div>
-            <!-- position -->
-            <?php
-            echo '
-                    <form method="post" class="form_add_account" novalidate>
-                        <input type="text" name="fname" placeholder="First Name" required>
-                        <input type="text" name="lname" placeholder="Last Name" required>
-                        <input type="email" name="email" placeholder="Email" required>
-                        <input type="hidden" name="username" placeholder="Username" required>
-                        <input type="password"
-                                    name="pass"
-                                    id="password"
-                                    placeholder="Password (atleast 8 characters with uppercase, lowercase, and a number)"
-                                    required
-                                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}"
-                                    maxlength="64"
-                                    title="Password must be 8–20 characters, with uppercase, lowercase, and a number.">';
-            if ($currentPosition !== "Focal Person") {
-
-                echo '
-                        <select name="pos" id="position" required>
-                        ';
-            } else {
-                echo '
-                            <select name="pos" id="position" required style="display: none">';
-            }
-            if ($currentPosition === "Director") {
-                echo '
-                            <option value="Technical Assistant">Technical Assistant</option>
-                            <option value="Focal Person">Focal Person</option>
-                            <option value="Panel">Panel</option>
-                            <option value="RET Chair">RET Chair</option>
-                        </select>';
-            } else if ($currentPosition === "Technical Assistant") {
-                echo '
-                            <option value="Technical Assistant">Technical Assistant</option>
-                            <option value="Focal Person">Focal Person</option>
-                            <option value="Panel">Panel</option>
-                            <option value="RET Chair">RET Chair</option>
-                        </select>';
-            } else {
-                echo '
-                            <option value="Researcher">Researcher</option>
-                        </select>';
-            }
-
-            echo '
-                        <!-- department -->';
-
-            if ($currentPosition !== "Focal Person") {
-                echo '
-                        <select name="dept" id="department" required>';
-            } else {
-                echo '
-                        <select name="dept" id="department" required style="display: none;">';
-            }
-
-            if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
-                echo '<option value="" disabled selected>Select Department</option>
-                            <option value="CPADM">CPADM</option>
-                            <option value="CMBT">CMBT - BA, HM</option>
-                            <option value="CoArch">CoArch</option>
-                            <option value="CoEd">CoEd</option>
-                            <option value="Crim">Crim</option>
-                            <option value="COE">COE</option>
-                            <option value="CICT">CICT</option>
-                            <option value="IPE">IPE</option>
-                            <option value="LHS">LHS</option>
-                            <option value="CIT">CIT</option>
-                            <option value="CAS">CAS</option>
-                            <option value="IOLL">IOLL</option>
-                            <option value="CON">CON</option>
-                            <option value="GS">GS</option>';
-            } else {
-                echo '
-                <option value=' . $currentDepartment . ' selected>' . $currentDepartment . '</option>
-                ';
-            }
-
-            if ($currentPosition !== "Focal Person") {
-                echo '
-                        </select>
-                        <select name="campus" id="campus" required>';
-            } else {
-                echo '
-                        </select>
-                        <select name="campus" id="campus" required style="display:none;">';
-            }
-            if ($currentPosition === "Director" || $currentPosition === "Technical Assistant") {
-                echo '
-                            <option value="" disabled selected>Select Campus</option>
-                            <option value="Sumacab">Sumacab</option>
-                            <option value="GT">Gen. Tinio</option>
-                            <option value="San Isidro">San Isidro</option>
-                            <option value="Gabaldon">Gabaldon</option>
-                            <option value="Atate">Atate</option>
-                            <option value="Fort Magsaysay">Fort Magsaysay</option>';
-            } else {
-                echo '
-                <option value=' . $currentCampus . '>' . $currentCampus . '</option>
-                ';
-            }
-
-            echo '
-                        </select>
-                        <div class="buttons">
-                            <button type="submit" class="btn btn-outline-success">Add</button>
-                            <button type="button" class="add_btn_close" id="close_add_account">Close</button>
-                        </div>
-                    </form>'
-                ?>
-            <?php if ($currentPosition === "Focal Person"): ?>
-
-                <div class="modal fade" id="add_emp_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                    aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
-
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="modal-title" id="addEmployeeModalLabel">Add Employee</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" class="form_add_emp" novalidate>
-                                    <!-- Employee Info -->
-                                    <h5>Employee Information</h5>
-                                    <div class="mb-3">
-                                        <label for="fname" class="form-label">First Name</label>
-                                        <input type="text" name="fname" id="fname" class="form-control"
-                                            placeholder="Enter First Name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="m_initial" class="form-label">Middle Initial</label>
-                                        <input type="text" name="m_initial" id="m_initial" class="form-control"
-                                            placeholder="Enter Middle Initial">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="lname" class="form-label">Last Name</label>
-                                        <input type="text" name="lname" id="lname" class="form-control"
-                                            placeholder="Enter Last Name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="address" class="form-label">Address</label>
-                                        <input type="text" name="address" id="address" class="form-control"
-                                            placeholder="Enter Address" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="birthday" class="form-label">Date of Birth</label>
-                                        <input type="date" name="birthday" id="birthday" class="form-control"
-                                            pattern="\d{4}-\d{2}-\d{2}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="marital_status" class="form-label">Marital Status</label>
-                                        <select name="marital_status" id="marital_status" class="form-select" required>
-                                            <option value="" disabled selected>Select Marital Status</option>
-                                            <option value="Single">Single</option>
-                                            <option value="Married">Married</option>
-                                            <option value="Widowed">Widowed</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="sex" class="form-label">Sex</label>
-                                        <select name="sex" id="sex" class="form-select" required>
-                                            <option value="" disabled selected>Select Sex</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="gender" class="form-label">Gender</label>
-                                        <select name="gender" id="gender" class="form-select" required>
-                                            <option value="" disabled selected>Select Sex</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="LGBTQIA+">LGBTQIA+</option>
-                                            <option value="Others">Others</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="priority_status" class="form-label">Priority Status</label>
-                                        <select name="priority_status" id="priority_status" class="form-select">
-                                            <option value="" disabled selected>Select Priority Status</option>
-                                            <option value="PWD">PWD</option>
-                                            <option value="Senior Citizen">Senior Citizen</option>
-                                            <option value="None">None</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="size" class="form-label">Shirt size</label>
-                                        <select name="size" id="size" class="form-select">
-                                            <option value="" disabled selected>Select Size</option>
-                                            <option value="S">S</option>
-                                            <option value="M">M</option>
-                                            <option value="L">L</option>
-                                            <option value="XL">XL</option>
-                                            <option value="2XL">2XL</option>
-                                            <option value="3XL">3XL</option>
-                                            <option value="4XL">4XL</option>
-
-                                        </select>
-                                    </div>
-
-                                    <!-- Employee Table -->
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control"
-                                            placeholder="Enter Email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="contact_no" class="form-label">Contact No</label>
-                                        <input type="text" name="contact_no" id="contact_no" class="form-control"
-                                            placeholder="Enter Contact Number" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="department" class="form-label">Department</label>
-                                        <select name="department" id="department" class="form-select" required>
-                                            <option value="" disabled>Select Department</option>
-                                            <option value="<?= $currentDepartment ?>" selected><?= $currentDepartment ?>
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="campus" class="form-label">Campus</label>
-                                        <select name="campus" id="campus" class="form-select" required>
-                                            <option value="" disabled>Select Campus</option>
-                                            <option value="<?= $currentCampus ?>" selected><?= $currentCampus ?></option>
-                                        </select>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" name="add_employee" class="btn btn-primary">Add
-                                            Employee</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
-
+    
+<div class="modals" id="add_account_modal" style="display: none;">
+    <div class="modal_add_account">
+        <div class="modal_title">
+            <h2><?= ($currentPosition === "Focal Person") ? "Add Researcher" : "Add Account" ?></h2>
         </div>
+        
+        <form method="post" class="form_add_account" novalidate>
+            <!-- Hidden field for existing employee ID (used when assigning account) -->
+            <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
+            
+            <input type="text" name="fname" placeholder="First Name" required>
+            <input type="text" name="lname" placeholder="Last Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password"
+                   name="pass"
+                   id="password"
+                   placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)"
+                   required
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}"
+                   maxlength="64"
+                   title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
+            
+            <?php if ($currentPosition !== "Focal Person"): ?>
+                <!-- Position Select (visible for Director/TA) -->
+                <select name="pos" id="position" required>
+                    <option value="" disabled selected>Select Position</option>
+                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                        <option value="Technical Assistant">Technical Assistant</option>
+                        <option value="Focal Person">Focal Person</option>
+                        <option value="Panel">Panel</option>
+                        <option value="RET Chair">RET Chair</option>
+                    <?php endif; ?>
+                </select>
+
+                <!-- Department Select (visible for Director/TA) -->
+                <select name="dept" id="department" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                        <option value="CPADM">CPADM</option>
+                        <option value="CMBT">CMBT - BA, HM</option>
+                        <option value="CoArch">CoArch</option>
+                        <option value="CoEd">CoEd</option>
+                        <option value="Crim">Crim</option>
+                        <option value="COE">COE</option>
+                        <option value="CICT">CICT</option>
+                        <option value="IPE">IPE</option>
+                        <option value="LHS">LHS</option>
+                        <option value="CIT">CIT</option>
+                        <option value="CAS">CAS</option>
+                        <option value="IOLL">IOLL</option>
+                        <option value="CON">CON</option>
+                        <option value="GS">GS</option>
+                    <?php endif; ?>
+                </select>
+
+                <!-- Campus Select (visible for Director/TA) -->
+                <select name="campus" id="campus" required>
+                    <option value="" disabled selected>Select Campus</option>
+                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                        <option value="Sumacab">Sumacab</option>
+                        <option value="GT">Gen. Tinio</option>
+                        <option value="San Isidro">San Isidro</option>
+                        <option value="Gabaldon">Gabaldon</option>
+                        <option value="Atate">Atate</option>
+                        <option value="Fort Magsaysay">Fort Magsaysay</option>
+                    <?php endif; ?>
+                </select>
+            <?php else: ?>
+                <!-- Hidden fields for Focal Person -->
+                <input type="hidden" name="pos" value="Researcher">
+                <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
+                <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
+            <?php endif; ?>
+            
+            <div class="buttons">
+                <button type="submit" class="btn btn-outline-success">Add</button>
+                <button type="button" class="add_btn_close" id="close_add_account">Close</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
 
 
@@ -1083,6 +979,7 @@ if ($conn->connect_error) {
 </body>
 
 <?php require('./reusableHTML/personalInfoModal.php'); ?>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -1121,34 +1018,84 @@ if ($conn->connect_error) {
         -------------------------------- */
         const addAccountModal = document.getElementById('add_account_modal');
 
-        document.addEventListener("click", function (e) {
-            if (e.target.classList.contains("assignBtn")) {
+        $(document).on('click', '.assignBtn', function () {
+            const row = $(this).closest('tr');
 
-                // Open modal
-                addAccountModal.style.display = "flex";
-                document.body.style.overflow = "hidden";
+            // Get employee data from the row
+            const employeeId = $(this).data('id'); // Make sure to add data-id attribute to the button
+            const fullName = row.find('.empName').text().trim();
+            const email = row.find('.empEmail').text().trim();
+            const department = row.find('td:eq(1)').text().trim(); // Adjust index as needed
+            const campus = row.find('td:eq(2)').text().trim(); // Adjust index as needed
 
-                // Get the row
-                let row = e.target.closest("tr");
+            // Split name
+            const nameParts = fullName.split(' ');
+            const fname = nameParts[0];
+            const lname = nameParts.slice(1).join(' ');
 
-                // Extract fields (update class selectors if yours differ)
-                let fullName = row.querySelector(".empName").innerText.trim();
-                let email = row.querySelector(".empEmail").innerText.trim();
+            // Check if account already exists for this email
+            $.ajax({
+                url: '../phpFunctions/checkAccountExists.php',
+                type: 'POST',
+                data: { email: email },
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp.exists) {
+                        alert('⚠️ This employee already has an account!');
+                        return;
+                    }
 
-                // First/Last name split
-                let parts = fullName.split(" ");
-                let fname = parts[0];
-                let lname = parts.slice(1).join(" ");
+                    // Open modal and fill fields
+                    $('#add_account_modal').css('display', 'flex');
+                    document.body.style.overflow = 'hidden';
 
-                // Autofill modal inputs
-                document.querySelector("input[name='fname']").value = fname;
-                document.querySelector("input[name='lname']").value = lname;
-                document.querySelector("input[name='email']").value = email;
-                document.querySelector("input[name='username']").value = email;
-                document.querySelector("input[name='pass']").value = email;
+                    // Fill form with employee data
+                    $('input[name="fname"]').val(fname);
+                    $('input[name="lname"]').val(lname);
+                    $('input[name="email"]').val(email).prop('readonly', true);
+                    $('input[name="username"]').val(email);
 
-                console.log("filled")
-            }
+                    // Auto-generate password from email
+                    const autoPassword = generatePasswordFromEmail(email);
+                    $('input[name="pass"]').val(autoPassword);
+
+                    // Set department and campus
+                    $('select[name="dept"]').val(department);
+                    $('select[name="campus"]').val(campus);
+
+                    // Store employee_id in a hidden field
+                    if ($('#existing_employee_id').length === 0) {
+                        $('form.form_add_account').prepend('<input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">');
+                    }
+                    $('#existing_employee_id').val(employeeId);
+
+                    // Add note
+                    if ($('#assign-note').length === 0) {
+                        $('form.form_add_account').prepend('<div id="assign-note" class="alert alert-info mb-3"><i class="fas fa-info-circle"></i> Creating account for existing employee</div>');
+                    }
+                },
+                error: function () {
+                    alert('❌ Failed to check account status');
+                }
+            });
+        });
+
+        // Generate password from email
+        function generatePasswordFromEmail(email) {
+            if (!email) return '';
+
+            // Take first part of email before @, capitalize first letter, add "123"
+            const emailPart = email.split('@')[0];
+            const password = emailPart.charAt(0).toUpperCase() + emailPart.slice(1) + '123';
+
+            return password;
+        }
+
+        // Clear readonly and hidden fields when modal closes
+        $('#close_add_account').on('click', function () {
+            $('input[name="email"]').prop('readonly', false);
+            $('#existing_employee_id').remove();
+            $('#assign-note').remove();
         });
 
         // Close add-account modal when clicking overlay  
@@ -1201,72 +1148,275 @@ if ($conn->connect_error) {
 
 
 <!-- Try lang -->
-<script>
-    $(document).ready(function () {
-        // 🔹 Open Edit Account Modal
-        $(document).on('click', '.editAccountBtn', function () {
-            const id = $(this).data('id');
 
-            $.post('../phpFunctions/getAccountDetails.php', {
-                id
-            }, function (resp) {
-                if (!resp || resp.error) {
-                    alert(resp?.error || 'Failed to fetch account details.');
+<script>
+    // Add this to your employees.php script section
+    $(document).ready(function () {
+
+        // =====================================================
+        // OPEN EDIT ACCOUNT MODAL
+        // =====================================================
+        $(document).on('click', '.editAccountBtn', function () {
+            const accountId = $(this).data('id');
+
+            if (!accountId) {
+                alert('❌ Invalid account ID');
+                return;
+            }
+
+            // Show loading state
+            $('#editAccountModal .modal-body').html('<div class="text-center p-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            $('#editAccountModal').modal('show');
+
+            // Fetch account details
+            $.ajax({
+                url: '../phpFunctions/getAccountDetails.php',
+                type: 'POST',
+                data: { id: accountId },
+                dataType: 'json',
+                success: function (resp) {
+                    if (!resp || resp.error) {
+                        alert('❌ ' + (resp?.error || 'Failed to fetch account details'));
+                        $('#editAccountModal').modal('hide');
+                        return;
+                    }
+
+                    // Restore modal body content if it was replaced
+                    if ($('#acc_id').length === 0) {
+                        location.reload(); // Reload to restore modal structure
+                        return;
+                    }
+
+                    // Populate form fields
+                    $('#acc_id').val(resp.id);
+                    $('#acc_username').val(resp.username);
+                    $('#acc_email').val(resp.email);
+                    $('#acc_fname').val(resp.fname);
+                    $('#acc_lname').val(resp.lname);
+                    $('#acc_position').val(resp.position);
+                    $('#acc_department').val(resp.department);
+                    $('#acc_campus').val(resp.campus);
+                    $('#acc_password').val(''); // Always clear password field
+
+                    // Add a note about password
+                    if (!$('#password-note').length) {
+                        $('#acc_password').after('<small id="password-note" class="form-text text-muted">Leave blank to keep current password</small>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Fetch Account Error:', error);
+                    alert('❌ An error occurred while fetching account details');
+                    $('#editAccountModal').modal('hide');
+                }
+            });
+        });
+
+        // =====================================================
+        // SAVE ACCOUNT UPDATE
+        // =====================================================
+        $('#editAccountForm').on('submit', function (e) {
+            e.preventDefault();
+
+            // Get form data
+            const formData = {
+                acc_id: $('#acc_id').val(),
+                acc_username: $('#acc_username').val().trim(),
+                acc_email: $('#acc_email').val().trim(),
+                acc_fname: $('#acc_fname').val().trim(),
+                acc_lname: $('#acc_lname').val().trim(),
+                acc_position: $('#acc_position').val(),
+                acc_department: $('#acc_department').val(),
+                acc_campus: $('#acc_campus').val(),
+                acc_password: $('#acc_password').val().trim()
+            };
+
+            // Frontend validation
+            if (!formData.acc_username || !formData.acc_email ||
+                !formData.acc_fname || !formData.acc_lname) {
+                alert('⚠️ Username, Email, First Name, and Last Name are required');
+                return;
+            }
+
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.acc_email)) {
+                alert('⚠️ Please enter a valid email address');
+                return;
+            }
+
+            // Password validation (if provided)
+            if (formData.acc_password) {
+                if (formData.acc_password.length < 8) {
+                    alert('⚠️ Password must be at least 8 characters long');
                     return;
                 }
 
-                $('#account_id').val(resp.id);
-                $('#edit_fname').val(resp.fname);
-                $('#edit_lname').val(resp.lname);
-                $('#edit_username').val(resp.username);
-                $('#edit_position').val(resp.position);
-                $('#edit_department').val(resp.department);
-                $('#edit_campus').val(resp.campus);
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                if (!passwordRegex.test(formData.acc_password)) {
+                    alert('⚠️ Password must contain at least one uppercase letter, one lowercase letter, and one number');
+                    return;
+                }
+            }
 
-                $('#editAccountModal').modal('show');
-            }, 'json').fail(() => alert('Request failed while fetching account.'));
+            // Disable submit button to prevent double submission
+            const $submitBtn = $('#editAccountForm button[type="submit"]');
+            const originalBtnText = $submitBtn.html();
+            $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Saving...');
+
+            // Send update request
+            $.ajax({
+                url: '../phpFunctions/updateAccount.php',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function (resp) {
+                    if (resp.success) {
+                        // Show success message
+                        alert('✅ ' + resp.message);
+
+                        // Close modal
+                        $('#editAccountModal').modal('hide');
+
+                        // Reload page to show updated data
+                        location.reload();
+                    } else {
+                        alert('❌ ' + (resp.error || 'Failed to update account'));
+                        $submitBtn.prop('disabled', false).html(originalBtnText);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Update Account Error:', error);
+                    console.error('Response:', xhr.responseText);
+                    alert('❌ An error occurred while updating the account');
+                    $submitBtn.prop('disabled', false).html(originalBtnText);
+                }
+            });
         });
 
-        // 🔹 Save Account Update
-        $('#editAccountForm').on('submit', function (e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
+        // =====================================================
+        // RESET FORM WHEN MODAL CLOSES
+        // =====================================================
+        $('#editAccountModal').on('hidden.bs.modal', function () {
+            $('#editAccountForm')[0].reset();
+            $('#acc_id').val('');
+            $('#password-note').remove();
+        });
 
-            $.post('../phpFunctions/updateAccount.php', formData, function (resp) {
-                if (resp.success) {
-                    alert(resp.message);
-                    $('#editAccountModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert(resp.error || 'Update failed.');
+        // =====================================================
+        // REAL-TIME VALIDATION FEEDBACK (OPTIONAL)
+        // =====================================================
+        $('#acc_email').on('blur', function () {
+            const email = $(this).val().trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (email && !emailRegex.test(email)) {
+                $(this).addClass('is-invalid');
+                if (!$(this).next('.invalid-feedback').length) {
+                    $(this).after('<div class="invalid-feedback">Please enter a valid email address</div>');
                 }
-            }, 'json').fail(() => alert('Request failed while updating account.'));
+            } else {
+                $(this).removeClass('is-invalid');
+                $(this).next('.invalid-feedback').remove();
+            }
+        });
+
+        $('#acc_password').on('blur', function () {
+            const password = $(this).val().trim();
+
+            if (password) {
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+                if (!passwordRegex.test(password)) {
+                    $(this).addClass('is-invalid');
+                    if (!$(this).next('.invalid-feedback').length) {
+                        $(this).after('<div class="invalid-feedback">Password must be 8+ characters with uppercase, lowercase, and number</div>');
+                    }
+                } else {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    $(this).next('.invalid-feedback').remove();
+                }
+            } else {
+                $(this).removeClass('is-invalid is-valid');
+                $(this).next('.invalid-feedback').remove();
+            }
         });
     });
 </script>
 
 <script>
-document.querySelector("input[name='email']").addEventListener("input", function() {
-    let email = this.value;
-    let passField = document.getElementById("password");
+    document.querySelector("input[name='email']").addEventListener("input", function () {
+        let email = this.value;
+        let passField = document.getElementById("password");
 
-    // Only autofill if user has NOT manually edited password yet
-    if (!passField.dataset.edited) {
-        passField.value = generatePassword(email);
+        // Only autofill if user has NOT manually edited password yet
+        if (!passField.dataset.edited) {
+            passField.value = generatePassword(email);
+        }
+    });
+
+    function generatePassword(email) {
+        if (!email) return "";
+
+        // Example: capitalize first letter + add "123"
+        let base = email.charAt(0).toUpperCase() + email.slice(1);
+        return base + "123";
     }
-});
 
-function generatePassword(email) {
-    if (!email) return "";
+    // Mark password as "edited" when user manually changes it
+    document.getElementById("password").addEventListener("input", function () {
+        this.dataset.edited = true;
+    });
+</script>
 
-    // Example: capitalize first letter + add "123"
-    let base = email.charAt(0).toUpperCase() + email.slice(1);
-    return base + "123";
-}
+<script>
+$(document).ready(function() {
+    // Open Add Account Modal
+    $('#add_account').on('click', function() {
+        $('#add_account_modal').css('display', 'flex');
+        document.body.style.overflow = 'hidden';
+        
+        // Clear form
+        $('.form_add_account')[0].reset();
+        $('#existing_employee_id').val('');
+        $('input[name="email"]').prop('readonly', false);
+        $('#assign-note').remove();
+    });
 
-// Mark password as "edited" when user manually changes it
-document.getElementById("password").addEventListener("input", function() {
-    this.dataset.edited = true;
+    // Close Add Account Modal
+    $('#close_add_account').on('click', function() {
+        $('#add_account_modal').css('display', 'none');
+        document.body.style.overflow = '';
+        
+        // Clear form
+        $('.form_add_account')[0].reset();
+        $('#existing_employee_id').val('');
+        $('input[name="email"]').prop('readonly', false);
+        $('#assign-note').remove();
+    });
+
+    // Close modal on outside click
+    $('#add_account_modal').on('click', function(e) {
+        if (e.target === this) {
+            $(this).css('display', 'none');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Auto-fill username from email
+    $('input[name="email"]').on('blur', function() {
+        const email = $(this).val().trim();
+        if (email && !$('input[name="username"]').val()) {
+            $('input[name="username"]').val(email);
+        }
+    });
+
+    // Prevent form interaction for Focal Person on hidden selects
+    <?php if ($currentPosition === "Focal Person"): ?>
+    $('#position, #department, #campus').on('mousedown keydown', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    <?php endif; ?>
 });
 </script>
 

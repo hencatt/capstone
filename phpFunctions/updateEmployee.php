@@ -1,8 +1,20 @@
 <?php
-error_reporting(0);
+// Save as: phpFunctions/addEmployee.php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
 header('Content-Type: application/json');
+
 require_once 'gad_portal.php';
-header('Content-Type: application/json');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['error' => 'Unauthorized access']);
+    exit;
+}
 
 $con = newCon();
 if ($con->connect_error) {
@@ -11,80 +23,106 @@ if ($con->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = intval($_POST['emp_id']);
-    if ($id <= 0) {
-        echo json_encode(['error' => 'Invalid employee ID']);
-        exit;
-    }
+    try {
+        // Sanitize and validate input
+        $fname = trim($_POST['fname'] ?? '');
+        $mname = trim($_POST['m_initial'] ?? '');
+        $lname = trim($_POST['lname'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $contact_no = trim($_POST['contact_no'] ?? '');
+        $department = $_POST['department'] ?? '';
+        $campus = $_POST['campus'] ?? '';
+        $birthday = $_POST['birthday'] ?? '';
+        $priority_status = $_POST['priority_status'] ?? 'None';
+        $address = trim($_POST['address'] ?? '');
+        $marital_status = $_POST['marital_status'] ?? '';
+        $size = $_POST['size'] ?? '';
+        $sex = $_POST['sex'] ?? '';
+        $gender = $_POST['gender'] ?? '';
+        $income = $_POST['income'] ?? '';
+        $children_num = isset($_POST['children_num']) ? intval($_POST['children_num']) : 0;
+        $concern = trim($_POST['concern'] ?? '') ?: 'N/A';
+        $status = 'Active';
 
-    $fname = $con->real_escape_string($_POST['inputFname']);
-    $mname = $con->real_escape_string($_POST['inputMname']);
-    $lname = $con->real_escape_string($_POST['inputLname']);
-    $email = $con->real_escape_string($_POST['inputEmail']);
-    $contact = $con->real_escape_string($_POST['inputContact']);
-    $department = $con->real_escape_string($_POST['inputDepartment']);
-    $campus = $con->real_escape_string($_POST['inputCampus']);
-    $birthdate = $con->real_escape_string($_POST['inputBirthdate']);
-    $priority = $con->real_escape_string($_POST['inputPriority']);
-    $street = $con->real_escape_string($_POST['inputStAddress']);
-    $city = $con->real_escape_string($_POST['inputCity']);
-    $province = $con->real_escape_string($_POST['inputProvince']);
-    $marital = $con->real_escape_string($_POST['inputMaritalStatus']);
-    $size = $con->real_escape_string($_POST['inputSize']);
-    $sex = $con->real_escape_string($_POST['inputSex']);
-    $gender = $con->real_escape_string($_POST['inputGender']);
-    $income = $con->real_escape_string($_POST['inputIncome']);
-    $children_num = isset($_POST['inputChildrenNum']) ? intval($_POST['inputChildrenNum']) : 0;
-    $concern = $con->real_escape_string($_POST['inputConcern']);
+        // Validate required fields
+        if (empty($fname) || empty($lname) || empty($email)) {
+            echo json_encode(['error' => 'First Name, Last Name, and Email are required']);
+            exit;
+        }
 
-    $address = trim("$street, $city, $province", ', ');
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['error' => 'Invalid email format']);
+            exit;
+        }
 
-    // --- Update employee_tbl ---
-    $updateEmp = "
-        UPDATE employee_tbl 
-        SET 
-            email = '$email', 
-            contact_no = '$contact', 
-            department = '$department', 
-            campus = '$campus'
-        WHERE id = '$id'
-    ";
+        // Check if email already exists
+        $checkStmt = $con->prepare("SELECT id FROM employee_tbl WHERE email = ?");
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $checkStmt->store_result();
 
-    // --- Update employee_info ---
-    $updateInfo = "
-        UPDATE employee_info 
-        SET 
-            fname = '$fname',
-            m_initial = '$mname',
-            lname = '$lname',
-            birthday = '$birthdate',
-            priority_status = '$priority',
-            address = '$address',
-            marital_status = '$marital',
-            size = '$size',
-            sex = '$sex',
-            gender = '$gender',
-            income = '$income',
-            children_num = '$children_num',
-            concern = '$concern'
-        WHERE employee_id = '$id'
-    ";
+        if ($checkStmt->num_rows > 0) {
+            echo json_encode(['error' => 'Email already exists in the system']);
+            $checkStmt->close();
+            $con->close();
+            exit;
+        }
+        $checkStmt->close();
 
-    $empResult = $con->query($updateEmp);
-    $infoResult = $con->query($updateInfo);
+        // Start transaction
+        $con->begin_transaction();
 
-    if ($empResult && $infoResult) {
-        echo json_encode(['success' => true, 'message' => 'Employee updated successfully!']);
-    } else {
+        // Insert into employee_tbl
+        $stmt_emp = $con->prepare("
+            INSERT INTO employee_tbl (email, contact_no, department, campus, status) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt_emp->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
+
+        if (!$stmt_emp->execute()) {
+            throw new Exception("Failed to insert into employee_tbl: " . $stmt_emp->error);
+        }
+
+        $employee_id = $con->insert_id;
+        $stmt_emp->close();
+
+        // Insert into employee_info
+        $stmt_info = $con->prepare("
+            INSERT INTO employee_info 
+            (fname, m_initial, lname, address, birthday, marital_status, sex, gender, 
+             priority_status, size, income, employee_id, children_num, concern) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmt_info->bind_param(
+            "sssssssssssiis",
+            $fname, $mname, $lname, $address, $birthday, $marital_status,
+            $sex, $gender, $priority_status, $size, $income,
+            $employee_id, $children_num, $concern
+        );
+
+        if (!$stmt_info->execute()) {
+            throw new Exception("Failed to insert into employee_info: " . $stmt_info->error);
+        }
+        $stmt_info->close();
+
+        // Commit transaction
+        $con->commit();
+
         echo json_encode([
-            'error' => 'Database update failed.',
-            'emp_error' => $con->error,
-            'info_error' => $con->error
+            'success' => true,
+            'message' => 'Employee added successfully!',
+            'employee_id' => $employee_id
         ]);
+
+    } catch (Exception $e) {
+        // Rollback on error
+        $con->rollback();
+        echo json_encode(['error' => $e->getMessage()]);
+    } finally {
+        $con->close();
     }
 
-    error_log("✅ updateEmployee.php reached");
-    $con->close();
 } else {
     echo json_encode(['error' => 'Invalid request method']);
 }
