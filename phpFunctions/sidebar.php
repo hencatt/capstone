@@ -396,7 +396,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         "events" => '
         <a href="events.php" class="categoryItem" id="' . $eventsOption . '" style="' . $eventStyle . '"><li>
                             <span class="material-symbols-outlined">event</span>
-                            Events
+                            View Announcement
                             </li></a>
         ' .
             ifSubPage($currentPage, "eventDetails", $subOption, $subOptionStyle, $subPage)
