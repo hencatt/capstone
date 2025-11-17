@@ -405,8 +405,8 @@ if ($conn->connect_error) {
 
                 <?php elseif ($currentPosition === "Focal Person"): ?>
 
-                    <div class="row mt-2 d-flex justify-content-end">
-                        <div class="col-2">
+                    <div class="row mt-2">
+                        <div class="col d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
                                 Add Employee
                             </button>
@@ -425,18 +425,11 @@ if ($conn->connect_error) {
                     <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
                     </div>
                 </div>
-                <div class="row mt-3" id="filterButton">
+                <div class="row mt-3 justify-content-between" id="filterButton">
+
                     <!-- FILTER BUTTONS HERE -->
                 </div>
 
-                <div class="row mt-3">
-                    <div class="col-3 d-flex align-items-center justify-content-start gap-1">
-                        <span class="material-symbols-outlined">
-                            search
-                        </span>
-                        <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
-                    </div>
-                </div>
 
                 <!-- TableHere -->
                 <div class="row mt-2 tableOverview">
