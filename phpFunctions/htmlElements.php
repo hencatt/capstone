@@ -17,9 +17,7 @@ function headerLinks($title)
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <!-- plotly link -->
 
-        <!--
         <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
-        -->
 
         <!-- font link -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
