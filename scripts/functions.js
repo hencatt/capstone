@@ -1,4 +1,3 @@
-// ALL PARAMS ARE ID NG MGA NASA FORM
 function filterFunction(
   location,
   searchBar,
@@ -10,7 +9,8 @@ function filterFunction(
   position,
   tableId,
   summary,
-  generateWhat
+  generateWhat,
+  searchBtn
 ) {
   console.log("Filter system loaded.");
 
@@ -39,19 +39,31 @@ function filterFunction(
     });
   }
 
-  // Attach listeners ONLY ONCE (outside filter)
+  // Attach change listeners for filters
   $(campus + ", " + dept + ", " + size + ", " + gender + ", " + checkbox).on(
     "change",
     filter
   );
 
-  if (hasSearch) {
-    $(searchBar).on("keyup", filter);
+  // Search triggers only on button click or Enter
+  if (hasSearch && searchBtn) {
+    $(searchBtn).on("click", () => {
+      filter();
+    });
+
+    $(searchBar).on("keypress", function (e) {
+      console.log("search enter")
+      if (e.which === 13) { // Enter key
+        e.preventDefault();
+        filter();
+      }
+    });
   }
 
   // Initial load
   filter();
 }
+
 
 
 function restrictDeptAndCampus(position, dept, campus, deptId, campusId) {
