@@ -376,26 +376,7 @@ if ($conn->connect_error) {
                 </div>
                 <?php
                 if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-
-                    <div class="row mt-3 d-flex justify-content-end">
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <div class="col">
-                                <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
-                                            checked>
-                                        Employees
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
-                                        Accounts
-                                    </label>
-                                </div>
-                            </div>
-                            <?php
-                        endif;
-                        ?>
-                        <div class="col-2">
+                        <div class="col d-flex justify-content-end">
                             <button id="add_account" class="btn btn-outline-success">
                                 Add Account
                                 <ion-icon name="add-outline" class="add-icon"></ion-icon>
@@ -428,6 +409,26 @@ if ($conn->connect_error) {
                 <div class="row mt-3 justify-content-between" id="filterButton">
 
                     <!-- FILTER BUTTONS HERE -->
+                </div>
+                <div class="row">
+                      <div class="row mt-3 d-flex justify-content-end">
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                            <div class="col">
+                                <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
+                                            checked>
+                                        Employees
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
+                                        Accounts
+                                    </label>
+                                </div>
+                            </div>
+                            <?php
+                        endif;
+                        ?>
                 </div>
 
 
@@ -814,15 +815,11 @@ if ($conn->connect_error) {
                 resetFilterFunction(position);
                 restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
 
-                setTimeout(() => {
-                    filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
-
-                }, 50);
-
                 $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
 
                     $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
                         // Now everything exists → safe to run
+                        filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
 
                     });
                 });
