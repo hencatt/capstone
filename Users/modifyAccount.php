@@ -7,7 +7,6 @@ session_start();
 $user = getUser();
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
-$currentUsername = $user['username'];
 $currentEmail = $user['email'];
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
@@ -18,7 +17,6 @@ $currentUserId = $user['id'];
 // UPDATE ACCOUNT BUTTON FUNCTION
 if (isset($_POST["saveBtn"])) {
     $newEmail = $_POST["inputEmail"];
-    $newUsername = $_POST["inputUsername"];
     $oldPassword = $_POST["inputOldPassword"];
     $newPassword = $_POST["inputNewPassword"];
     $confirmPassword = $_POST["inputConfirmPassword"];
@@ -35,11 +33,7 @@ if (isset($_POST["saveBtn"])) {
         $types .= "s";
         $params[] = $newEmail;
     }
-    if (!empty($newUsername)) {
-        $fields[] = "username = ?";
-        $types .= "s";
-        $params[] = $newUsername;
-    }
+
 
     // Password Update Logic
     if (!empty($oldPassword) && !empty($newPassword) && !empty($confirmPassword)) {
@@ -216,11 +210,6 @@ if (isset($_POST["saveInfo"])) {
                                 </div>
 
                                 <div class="row mt-2">
-                                    <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
-                                        <label for="inputUsername" class="col-form-label col-sm-3">Username:</label>
-                                        <input type="text" name="inputUsername" id="inputUsername" disabled
-                                            placeholder="<?= $currentUsername ?>" class="form-control">
-                                    </div>
                                     <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
                                         <label for="inputEmail" class="col-form-label col-sm-3">Email:</label>
                                         <input type="text" name="inputEmail" id="inputEmail" disabled
@@ -483,11 +472,11 @@ if (isset($_POST["saveInfo"])) {
             $('#editBtn').click(function () {
                 const isDisabled = $('#inputEmail').prop('disabled');
 
-                $('#saveBtn, #inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword')
+                $('#saveBtn, #inputEmail, #inputOldPassword, #inputNewPassword, #inputConfirmPassword')
                     .prop('disabled', !isDisabled);
 
                 if (!isDisabled) {
-                    $('#inputEmail, #inputUsername, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
+                    $('#inputEmail, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
                 }
 
                 $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');

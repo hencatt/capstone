@@ -82,7 +82,6 @@ $accounts = [
     [
         "id" => 1,
         "email" => "admin@sumacab.cict.edu.ph",
-        "username" => "admin",
         "pass" => password_hash("admin", PASSWORD_DEFAULT),
         "fname" => "Juan",
         "lname" => "Dela Cruz",
@@ -93,7 +92,6 @@ $accounts = [
     [
         "id" => 2,
         "email" => "focal@sumacab.cict.edu.ph",
-        "username" => "focal",
         "pass" => password_hash("focal", PASSWORD_DEFAULT),
         "fname" => "Maria",
         "lname" => "Santos",
@@ -104,7 +102,6 @@ $accounts = [
     [
         "id" => 3,
         "email" => "ret@sumacab.cict.edu.ph",
-        "username" => "ret",
         "pass" => password_hash("ret", PASSWORD_DEFAULT),
         "fname" => "Jose",
         "lname" => "Ramos",
@@ -115,7 +112,6 @@ $accounts = [
     [
         "id" => 4,
         "email" => "res@sumacab.cict.edu.ph",
-        "username" => "res",
         "pass" => password_hash("res", PASSWORD_DEFAULT),
         "fname" => "Ana",
         "lname" => "Lopez",
@@ -126,7 +122,6 @@ $accounts = [
     [
         "id" => 5,
         "email" => "ta@sumacab.cict.edu.ph",
-        "username" => "ta",
         "pass" => password_hash("ta", PASSWORD_DEFAULT),
         "fname" => "Mark",
         "lname" => "Villanueva",
@@ -137,7 +132,6 @@ $accounts = [
     [
         "id" => 6,
         "email" => "panel@sumacab.cict.edu.ph",
-        "username" => "panel",
         "pass" => password_hash("panel", PASSWORD_DEFAULT),
         "fname" => "Carla",
         "lname" => "Reyes",
@@ -148,21 +142,20 @@ $accounts = [
 ];
 
 $stmt = $con->prepare("INSERT INTO accounts_tbl 
-    (id, email, username, pass, fname, lname, position, department, campus) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    (id, email, pass, fname, lname, position, department, campus) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
 foreach ($accounts as $acc) {
-    $check = $con->prepare("SELECT id FROM accounts_tbl WHERE email = ? OR username = ?");
-    $check->bind_param("ss", $acc['email'], $acc['username']);
+    $check = $con->prepare("SELECT id FROM accounts_tbl WHERE email = ?");
+    $check->bind_param("s", $acc['email']);
     $check->execute();
     $check->store_result();
 
     if ($check->num_rows == 0) {
         $stmt->bind_param(
-            "issssssss",
+            "isssssss",
             $acc['id'],
             $acc['email'],
-            $acc['username'],
             $acc['pass'],
             $acc['fname'],
             $acc['lname'],
@@ -171,9 +164,9 @@ foreach ($accounts as $acc) {
             $acc['campus']
         );
         $stmt->execute();
-        echo "✅ Account `{$acc['username']}` inserted.<br>";
+        echo "✅ Account `{$acc['email']}` inserted.<br>";
     } else {
-        echo "⚠️ Account `{$acc['username']}` already exists.<br>";
+        echo "⚠️ Account `{$acc['email']}` already exists.<br>";
     }
 
     $check->close();

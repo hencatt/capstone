@@ -12,7 +12,7 @@ require_once '../Phpmailer/src/SMTP.php';
 
 // Send email for account creation
 if (!function_exists('sendUserCredentials')) {
-    function sendUserCredentials($email, $username, $pass, $fname, $lname) {
+    function sendUserCredentials($email, $pass, $fname, $lname) {
         $mail = new PHPMailer(true);
 
         try {
@@ -35,7 +35,7 @@ if (!function_exists('sendUserCredentials')) {
             $mail->Body = "
                 Hello, <b>{$fullName}</b>! <br><br>
                 Your account has been created.<br><br>
-                <b>Username:</b> {$username}<br>
+                <b>Email:</b> {$email}<br>
                 <b>Password:</b> {$pass}<br><br>
                 Please login with this link:<br>
                 <a href='http://localhost/capstone'>NEUST GAD Portal</a>

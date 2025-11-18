@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fname = trim($_POST['fname'] ?? '');
         $lname = trim($_POST['lname'] ?? '');
         $email = trim($_POST['email'] ?? '');
-        $username = trim($_POST['username'] ?? '');
         $plainPassword = $_POST['pass'] ?? '';
         $position = $_POST['pos'] ?? '';
 
@@ -31,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = 'Active';
 
         // Validate required fields
-        if (empty($fname) || empty($lname) || empty($email) || empty($username) || empty($plainPassword)) {
+        if (empty($fname) || empty($lname) || empty($email) ||  empty($plainPassword)) {
             alertError("Error", "All fields are required");
             exit();
         }
@@ -89,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // STEP 3: Now insert into accounts_tbl with the employee_id
-            $insertAccount = $con->prepare("INSERT INTO accounts_tbl (id, fname, lname, email, username, pass, position, department, campus, date_created, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)");
-            $insertAccount->bind_param("issssssss", $employee_id, $fname, $lname, $email, $username, $password, $position, $department, $campus);
+            $insertAccount = $con->prepare("INSERT INTO accounts_tbl (id, fname, lname, email, pass, position, department, campus, date_created, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)");
+            $insertAccount->bind_param("isssssss", $employee_id, $fname, $lname, $email, $password, $position, $department, $campus);
 
             if (!$insertAccount->execute()) {
                 throw new Exception("Failed to create account: " . $insertAccount->error);
@@ -103,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             alertSuccess("Done", "Account Created Successfully");
 
             // Send credentials email to the new user
-            sendUserCredentials($email, $username, $plainPassword, $fname, $lname);
+            sendUserCredentials($email, $plainPassword, $fname, $lname);
 
             // Redirect to prevent form resubmission
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -442,7 +441,6 @@ if ($conn->connect_error) {
                 <input type="text" name="fname" placeholder="First Name" required>
                 <input type="text" name="lname" placeholder="Last Name" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="username" placeholder="Username" required style="display:none;">
                 <input type="password" name="pass" id="password"
                     placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)" required
                     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" maxlength="64"
@@ -950,7 +948,6 @@ if ($conn->connect_error) {
                     $('input[name="fname"]').val(fname);
                     $('input[name="lname"]').val(lname);
                     $('input[name="email"]').val(email).prop('readonly', true);
-                    $('input[name="username"]').val(email);
 
                     // Auto-generate password from email
                     const autoPassword = generatePasswordFromEmail(email);

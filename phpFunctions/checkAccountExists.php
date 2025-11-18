@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Check if account exists
-    $stmt = $con->prepare("SELECT id, username, position FROM accounts_tbl WHERE email = ?");
+    $stmt = $con->prepare("SELECT id, position FROM accounts_tbl WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -45,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'exists' => true,
             'account_id' => $account['id'],
-            'username' => $account['username'],
             'position' => $account['position']
         ]);
     } else {
