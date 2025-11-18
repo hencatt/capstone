@@ -172,11 +172,11 @@ $age45_54 = getAge(35, 44);
 $age55_64 = getAge(35, 44);
 $age65_abv = getAge(65, 125);
 
-function getDepartmentBreakdown($campus = '__all__')
+function getDepartmentBreakdown()
 {
     $con = newCon();
 
-    $baseSql = "SELECT
+    $sql = "SELECT
             COALESCE(t.department, 'Unknown') AS department,
             COUNT(DISTINCT t.id) AS total_employees,
             COUNT(DISTINCT CASE WHEN ei.gender = 'Male' THEN t.id END) AS male_total,
@@ -185,23 +185,13 @@ function getDepartmentBreakdown($campus = '__all__')
             COUNT(DISTINCT CASE WHEN t.inactive_date IS NOT NULL THEN t.id END) AS retire_count
 
             FROM employee_tbl t
-            LEFT JOIN employee_info ei ON ei.employee_id = t.id";
-
-    if ($campus && $campus !== '__all__') {
-        $sql = $baseSql . " WHERE t.campus = ? GROUP BY t.department ORDER BY total_employees DESC";
-        $stmt = $con->prepare($sql);
-        if ($stmt === false) {
-            error_log("getDepartmentBreakdown prepare error: " . $con->error . " -- SQL: " . $sql);
-            return false;
-        }
-        $stmt->bind_param('s', $campus);
-    } else {
-        $sql = $baseSql . " GROUP BY t.department ORDER BY total_employees DESC";
-        $stmt = $con->prepare($sql);
-        if ($stmt === false) {
-            error_log("getDepartmentBreakdown prepare error: " . $con->error . " -- SQL: " . $sql);
-            return false;
-        }
+            LEFT JOIN employee_info ei ON ei.employee_id = t.id
+            GROUP BY t.department
+            ORDER BY total_employees DESC";
+    $stmt = $con->prepare($sql);
+    if ($stmt === false) {
+        error_log("getDepartmentBreakdown prepare error: " . $con->error . " -- SQL: " . $sql);
+        return false;
     }
 
     if (!$stmt->execute()) {
@@ -221,35 +211,23 @@ function getDepartmentBreakdown($campus = '__all__')
     return $result;
 }
 
-// Respect optional campus filter from query string
-$selectedCampus = isset($_GET['campus']) ? $_GET['campus'] : '__all__';
-$departmentData = getDepartmentBreakdown($selectedCampus);
 
-// Build list of campuses for the campus filter
-$campusList = [];
-$conCampus = newCon();
-if ($conCampus) {
-    $rs = $conCampus->query("SELECT DISTINCT campus FROM employee_tbl WHERE campus IS NOT NULL AND campus <> '' ORDER BY campus");
-    if ($rs) {
-        while ($r = $rs->fetch_assoc()) {
-            $campusList[] = $r['campus'];
-        }
-        $rs->close();
-    }
-    $conCampus->close();
-}
+    // Calculate total retirement count from aggregated data
+    $departmentData = getDepartmentBreakdown();
+    $retire_count = 0;
 
-// Build PHP arrays for the department chart so json_encode() outputs valid JS arrays
-$dept = [];
-$total = [];
-$male = [];
-$female = [];
-$lgbt = [];
-$senior = [];
+    // Build PHP arrays for the department chart so json_encode() outputs valid JS arrays
+    $dept = [];
+    $total = [];
+    $male = [];
+    $female = [];
+    $lgbt = [];
+    $senior = [];
+
 if ($departmentData && $departmentData instanceof mysqli_result) {
-    // rewind if possible (in case result was iterated earlier)
-    // mysqli_result doesn't support rewind, so only fetch remaining rows
     while ($row = $departmentData->fetch_assoc()) {
+        $retire_count += (int) ($row['retire_count'] ?? 0);
+
         $dept[] = $row['department'] ?? 'Unknown';
         $total[] = (int) ($row['total_employees'] ?? 0);
         $male[] = (int) ($row['male_total'] ?? 0);
@@ -258,9 +236,6 @@ if ($departmentData && $departmentData instanceof mysqli_result) {
         $senior[] = (int) ($row['retire_count'] ?? 0);
     }
 }
-
-// Calculate total retirement count from aggregated data
-$retire_count = array_sum($senior);
 function getEvent()
 {
     $con = newCon();
@@ -311,7 +286,7 @@ $eventLists = getEvent();
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "dashboard") ?>
             <div id="contents">
-                <div class="row d-flex flex-row align-items-center justify-content-center gap-3 mt-3">
+                <div class="row d-flex flex-row align-items-center justify-content-center gap-4 mt-3 mb-4">
                     <div class="col summaryOverview">
                         <h6>Total Employees</h6><br>
                         <h6 class="itemText"><?= $totalEmployee ?></h6>
@@ -320,87 +295,80 @@ $eventLists = getEvent();
                         <h6>Total Retirees</h6><br>
                         <h6 class="itemText"><?= $retire_count ?></h6>
                     </div>
-                    <!--<div class="col summaryOverview">
-                        <h6>New Hires</h6><br>
-                        <h6 class="itemText">(number)</h6>
+                </div>
+                <div class="row mt-4 d-flex flex-row gap-4">
+                    <div class="col-6 position-static " style="background-color:white; border-radius: 10px; padding: 20px; width: min-content;">
+                        <div id="genderChart" style="margin: auto;"></div>
                     </div>
-                </div>-->
-                    <div class="row mt-3 d-flex flex-row align-items-center justify-content-center gap-3">
-                        <div class="col-5 d-flex justify-content-center "
-                            style="background-color:white; border-radius: 10px;">
-                            <!-- <h4>Gender Distribution</h4> -->
-                            <!-- <canvas id="genderGraph"></canvas> -->
-                            <div id="genderChart" style="margin: auto;"></div>
-                        </div>
-                        <div class="col d-flex justify-content-center"
-                            style="background-color:white; border-radius: 10px;">
-                            <h4 style="margin-top: 1rem">Events</h4><br />
-                            <!-- <canvas height="300px" id="ageGraph"></canvas> -->
-                            <div class="announcement-list">
-                                <br />
-                                <div>
-                                    <?php
-                                    $max = 5;
-                                    $shown = 0;
+                    <div class="col" style="background-color:white; border-radius: 10px; padding: 20px;  max-height: 450px">
+                        <h5 class="mb-3" style="font-weight: 600;">Events</h5>
+                        <div class="announcement-list">
+                            <?php
+                            $max = 5;
+                            $shown = 0;
 
-                                    if (is_string($eventLists)) {
-                                        echo '<div class="alert alert-info">' . $eventLists . '</div>';
-                                    } elseif ($eventLists && $eventLists instanceof mysqli_result) {
-                                        while ($row = $eventLists->fetch_assoc()) {
-                                            if ($shown >= $max)
-                                                break;
-                                            $shown++;
+                            if (is_string($eventLists)) {
+                                echo '<div class="alert alert-info">' . $eventLists . '</div>';
+                            } elseif ($eventLists && $eventLists instanceof mysqli_result) {
+                                while ($row = $eventLists->fetch_assoc()) {
+                                    if ($shown >= $max)
+                                        break;
+                                    $shown++;
 
-                                            $id = (int) ($row['id'] ?? 0);
-                                            $title = htmlspecialchars($row['announceTitle'] ?? 'No title');
-                                            $desc = htmlspecialchars($row['announceDesc'] ?? '');
-                                            $rawDate = $row['announceDate'] ?? null;
-                                            $date = $rawDate ? date('j F Y', strtotime($rawDate)) : '';
-                                            $tag = htmlspecialchars($row['category'] ?? 'Event');
-                                            ?>
+                                    $id = (int) ($row['id'] ?? 0);
+                                    $title = htmlspecialchars($row['announceTitle'] ?? 'No title');
+                                    $desc = htmlspecialchars($row['announceDesc'] ?? '');
+                                    $rawDate = $row['announceDate'] ?? null;
+                                    $date = $rawDate ? date('j F Y', strtotime($rawDate)) : '';
+                                    $tag = htmlspecialchars($row['category'] ?? 'Event');
+                                    ?>
 
-                                            <div class="card  mb-2 " style="margin-top: 1rem; left: -5rem; width: auto;">
-                                                <div class="row g-0 align-items-center">
-                                                    <div class="col-auto p-2">
-                                                        <div class="date-badge text-center">
-                                                            <div class="year"><?= date('Y', strtotime($rawDate ?: 'now')) ?>
-                                                            </div>
-                                                            <div class="day"><?= date('j', strtotime($rawDate ?: 'now')) ?>
-                                                            </div>
-                                                            <div class="month"><?= date('F', strtotime($rawDate ?: 'now')) ?>
-                                                            </div>
-                                                        </div>
+                                    <div class="card mb-3 position-static" style="margin-top: .75rem; width: 100%; position: static; ">
+                                        <div class="row g-0  ">
+                                            <div class="col-auto p-2 ">
+                                                <div class="date-badge text-center">
+                                                    <div class="year"><?= date('Y', strtotime($rawDate ?: 'now')) ?>
                                                     </div>
-                                                    <div class="col">
-                                                        <div class="card-body py-3 w-100">
-                                                            <div class="d-flex">
-                                                                <div class="flex-grow-1">
-                                                                    <h5 class="card-title mb-1"><?= $title ?></h5>
-                                                                    <p class="card-text mb-1 text-muted"><?= $desc ?></p>
-                                                                    <span
-                                                                        class="badge bg-secondary rounded-pill"><?= $tag ?></span>
-                                                                </div>
-                                                                <div class="ms-3 align-self-start">
-                                                                    <a href="events.php?id=<?= $id ?>"
-                                                                        class="text-primary text-decoration-none">View More</a>
-                                                                </div>
-                                                            </div>
+                                                    <div class="day"><?= date('j', strtotime($rawDate ?: 'now')) ?>
+                                                    </div>
+                                                    <div class="month"><?= date('F', strtotime($rawDate ?: 'now')) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="card-body py-2 w-100 ">
+                                                    <div class="d-flex  ">
+                                                        <div class="flex-grow-1">
+                                                            <h5 class="card-title mb-1"><?= $title ?></h5>
+                                                            <p class="card-text mb-1 text-muted"><?= $desc ?></p>
+                                                            <span
+                                                                class="badge bg-secondary rounded-pill"><?= $tag ?></span>
+                                                        </div>
+                                                        <div class="ms-3 align-self-start">
+                                                            <a href="events.php?id=<?= $id ?>"
+                                                                class="text-primary text-decoration-none">View More</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            <?php
-                                        }
-                                    }
-                                    ?>
-                                </div>
-                            </div>
+                                    <?php
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
-                    <div class="col"
-                        style="background-color:white; border-radius: 10px; padding:1rem; margin-top:1rem; overflow-x: auto;">
+                </div>
+            </div>
+                    <div class ="row mt-4">
+                        <div class="col-12" >
+                            <div class="row mt-4 "
+                        style="background-color:white; border-radius: 10px; padding:1rem; margin-top:1rem; overflow-x: auto: height:600px;">
                         <div id="deptChart"></div>
+                    </div>
+                        </div>
                     </div>
 
 
@@ -463,9 +431,9 @@ $eventLists = getEvent();
                     // Graph Charts
                     // Increased deptHeight so the department names and grouped bars are readable
                     const deptHeight = 700;
-                    const deptWidth = 1200;
+                    const deptWidth = 1100;
                     const genderChartHeight = 400;
-                    const genderChartWidth = 400;
+                    const genderChartWidth = 465;
 
                     const graphMargin = { t: 0, b: 0, l: 0, r: 0 };
 
@@ -722,7 +690,8 @@ $eventLists = getEvent();
                         margin: { t: 60, b: 20, l: 20, r: 20 },
                         showlegend: true,
                         xaxis: { scaleanchor: "y", scaleratio: 1 },
-                        yaxis: { scaleanchor: "x", scaleratio: 1 }
+                        yaxis: { scaleanchor: "x", scaleratio: 1 },
+                        legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.20, yanchor: 'top' },
                     }
 
                     // Only attempt to draw the gender chart immediately if Plotly is already loaded.

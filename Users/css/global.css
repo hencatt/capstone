@@ -164,7 +164,7 @@ option:hover {
   min-width: 84px;
   height: 94px;
   border-radius: 10px;
-  background: #766df4;
+  background: #9e98f1;
   color: #f8f8f8;
   padding: 6px 8px;
   display: flex;
@@ -195,4 +195,5 @@ option:hover {
 
 .announcement-list .card + .card {
   margin-top: 0.75rem;
+  margin-left: auto;
 }
