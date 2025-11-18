@@ -52,17 +52,9 @@ $result = $con->query($sql);
                         <td><?= htmlspecialchars($row['campus']) ?></td>
                         <td class="empEmail"><?= htmlspecialchars($row['email']) ?></td>
                         <td>
-                            <?php if ($row['account_id']): ?>
-                                <span class="badge bg-success">Has Account</span>
-                            <?php else: ?>
-                                <span class="badge bg-warning text-dark">No Account</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
                             <div class="btn-group btn-group-sm" role="group">
                                 <button type="button" 
                                         class="btn btn-outline-primary view-btn"
-                                        data-id="<?= htmlspecialchars($row['emp_id']) ?>"
                                         title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -74,7 +66,9 @@ $result = $con->query($sql);
                                     <i class="fas fa-edit"></i>
                                 </button>
 
-                                <?php if (!$row['account_id'] && ($currentPosition === 'Director' || $currentPosition === 'Technical Assistant')): ?>
+                                <?php 
+                                if (!$row['account_id'] && ($currentPosition === 'Director' || $currentPosition === 'Technical Assistant')):
+                                     ?>
                                     <button type="button"
                                             class="btn btn-outline-info assignBtn"
                                             data-id="<?= htmlspecialchars($row['emp_id']) ?>"
