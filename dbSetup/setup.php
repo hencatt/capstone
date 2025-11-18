@@ -42,7 +42,6 @@ CREATE TABLE IF NOT EXISTS `employee_tbl` (
 CREATE TABLE IF NOT EXISTS `accounts_tbl` (
   `id` int(11) NOT NULL,
   `email` varchar(60) NOT NULL,
-  `username` varchar(100) NOT NULL,
   `pass` text NOT NULL,
   `fname` varchar(60) NOT NULL,
   `lname` varchar(60) NOT NULL,

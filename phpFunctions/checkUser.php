@@ -44,7 +44,7 @@ function setUser()
 {
     $currentId = $_SESSION['user_id'];
     $con = newCon();
-    $sql = "SELECT fname, lname, username, email, position, department, campus FROM accounts_tbl WHERE id = '$currentId'";
+    $sql = "SELECT fname, lname, email, position, department, campus FROM accounts_tbl WHERE id = '$currentId'";
     return $con->query($sql);
 }
 
@@ -60,7 +60,6 @@ function getUser()
             "fname" => htmlspecialchars($row["fname"]),
             "lname" => htmlspecialchars($row["lname"]),
             "email" => htmlspecialchars($row["email"]),
-            "username" => htmlspecialchars($row['username']),
             "fullname" => htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']),
             "position" => htmlspecialchars($row['position']),
             "campus" => htmlspecialchars_decode($row['campus']),

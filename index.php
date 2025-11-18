@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = trim($_POST['email']);
         $password = trim($_POST['pass']);
 
-        $select = mysqli_query($con, "SELECT * FROM accounts_tbl WHERE email = '$input' OR username = '$input'");
+        $select = mysqli_query($con, "SELECT * FROM accounts_tbl WHERE email = '$input'");
         if ($select && mysqli_num_rows($select) > 0) {
             $user = mysqli_fetch_assoc($select);
             $hashedPassword = $user['pass'];
@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_position'] = $user['position'];
-                $_SESSION['user_username'] = $user['username'];
                 $_SESSION['user_fname'] = $user['fname'];
                 $_SESSION['user_lname'] = $user['lname'];
                 $_SESSION['fullname'] = $_SESSION['user_fname'] . " " . $_SESSION['user_lname'];
@@ -95,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
             }
         } else {
-            echo '<div class="alert alert-danger">Invalid email or username.</div>';
+            echo '<div class="alert alert-danger">Invalid email</div>';
             // Log the failed attempt
             $insertQuery = "INSERT INTO login_attempts (ip_add, attempt_time) VALUES (?, ?)";
             $stmt = $con->prepare($insertQuery);
@@ -233,9 +232,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <form action="" method="POST">
                                     <div class="row mt-3">
                                         <div class="col">
-                                            <label for="inputEmail" class="form-label"><b>Email or Username</b></label>
+                                            <label for="inputEmail" class="form-label"><b>Email</b></label>
                                             <input type="text" class="form-control" id="inputEmail" name="email"
-                                                placeholder="Enter Email or Username">
+                                                placeholder="Enter Email">
                                         </div>
                                     </div>
                                     <div class="row mt-3">

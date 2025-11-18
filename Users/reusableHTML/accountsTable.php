@@ -19,7 +19,6 @@ $sql = "
         id,
         fname,
         lname,
-        username,
         position,
         department,
         campus,
@@ -36,7 +35,6 @@ $result = $con->query($sql);
         <thead class="thead-dark">
             <tr>
                 <th>Full Name</th>
-                <th>Username</th>
                 <th>Position</th>
                 <th>Password</th>
                 <th>Action</th>
@@ -47,7 +45,6 @@ $result = $con->query($sql);
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
                         <td><?= htmlspecialchars($row['fname'] . ' ' . $row['lname']) ?></td>
-                        <td><?= htmlspecialchars($row['username']) ?></td>
                         <td><?= htmlspecialchars($row['position']) ?></td>
                         <td><?= htmlspecialchars($row['password']) ?></td>
                         <td>
@@ -83,7 +80,6 @@ $(document).on('click', '.editAccountBtn', function() {
         }
 
         // ✅ Match your modal field IDs (with "acc_")
-        $('#acc_username').val(resp.username);
         $('#acc_fname').val(resp.fname);
         $('#acc_lname').val(resp.lname);
         $('#acc_email').val(resp.email);
