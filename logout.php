@@ -11,7 +11,7 @@ header("Pragma: no-cache");
 // Destroy the session
 if (isset($_GET['logout'])) {
     insertLog($_SESSION['fullname'], "User Logout", date('Y-m-d H:i:s'));
-    session_unset(); // Unset all session variables
+    session_unset(); // Unset lal session variables
     session_destroy(); // Destroy the session
     header("Location: index.php"); // Redirect to the login page
     exit();
