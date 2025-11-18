@@ -126,18 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Hash password
         $password = password_hash($plainPassword, PASSWORD_DEFAULT);
 
-        // Check if the email already exists in accounts_tbl
-        $checkEmailQuery = $con->prepare("SELECT email FROM accounts_tbl WHERE email = ?");
-        $checkEmailQuery->bind_param("s", $email);
-        $checkEmailQuery->execute();
-        $checkEmailQuery->store_result();
 
-        if ($checkEmailQuery->num_rows > 0) {
-            $checkEmailQuery->close();
-            alertError("Error", "Email already exists in accounts");
-            exit();
-        }
-        $checkEmailQuery->close();
 
         // Start transaction for data integrity
         $con->begin_transaction();
@@ -1419,5 +1408,6 @@ $(document).ready(function() {
     <?php endif; ?>
 });
 </script>
+
 
 </html>

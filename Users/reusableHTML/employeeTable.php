@@ -40,8 +40,6 @@ $result = $con->query($sql);
                 <th>Full Name</th>
                 <th>Department</th>
                 <th>Campus</th>
-                <th>Email</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>

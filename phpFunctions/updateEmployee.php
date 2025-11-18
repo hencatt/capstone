@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 
 require_once 'gad_portal.php';
 
+// Check if user is logged in
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -25,6 +26,7 @@ if ($con->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Sanitize and validate input
+        $emp_id = isset($_POST['emp_id']) ? intval($_POST['emp_id']) : 0;
         $fname = trim($_POST['fname'] ?? '');
         $mname = trim($_POST['m_initial'] ?? '');
         $lname = trim($_POST['lname'] ?? '');
@@ -42,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $income = $_POST['income'] ?? '';
         $children_num = isset($_POST['children_num']) ? intval($_POST['children_num']) : 0;
         $concern = trim($_POST['concern'] ?? '') ?: 'N/A';
-        $status = 'Active';
 
         // Validate required fields
         if (empty($fname) || empty($lname) || empty($email)) {
@@ -50,73 +51,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Validate email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo json_encode(['error' => 'Invalid email format']);
-            exit;
-        }
-
-        // Check if email already exists
-        $checkStmt = $con->prepare("SELECT id FROM employee_tbl WHERE email = ?");
-        $checkStmt->bind_param("s", $email);
-        $checkStmt->execute();
-        $checkStmt->store_result();
-
-        if ($checkStmt->num_rows > 0) {
-            echo json_encode(['error' => 'Email already exists in the system']);
-            $checkStmt->close();
-            $con->close();
-            exit;
-        }
-        $checkStmt->close();
-
         // Start transaction
         $con->begin_transaction();
 
-        // Insert into employee_tbl
-        $stmt_emp = $con->prepare("
-            INSERT INTO employee_tbl (email, contact_no, department, campus, status) 
-            VALUES (?, ?, ?, ?, ?)
-        ");
-        $stmt_emp->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
+        // Check if this is an UPDATE or INSERT
+        if ($emp_id > 0) {
+            // UPDATE EXISTING EMPLOYEE
+            
+            // Update employee_tbl
+            $stmt_emp = $con->prepare("
+                UPDATE employee_tbl 
+                SET email = ?, contact_no = ?, department = ?, campus = ?
+                WHERE id = ?
+            ");
+            $stmt_emp->bind_param("ssssi", $email, $contact_no, $department, $campus, $emp_id);
+            
+            if (!$stmt_emp->execute()) {
+                throw new Exception("Failed to update employee_tbl: " . $stmt_emp->error);
+            }
+            $stmt_emp->close();
 
-        if (!$stmt_emp->execute()) {
-            throw new Exception("Failed to insert into employee_tbl: " . $stmt_emp->error);
+            // Update employee_info
+            $stmt_info = $con->prepare("
+                UPDATE employee_info 
+                SET fname = ?, m_initial = ?, lname = ?, address = ?, birthday = ?, 
+                    marital_status = ?, sex = ?, gender = ?, priority_status = ?, 
+                    size = ?, income = ?, children_num = ?, concern = ?
+                WHERE employee_id = ?
+            ");
+            $stmt_info->bind_param(
+                "sssssssssssiis",
+                $fname, $mname, $lname, $address, $birthday, $marital_status,
+                $sex, $gender, $priority_status, $size, $income,
+                $children_num, $concern, $emp_id
+            );
+
+            if (!$stmt_info->execute()) {
+                throw new Exception("Failed to update employee_info: " . $stmt_info->error);
+            }
+            $stmt_info->close();
+
+            $con->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => 'Employee updated successfully!',
+                'employee_id' => $emp_id
+            ]);
+
+        } else {
+            // INSERT NEW EMPLOYEE
+            $status = 'Active';
+            
+            // Insert into employee_tbl
+            $stmt_emp = $con->prepare("
+                INSERT INTO employee_tbl (email, contact_no, department, campus, status) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt_emp->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
+
+            if (!$stmt_emp->execute()) {
+                throw new Exception("Failed to insert into employee_tbl: " . $stmt_emp->error);
+            }
+
+            $employee_id = $con->insert_id;
+            $stmt_emp->close();
+
+            // Insert into employee_info
+            $stmt_info = $con->prepare("
+                INSERT INTO employee_info 
+                (fname, m_initial, lname, address, birthday, marital_status, sex, gender, 
+                 priority_status, size, income, employee_id, children_num, concern) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt_info->bind_param(
+                "sssssssssssiis",
+                $fname, $mname, $lname, $address, $birthday, $marital_status,
+                $sex, $gender, $priority_status, $size, $income,
+                $employee_id, $children_num, $concern
+            );
+
+            if (!$stmt_info->execute()) {
+                throw new Exception("Failed to insert into employee_info: " . $stmt_info->error);
+            }
+            $stmt_info->close();
+
+            $con->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => 'Employee added successfully!',
+                'employee_id' => $employee_id
+            ]);
         }
-
-        $employee_id = $con->insert_id;
-        $stmt_emp->close();
-
-        // Insert into employee_info
-        $stmt_info = $con->prepare("
-            INSERT INTO employee_info 
-            (fname, m_initial, lname, address, birthday, marital_status, sex, gender, 
-             priority_status, size, income, employee_id, children_num, concern) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmt_info->bind_param(
-            "sssssssssssiis",
-            $fname, $mname, $lname, $address, $birthday, $marital_status,
-            $sex, $gender, $priority_status, $size, $income,
-            $employee_id, $children_num, $concern
-        );
-
-        if (!$stmt_info->execute()) {
-            throw new Exception("Failed to insert into employee_info: " . $stmt_info->error);
-        }
-        $stmt_info->close();
-
-        // Commit transaction
-        $con->commit();
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'Employee added successfully!',
-            'employee_id' => $employee_id
-        ]);
 
     } catch (Exception $e) {
-        // Rollback on error
         $con->rollback();
         echo json_encode(['error' => $e->getMessage()]);
     } finally {

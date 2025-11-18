@@ -187,7 +187,7 @@
       <!-- Action Buttons -->
       <div class="row">
         <div class="col d-flex flex-row justify-content-end gap-3">
-          <button type="button" class="btn btn-outline-success" id="saveInfo">
+          <button type="submit" class="btn btn-outline-success" id="saveInfo">
             <i class="fas fa-save me-1"></i> Save
           </button>
           <button type="button" id="cancelInfo" class="btn btn-secondary close-btn">
@@ -200,6 +200,8 @@
 </div>
 
 <script>
+
+  
 $(document).ready(function() {
   // Show/hide LGBTQIA+ specify field
   $('#gender').on('change', function() {
