@@ -84,17 +84,17 @@ deleteItemInventory("deleteItem", $currentUser);
 
 
     <script>
+        // Add this to your existing script section in inventory.php
+        // Add this to your existing script section in inventory.php
         $(document).ready(function () {
             const position = <?= json_encode($currentPosition) ?>;
             const campus = <?= json_encode($currentCampus) ?>;
             const dept = <?= json_encode($currentDepartment) ?>;
 
             const searchBtn = $("#searchBtn");
-
+            const searchBar = $("#searchBar");
             const inventoryButtonRow = $("#inventoryButtonsRow");
 
-            // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
-            // $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
             if (position === "Technical Assistant") {
                 $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function () {
                     $("#viewMoreBtn").hide();
@@ -103,10 +103,47 @@ deleteItemInventory("deleteItem", $currentUser);
                 inventoryButtonRow.hide();
             }
 
-            searchBtn.on("click", () => {
+            // Search function
+            function searchInventory() {
+                const searchTerm = searchBar.val().trim();
 
-            })
-        })
+                $.ajax({
+                    url: './searchInventory.php',
+                    type: 'GET',
+                    data: { search: searchTerm },
+                    beforeSend: function () {
+                        $('#inventoryTable').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                    },
+                    success: function (response) {
+                        $('#inventoryTable').html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Search error:', error);
+                        $('#inventoryTable').html('<div class="alert alert-danger">Error loading results. Please try again.</div>');
+                    }
+                });
+            }
+
+            // Trigger search on button click
+            searchBtn.on("click", function () {
+                searchInventory();
+            });
+
+            // Optional: Trigger search on Enter key press
+            searchBar.on("keypress", function (e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    searchInventory();
+                }
+            });
+
+            // Optional: Clear search and reload all items
+            searchBar.on("input", function () {
+                if ($(this).val().trim() === "") {
+                    searchInventory(); // Reload all items when search is cleared
+                }
+            });
+        });
     </script>
 
 </body>

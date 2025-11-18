@@ -1,3 +1,30 @@
+<?php
+// Get search term if provided (will be set by searchInventory.php or parent page)
+if (!isset($searchTerm)) {
+    $searchTerm = '';
+}
+
+$con = newCon();
+
+// Modify SQL query to include search
+if (!empty($searchTerm)) {
+    $searchParam = "%" . $con->real_escape_string($searchTerm) . "%";
+    $sql = "SELECT id, itemName, itemDesc, itemImage, itemQuantity, itemSize, itemCategory 
+            FROM inventory_tbl 
+            WHERE itemName LIKE ? 
+            OR itemDesc LIKE ? 
+            OR itemCategory LIKE ? 
+            OR itemSize LIKE ?";
+    
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("ssss", $searchParam, $searchParam, $searchParam, $searchParam);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $sql = "SELECT id, itemName, itemDesc, itemImage, itemQuantity, itemSize, itemCategory FROM inventory_tbl";
+    $result = $con->query($sql);
+}
+?>
 
 <table class="table table-sm table-striped">
     <thead>
@@ -17,10 +44,6 @@
     </thead>
     <tbody>
         <?php
-        $con = newCon();
-        $sql = "SELECT id, itemName, itemDesc, itemImage, itemQuantity, itemSize, itemCategory FROM inventory_tbl";
-        $result = $con->query($sql);
-
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $itemStatus = "";
@@ -37,35 +60,22 @@
                 echo '<td style="text-align: center;"><img src="' . $row['itemImage'] . '" width="30" alt="-"></td>';
                 echo '<td style="text-align: center;">' . $itemStatus . '</td>';
                 echo '<td style="text-align: center;">' . htmlspecialchars($row['itemCategory']) . '</td>';
-                echo '<td colspan="2"
-                        style="
-                        text-align: center;
-                        "
-                        >' .
-
-                    '
-                    '; ?><?php
-                            if ($_SESSION['user_position'] === "Technical Assistant") {
-                                echo '
-                    <div class="row" id="editItem">
+                
+                if ($_SESSION['user_position'] === "Technical Assistant") {
+                    echo '<td style="text-align: center;">';
+                    echo '<div class="row" id="editItem">
                         <div class="col d-flex justify-content-center align-items-center gap-2">
                             <button data-bs-toggle="modal" class="btn btn-outline-success" data-bs-target="#editItem' . htmlspecialchars($row['id']) . '">
-                                            <span class="material-symbols-outlined">edit</span>
-                                            </button>
-                                            ';
-                                echo
-                                '<button data-bs-toggle="modal" class="btn btn-outline-danger" data-bs-target="#deleteItem' . htmlspecialchars($row['id']) . '">
-                                            <span class="material-symbols-outlined">delete</span>
-                                            </button>
-                                            </div>
-                                            </div>
-                                            ' .
-
-                                    '</td>';
-                                echo '</tr>';
-                            }
-                            ?>
-<?php
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button data-bs-toggle="modal" class="btn btn-outline-danger" data-bs-target="#deleteItem' . htmlspecialchars($row['id']) . '">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>';
+                    echo '</td>';
+                }
+                echo '</tr>';
 
                 // EDIT MODAL
                 echo '
@@ -172,10 +182,13 @@
                 ';
             }
         } else {
-            echo "0 results";
+            echo '<tr><td colspan="8" class="text-center">No items found</td></tr>';
+        }
+        
+        if (isset($stmt)) {
+            $stmt->close();
         }
         $con->close();
-?>
-
+        ?>
     </tbody>
 </table>

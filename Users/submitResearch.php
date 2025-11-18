@@ -27,35 +27,28 @@ if (isset($_POST['submitResearch'])) {
     $dateStarted = $_POST['dateStarted'];
     $dateComplete = $_POST['dateComplete'];
     $dateSubmitted = $_POST['inputDateNow'];
-    $agenda = $_POST['researchAgenda'];
-    $sdg = $_POST['researchSDG'];
+
+    // Handle multiple agendas
+    $agendas = isset($_POST['researchAgenda']) ? $_POST['researchAgenda'] : [];
+    $agenda = implode(", ", $agendas);
+
+    // Handle multiple SDGs
+    $sdgs = isset($_POST['researchSDG']) ? $_POST['researchSDG'] : [];
+    $sdg = implode(", ", $sdgs);
+
     $category = $_POST['researchCategory'];
     $description = trim($_POST['researchDescription']);
-    $inputEmail = trim($_POST['inputEmail']); // ✅ get email from form input
+    $inputEmail = trim($_POST['inputEmail']);
+    $eventId = $_POST['researchEvent']; // Store event ID
 
-    // ✅ Check if email exists in either accounts_tbl or employee_tbl
-    $checkEmail = $con->prepare("
-        SELECT research_email FROM research_tbl WHERE research_email = ?
-    ");
-    $checkEmail->bind_param("s", $inputEmail);
-    $checkEmail->execute();
-    $checkEmail->store_result();
-
-
-
-
-    $checkEmail->close();
-
-    // Handle file upload
+    // Rest of your existing upload code...
     $fileName = $_FILES['researchUpload']['name'];
     $fileTmp = $_FILES['researchUpload']['tmp_name'];
     $targetDir = "researchfiles/";
     $targetFile = $targetDir . basename($fileName);
 
-    // Get author
     $author = $currentFname . " " . $currentLname;
 
-    // Get co-authors
     $coauthors = [];
     if (!empty($_POST['coauthors'])) {
         foreach ($_POST['coauthors'] as $coauthor) {
@@ -65,25 +58,23 @@ if (isset($_POST['submitResearch'])) {
     $coauthorStr = implode(", ", $coauthors);
 
     if (move_uploaded_file($fileTmp, $targetFile)) {
+        // You'll need to add event_id column to research_tbl
         $stmt = $con->prepare("
             INSERT INTO research_tbl (
                 research_title, date_started, date_completed, file,
                 description, author, research_email, co_author, date_submitted,
-                research_agenda, research_sdg, research_category
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                research_agenda, research_sdg, research_category, event_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("ssssssssssss", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $inputEmail, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category);
+        $stmt->bind_param("ssssssssssssi", $title, $dateStarted, $dateComplete, $targetFile, $description, $author, $inputEmail, $coauthorStr, $dateSubmitted, $agenda, $sdg, $category, $eventId);
         $result = $stmt->execute();
         $stmt->close();
 
         if ($result) {
-            // ✅ Send email after successful upload
             include '../phpFunctions/email.php';
             sendSubmissionNotification($con, $inputEmail, $title);
-
             alertSuccess("Uploaded", $title . " Uploaded");
             insertLog($currentUser, "Submitted research: $title", date('Y-m-d H:i:s'));
-
             header("Location: submitResearch.php?success=1");
             exit;
         } else {
@@ -94,6 +85,8 @@ if (isset($_POST['submitResearch'])) {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -309,55 +302,63 @@ if (isset($_POST['submitResearch'])) {
 
                             <div class="row mt-3">
                                 <div class="col">
-                                    <label for="researchAgenda" class="form-label">NEUST Research Agenda</label>
-                                    <select name="researchAgenda" id="researchAgenda" class="form-select">
-                                        <option value="" selected disabled>Select Research Agenda</option>
-                                        <option value="ICT">Information and Communication Technology
+                                    <label for="researchAgenda" class="form-label">NEUST Research Agenda (Select
+                                        multiple)</label>
+                                    <select name="researchAgenda[]" id="researchAgenda" class="form-select" multiple
+                                        size="5">
+                                        <option value="Information and Communication Technology">Information and
+                                            Communication Technology</option>
+                                        <option value="Advanced Materials Development">Advanced Materials Development
                                         </option>
+                                        <option value="Climate Change and Disaster Risk">Climate Change and Disaster
+                                            Risk</option>
+                                        <option value="Food Security and Nutrition">Food Security and Nutrition</option>
+                                        <option value="Health and Wellness">Health and Wellness</option>
+                                        <option value="Industry and Trade">Industry and Trade</option>
+                                        <option value="Basic Education">Basic Education</option>
+                                        <option value="Higher Education">Higher Education</option>
+                                        <option value="Governance and Peace">Governance and Peace</option>
+                                        <option value="Creative Industries">Creative Industries</option>
                                     </select>
+                                    <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select
+                                        multiple</small>
                                 </div>
                             </div>
 
                             <div class="row mt-3">
                                 <div class="col">
-                                    <label for="researchSDG" class="form-label">Sustainable Development Goals</label>
-                                    <select name="researchSDG" id="researchSDG" class="form-select">
-                                        <option value="" selected disabled>Select SDG</option>
-                                        <option value="No Poverty">
-                                            SDG 1 - No Poverty</option>
-                                        <option value="Zero Hunger">
-                                            SDG 2 - Zero Hunger</option>
-                                        <option value="Good Health and Well Being">
-                                            SDG 3 - Good Health and Well Being</option>
-                                        <option value="Quality Education">
-                                            SDG 4 - Quality Education</option>
-                                        <option value="Gender Equality">
-                                            SDG 5 - Gender Equality</option>
-                                        <option value="Clean Water and Sanitization">
-                                            SDG 6 - Clean Water and Sanitization</option>
-                                        <option value="Affordable and Clean Energy">
-                                            SDG 7 - Affordable and Clean Energy</option>
-                                        <option value="Decent Work and Economic Growth">
-                                            SDG 8 - Decent Work and Economic Growth</option>
-                                        <option value="Industry, Innovation and Infrastructure">
-                                            SDG 9 - Industry, Innovation and Infrastructure</option>
-                                        <option value="Reduced Inequalities">
-                                            SDG 10 - Reduced Inequalities</option>
-                                        <option value="Sustainable Cities and Communities">
-                                            SDG 11 - Sustainable Cities and Communities</option>
-                                        <option value="Responsible Consumption">
-                                            SDG 12 - Responsible Consumption</option>
-                                        <option value="Climate Action">
-                                            SDG 13 - Climate Action</option>
-                                        <option value="Life Below Water">
-                                            SDG 14 - Life Below Water</option>
-                                        <option value="Life on Land">
-                                            SDG 15 - Life on Land</option>
-                                        <option value="Peace, Justice and Strong Institution">
-                                            SDG 16 - Peace, Justice and Strong Institution</option>
-                                        <option value="Partnerships and Goals">
-                                            SDG 17 - Partnerships and Goals</option>
+                                    <label for="researchSDG" class="form-label">Sustainable Development Goals (Select
+                                        multiple)</label>
+                                    <select name="researchSDG[]" id="researchSDG" class="form-select" multiple
+                                        size="10">
+                                        <option value="No Poverty">SDG 1 - No Poverty</option>
+                                        <option value="Zero Hunger">SDG 2 - Zero Hunger</option>
+                                        <option value="Good Health and Well Being">SDG 3 - Good Health and Well Being
+                                        </option>
+                                        <option value="Quality Education">SDG 4 - Quality Education</option>
+                                        <option value="Gender Equality">SDG 5 - Gender Equality</option>
+                                        <option value="Clean Water and Sanitization">SDG 6 - Clean Water and
+                                            Sanitization</option>
+                                        <option value="Affordable and Clean Energy">SDG 7 - Affordable and Clean Energy
+                                        </option>
+                                        <option value="Decent Work and Economic Growth">SDG 8 - Decent Work and Economic
+                                            Growth</option>
+                                        <option value="Industry, Innovation and Infrastructure">SDG 9 - Industry,
+                                            Innovation and Infrastructure</option>
+                                        <option value="Reduced Inequalities">SDG 10 - Reduced Inequalities</option>
+                                        <option value="Sustainable Cities and Communities">SDG 11 - Sustainable Cities
+                                            and Communities</option>
+                                        <option value="Responsible Consumption">SDG 12 - Responsible Consumption
+                                        </option>
+                                        <option value="Climate Action">SDG 13 - Climate Action</option>
+                                        <option value="Life Below Water">SDG 14 - Life Below Water</option>
+                                        <option value="Life on Land">SDG 15 - Life on Land</option>
+                                        <option value="Peace, Justice and Strong Institution">SDG 16 - Peace, Justice
+                                            and Strong Institution</option>
+                                        <option value="Partnerships and Goals">SDG 17 - Partnerships and Goals</option>
                                     </select>
+                                    <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select
+                                        multiple</small>
                                 </div>
                             </div>
 
@@ -369,13 +370,16 @@ if (isset($_POST['submitResearch'])) {
                                         style="height: 400px;" required></textarea>
                                 </div>
                             </div>
+
+
                             <div class="row mt-5">
                                 <div class="col">
                                     <label for="researchEvent" class="form-label">Select Event</label>
                                     <select name="researchEvent" id="researchEvent" class="form-control" required>
+                                        <option value="" selected disabled>Select Event</option>
                                         <?php
                                         $category = "Research Event";
-                                        $sql = "SELECT announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";
+                                        $sql = "SELECT id, announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";
                                         $stmt = $con->prepare($sql);
                                         $stmt->bind_param("s", $category);
 
@@ -384,20 +388,34 @@ if (isset($_POST['submitResearch'])) {
 
                                         if ($result && $result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
-
                                                 echo '<option 
-                        value="' . htmlspecialchars($row['announceTitle']) . '" 
-                        data-deadline="' . htmlspecialchars($row['proposalDate']) . '">
-                        ' . htmlspecialchars($row['announceTitle']) . '
-                      </option>';
+                                            value="' . htmlspecialchars($row['id']) . '" 
+                                            data-deadline="' . htmlspecialchars($row['proposalDate']) . '">
+                                            ' . htmlspecialchars($row['announceTitle']) . '
+                                        </option>';
                                             }
                                         }
                                         ?>
                                     </select>
                                 </div>
-
-
                             </div>
+
+
+                            <!-- Add Panel Members Display Section (Add this after Select Event) -->
+                            <div class="row mt-3" id="panelMembersSection" style="display: none;">
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">Panel Members for this Event</h6>
+                                        </div>
+                                        <div class="card-body" id="panelMembersList">
+                                            <p class="text-muted">Select an event to see panel members</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <div class="row mt-5 mb-3">
                                 <div class="col d-flex justify-content-end">
                                     <button type="submit" name="submitResearch" id="submitResearch"
@@ -415,27 +433,47 @@ if (isset($_POST['submitResearch'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('researchEvent').addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-            const deadline = new Date(selected.getAttribute('data-deadline'));
-            const today = new Date();
-            const submitBtn = document.getElementById('submitResearch');
+        $(document).ready(function () {
+            // Existing deadline check code
+            $('#researchEvent').on('change', function () {
+                const selected = this.options[this.selectedIndex];
+                const deadline = new Date(selected.getAttribute('data-deadline'));
+                const today = new Date();
+                const submitBtn = document.getElementById('submitResearch');
+                const eventId = $(this).val();
 
-            console.log("deadline: ", deadline);
-            console.log("today: ", today);
-            console.log(today > deadline);
+                // Check deadline
+                if (today > deadline) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = "Submission Closed";
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Submit";
+                }
 
-            if (today > deadline) {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Submission Closed";
-            } else {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit";
-            }
+                // Fetch and display panel members
+                if (eventId) {
+                    $.ajax({
+                        url: 'getPanelMembers.php',
+                        type: 'GET',
+                        data: { eventId: eventId },
+                        success: function (response) {
+                            $('#panelMembersList').html(response);
+                            $('#panelMembersSection').slideDown();
+                        },
+                        error: function () {
+                            $('#panelMembersList').html('<p class="text-danger">Error loading panel members</p>');
+                            $('#panelMembersSection').slideDown();
+                        }
+                    });
+                } else {
+                    $('#panelMembersSection').slideUp();
+                }
+            });
+
+            // Trigger on page load for default selection
+            $('#researchEvent').trigger('change');
         });
-
-        // Trigger on page load for default selection
-        document.getElementById('researchEvent').dispatchEvent(new Event('change'));
     </script>
     <script>
         let coauthors = []; // global array
