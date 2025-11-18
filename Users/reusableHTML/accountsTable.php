@@ -51,11 +51,6 @@ $result = $con->query($sql);
                         <td><?= htmlspecialchars($row['position']) ?></td>
                         <td><?= htmlspecialchars($row['password']) ?></td>
                         <td>
-                            <button type="button"
-                                    class="btn btn-outline-success btn-sm editAccountBtn"
-                                    data-id="<?= htmlspecialchars($row['id']) ?>">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
 
                             <button type="button"
                                     class="btn btn-outline-danger btn-sm deleteAccountBtn"
