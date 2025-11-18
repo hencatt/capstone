@@ -154,7 +154,7 @@ if ($stmt->execute()) {
                 <div class="row mt-5">
                     <div class="col">
 
-                        <button class="btn btn-outline-primary" id="coAuthorBtn">Assign Panel</button>
+                        <button class="btn btn-outline-primary" id="addPanelBtn">Assign Panel</button>
 
                     </div>
                 </div>
@@ -162,113 +162,220 @@ if ($stmt->execute()) {
             endif;
             ?>
 
+            <!-- PANEL MODAL -->
+            <div id="addPanelModal" style="display: none;">
+                <div class="custom-modal-backdrop"></div>
+                <div class="custom-modal-dialog">
+                    <div class="custom-modal-content">
+                        <div class="custom-modal-header">
+                            <h1 class="custom-modal-title">Assign Panel Members</h1>
+                            <button type="button" class="custom-close-btn" id="closeModalBtn">&times;</button>
+                        </div>
+                        <form method="POST" action="" id="panelAssignForm">
+                            <div class="custom-modal-body">
+                                <input type="hidden" name="eventId" value="<?= $eventId ?>">
 
-            <!-- CO AUTHORS MODAL -->
-            <div class="modal fade" id="coauthorModal" tabindex="-1" aria-labelledby="coauthorModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="coauthorModalLabel">Panel</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="coauthor_lastname" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="coauthor_lastname" name="coauthor_lastname"
-                                    placeholder="Last Name">
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Select Panel Members (Minimum 3
+                                            required)</strong></label>
+                                    <div id="panelMembersList" class="border rounded p-3"
+                                        style="max-height: 400px; overflow-y: auto; background-color: white;">
+                                        <?php
+                                        $con = con();
+                                        $sql = "SELECT 
+                                        a.id, 
+                                        CONCAT(a.fname, ' ', a.lname) as fullname, 
+                                        a.department, 
+                                        a.campus 
+                                    FROM accounts_tbl a
+                                    INNER JOIN employee_tbl e ON a.id = e.id
+                                    WHERE a.position = 'Panel' 
+                                    AND a.is_active = 1
+                                    AND e.status = 'Active'
+                                    ORDER BY a.lname, a.fname ASC";
+                                        $result = $con->query($sql);
+
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input panel-checkbox" type="checkbox" name="panelMembers[]" value="' . htmlspecialchars($row['id']) . '" id="panel' . htmlspecialchars($row['id']) . '">
+                                        <label class="form-check-label" for="panel' . htmlspecialchars($row['id']) . '">
+                                            <strong>' . htmlspecialchars($row['fullname']) . '</strong><br>
+                                            <small class="text-muted">' . htmlspecialchars($row['department']) . ' - ' . htmlspecialchars($row['campus']) . '</small>
+                                        </label>
+                                    </div>';
+                                            }
+                                        } else {
+                                            echo '<p class="text-muted">No panel members available.</p>';
+                                        }
+                                        $con->close();
+                                        ?>
+                                    </div>
+                                    <small class="text-muted">Selected: <span id="selectedCount">0</span> panel
+                                        member(s)</small>
+                                </div>
+
+                                <div class="alert alert-warning" role="alert" id="panelWarning" style="display: none;">
+                                    Please select at least 3 panel members.
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="coauthor_firstname" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="coauthor_firstname"
-                                    name="coauthor_firstname" placeholder="First Name">
+                            <div class="custom-modal-footer">
+                                <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary" name="assignPanel" id="assignPanelBtn"
+                                    disabled>Assign Panel</button>
                             </div>
-                            <div class="mb-3">
-                                <label for="coauthor_middlename" class="form-label">Middle Name</label>
-                                <input type="text" class="form-control" id="coauthor_middlename"
-                                    name="coauthor_middlename" placeholder="Middle Name">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="addCoauthorsBtn">Add</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- ---------------- -->
+
+            <style>
+                /* Custom Modal Styles */
+                #addPanelModal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 9999;
+                }
+
+                .custom-modal-backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 9998;
+                }
+
+                .custom-modal-dialog {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 90%;
+                    max-width: 800px;
+                    z-index: 9999;
+                }
+
+                .custom-modal-content {
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    max-height: 90vh;
+                    overflow-y: auto;
+                }
+
+                .custom-modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1rem 1.5rem;
+                    border-bottom: 1px solid #dee2e6;
+                }
+
+                .custom-modal-title {
+                    margin: 0;
+                    font-size: 1.25rem;
+                    font-weight: 500;
+                }
+
+                .custom-close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 2rem;
+                    line-height: 1;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .custom-close-btn:hover {
+                    opacity: 0.7;
+                }
+
+                .custom-modal-body {
+                    padding: 1.5rem;
+                }
+
+                .custom-modal-footer {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    padding: 1rem 1.5rem;
+                    border-top: 1px solid #dee2e6;
+                }
+            </style>
+
+
+
         </div>
     </div>
 
-
-
+    <!-- Add this script at the bottom of eventDetails.php before closing </body> -->
     <script>
-        let coauthors = []; // global array
-
         $(document).ready(function () {
-            const coAuthButton = $('#coAuthorBtn');
-            $('#coAuthorsModal').hide();
+            console.log("alksdjflkj")
+            const addPanelBtn = $("#addPanelBtn");
+            const panelModal = $("#addPanelModal");
+            const closeModalBtn = $("#closeModalBtn");
+            const cancelModalBtn = $("#cancelModalBtn");
+            const panelCheckboxes = $(".panel-checkbox");
+            const selectedCount = $("#selectedCount");
+            const assignPanelBtn = $("#assignPanelBtn");
+            const panelWarning = $("#panelWarning");
 
-            // Make updateCoauthorsList globally accessible
-            window.updateCoauthorsList = function () {
-                const tbody = document.querySelector('#coauthorsTable tbody');
-                tbody.innerHTML = '';
-                coauthors.forEach((c, idx) => {
-                    tbody.innerHTML += `
-                    <tr>
-                        <td><input type="hidden" name="coauthors[${idx}][lname]" value="${c.lname}">${c.lname}</td>
-                        <td><input type="hidden" name="coauthors[${idx}][fname]" value="${c.fname}">${c.fname}</td>
-                        <td><input type="hidden" name="coauthors[${idx}][mname]" value="${c.mname}">${c.mname}</td>
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeCoauthor(${idx})">Remove</button></td>
-                    </tr>`;
-                });
-            };
+            // Open modal
+            addPanelBtn.on("click", function () {
+                console.log("clicked addpanel ")
+                panelModal.fadeIn(200);
+                $("body").css("overflow", "hidden"); // Prevent background scrolling
+            });
 
-            window.removeCoauthor = function (idx) {
-                coauthors.splice(idx, 1);
-                updateCoauthorsList();
+            // Close modal functions
+            function closeModal() {
+                panelModal.fadeOut(200);
+                $("body").css("overflow", "auto"); // Re-enable scrolling
             }
 
-            // Load modal content
-            $('#coAuthorsModal').load("../phpFunctions/addCoAuthor.php", function () {
-                // Delegate click event to dynamically added employee rows
-                $('#coAuthorsModal').on('click', '.employeeRow', function () {
-                    const fname = $(this).data('fname');
-                    const mname = $(this).data('mname');
-                    const lname = $(this).data('lname');
-                    const email = $(this).data('email');
+            closeModalBtn.on("click", closeModal);
+            cancelModalBtn.on("click", closeModal);
 
-                    // Prevent duplicate co-authors in the table
-                    if (!coauthors.some(c => c.lname === lname && c.fname === fname)) {
-                        coauthors.push({ lname, fname, mname, email });
-                        updateCoauthorsList();
+            // Close on backdrop click
+            $(".custom-modal-backdrop").on("click", closeModal);
+
+            // Update count and validate selection
+            panelCheckboxes.on("change", function () {
+                const checkedCount = $(".panel-checkbox:checked").length;
+                selectedCount.text(checkedCount);
+
+                if (checkedCount >= 3) {
+                    assignPanelBtn.prop("disabled", false);
+                    panelWarning.hide();
+                } else {
+                    assignPanelBtn.prop("disabled", true);
+                    if (checkedCount > 0) {
+                        panelWarning.show();
+                    } else {
+                        panelWarning.hide();
                     }
-
-                    // Add email to dropdown (NO DUPLICATE OPTIONS)
-                    if ($("#inputEmail option[value='" + email + "']").length === 0) {
-                        $("#inputEmail").append(`<option value="${email}">${email}</option>`);
-                    }
-                });
-
-                // Close modal button inside loaded content
-                $('#closeCoAuthorModal').on('click', function () {
-                    $('#coAuthorsModal').hide();
-                    coAuthButton.text("Assign Panel");
-                });
+                }
             });
 
-            // Toggle modal
-            coAuthButton.on("click", function () {
-                $('#coAuthorsModal').toggle();
-                const isVisible = $('#coAuthorsModal').is(":visible");
-                coAuthButton.text(isVisible ? ">>>" : "Assign Panel");
-            });
-
-            // Click outside to close
-            $('body').on("click", function (e) {
-                if (!$(e.target).closest('#coAuthorsModal, #coAuthorBtn').length && $('#coAuthorsModal').is(':visible')) {
-                    $('#coAuthorsModal').hide();
-                    coAuthButton.text("Add Co-Authors");
+            // Validate before form submission
+            $("#panelAssignForm").on("submit", function (e) {
+                const checkedCount = $(".panel-checkbox:checked").length;
+                if (checkedCount < 3) {
+                    e.preventDefault();
+                    panelWarning.show();
+                    return false;
                 }
             });
         });

@@ -11,7 +11,8 @@ $dbName = "gad_portal";
 
 // 1. Create the database
 $sql = "CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci";
-if (!$con->query($sql)) die("DB Error: " . $con->error);
+if (!$con->query($sql))
+  die("DB Error: " . $con->error);
 $con->select_db($dbName);
 
 echo "Database ready.<br>";
@@ -22,8 +23,8 @@ echo "Database ready.<br>";
 
 $tables = [
 
-// 1. EMPLOYEE TABLE (MUST COME FIRST)
-"employee_tbl" => "
+  // 1. EMPLOYEE TABLE (MUST COME FIRST)
+  "employee_tbl" => "
 CREATE TABLE IF NOT EXISTS `employee_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
@@ -36,8 +37,8 @@ CREATE TABLE IF NOT EXISTS `employee_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 2. ACCOUNTS TABLE (USES EMPLOYEE ID)
-"accounts_tbl" => "
+  // 2. ACCOUNTS TABLE (USES EMPLOYEE ID)
+  "accounts_tbl" => "
 CREATE TABLE IF NOT EXISTS `accounts_tbl` (
   `id` int(11) NOT NULL,
   `email` varchar(60) NOT NULL,
@@ -55,8 +56,8 @@ CREATE TABLE IF NOT EXISTS `accounts_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 3. EMPLOYEE INFO
-"employee_info" => "
+  // 3. EMPLOYEE INFO
+  "employee_info" => "
 CREATE TABLE IF NOT EXISTS `employee_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fname` varchar(100) NOT NULL,
@@ -79,8 +80,8 @@ CREATE TABLE IF NOT EXISTS `employee_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 4. ANNOUNCEMENTS
-"announcement_tbl" => "
+  // 4. ANNOUNCEMENTS
+  "announcement_tbl" => "
 CREATE TABLE IF NOT EXISTS `announcement_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `announceTitle` varchar(45) NOT NULL,
@@ -94,8 +95,8 @@ CREATE TABLE IF NOT EXISTS `announcement_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 5. INVENTORY
-"inventory_tbl" => "
+  // 5. INVENTORY
+  "inventory_tbl" => "
 CREATE TABLE IF NOT EXISTS `inventory_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `itemName` varchar(45) NOT NULL,
@@ -108,8 +109,8 @@ CREATE TABLE IF NOT EXISTS `inventory_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 6. LOGIN ATTEMPTS
-"login_attempts" => "
+  // 6. LOGIN ATTEMPTS
+  "login_attempts" => "
 CREATE TABLE IF NOT EXISTS `login_attempts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_add` varchar(45) NOT NULL,
@@ -118,8 +119,8 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 7. LOGS
-"logs" => "
+  // 7. LOGS
+  "logs" => "
 CREATE TABLE IF NOT EXISTS `logs` (
   `log_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
@@ -129,8 +130,8 @@ CREATE TABLE IF NOT EXISTS `logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 8. RESEARCH
-"research_tbl" => "
+  // 8. RESEARCH
+  "research_tbl" => "
 CREATE TABLE IF NOT EXISTS `research_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `research_title` varchar(255) NOT NULL,
@@ -153,8 +154,8 @@ CREATE TABLE IF NOT EXISTS `research_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 9. COMMENTS
-"comments_tbl" => "
+  // 9. COMMENTS
+  "comments_tbl" => "
 CREATE TABLE IF NOT EXISTS `comments_tbl` (
   `comment_id` int(11) NOT NULL AUTO_INCREMENT,
   `research_id` int(11) NOT NULL,
@@ -166,8 +167,8 @@ CREATE TABLE IF NOT EXISTS `comments_tbl` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-// 10. VOTES
-"votes_tbl" => "
+  // 10. VOTES
+  "votes_tbl" => "
 CREATE TABLE IF NOT EXISTS `votes_tbl` (
   `vote_id` int(11) NOT NULL AUTO_INCREMENT,
   `vote` ENUM('Approve','Reject') NOT NULL,
@@ -181,16 +182,32 @@ CREATE TABLE IF NOT EXISTS `votes_tbl` (
   CONSTRAINT `fk_votes_research` FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_votes_panel` FOREIGN KEY (`panel_id`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+",
+
+  // 11. EVENT PANEL ASSIGNMENTS
+  "event_panel_tbl" => "
+CREATE TABLE IF NOT EXISTS `event_panel_tbl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `eventId` int(11) NOT NULL,
+  `panelId` int(11) NOT NULL,
+  `assignedBy` varchar(255) NOT NULL,
+  `assignedDate` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_event_panel_event` (`eventId`),
+  KEY `fk_event_panel_account` (`panelId`),
+  CONSTRAINT `fk_event_panel_event` FOREIGN KEY (`eventId`) REFERENCES `announcement_tbl` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_event_panel_account` FOREIGN KEY (`panelId`) REFERENCES `accounts_tbl` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 "
 ];
 
 // Execute everything
 foreach ($tables as $name => $query) {
-    if ($con->query($query)) {
-        echo "Table '$name' created OK.<br>";
-    } else {
-        echo "Error in $name: " . $con->error . "<br>";
-    }
+  if ($con->query($query)) {
+    echo "Table '$name' created OK.<br>";
+  } else {
+    echo "Error in $name: " . $con->error . "<br>";
+  }
 }
 
 $con->close();
