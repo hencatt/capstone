@@ -588,7 +588,7 @@ if ($conn->connect_error) {
 
 
 
-
+    <!-- qwerty -->
     <!-- Edit Account Modal -->
     <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel"
         aria-hidden="true">
@@ -918,32 +918,18 @@ if ($conn->connect_error) {
                 const campus = <?= json_encode($currentCampus) ?>;
                 const dept = <?= json_encode($currentDepartment) ?>;
 
-                function initializeTable(selector) {
-                    // Destroy existing DataTable if already initialized
-                    if ($.fn.DataTable.isDataTable(selector)) {
-                        $(selector).DataTable().destroy();
-                    }
 
-                    // Initialize again
-                    setTimeout(() => {
-                        $(selector).DataTable({
-                            responsive: true,
-                            autoWidth: false,
-                            pageLength: 10
-                        });
-                    }, 200);
-                }
 
                 function loadEmployeeTable() {
                     $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
                         filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
-                        initializeTable('#employee_table');
+                 
                     });
                 }
 
                 function loadAccountsTable() {
                     $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function () {
-                        initializeTable('#accounts_table');
+                     
                     });
                 }
 
@@ -1090,44 +1076,6 @@ if ($conn->connect_error) {
                 addAccountModal.style.display = "none";
                 document.body.style.overflow = "";
             }
-        });
-
-
-
-        /* -------------------------------
-           GENDER + CHILD OPTIONS (your jQuery logic)
-        -------------------------------- */
-        $(function () {
-            const genderSelect = $("#inputGender");
-            const otherGender = $("#otherGender");
-            otherGender.hide();
-
-            genderSelect.on("change", function () {
-                if ($(this).val() === "LGBTQIA+") {
-                    otherGender.show();
-                } else {
-                    otherGender.val("");
-                    otherGender.hide();
-                }
-            });
-
-            function toggleChildOptions() {
-                const checkedChild = $('input[name="inputChildren"]:checked').val();
-                if (checkedChild === "No") {
-                    $("#childrenNum").val("");
-                    $("#childrenNumCol").hide();
-                    $("#childConcern").val("");
-                    $("#childConcernCol").hide();
-                } else {
-                    $("#childrenNumCol").show();
-                    $("#childConcernCol").show();
-                }
-            }
-
-            toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function () {
-                toggleChildOptions();
-            });
         });
     });
 </script>
