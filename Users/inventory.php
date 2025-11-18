@@ -54,7 +54,7 @@ deleteItemInventory("deleteItem", $currentUser);
                 <div class="row mt-2 d-flex justify-content-between align-items-center">
                     <div class="col-3 d-flex align-items-center justify-content-start gap-1">
                         <input type="text" placeholder="Search" name="searchBar" id="searchBar" class="form-control">
-                        <button type="button" class="btn btn-secondary" name="searchBtn" id="searchBtn"> <span
+                        <button type="button" class="btn btn-secondary" name="searchBtn" id="searchBtn" style="background-color: #0a7afa;"> <span
                                 class="material-symbols-outlined">
                                 search
                             </span></button>
