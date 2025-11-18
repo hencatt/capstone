@@ -12,7 +12,7 @@
     <form id="employeeForm">
       <hr>
       <div class="row d-flex">
-        <!-- Hidden field to track if editing or adding -->
+        <!-- Hidden field to track employee ID (for updates) -->
         <input type="hidden" name="emp_id" id="emp_id" value="">
 
         <!-- GROUP 1 -->
@@ -20,50 +20,48 @@
           <div class="row">
             <div class="col">
               <label for="fname" class="form-label">First Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" required>
+              <input type="text" class="form-control" id="fname" name="inputFname" placeholder="Enter First Name" required>
             </div>
             <div class="col">
               <label for="m_initial" class="form-label">Middle Initial</label>
-              <input type="text" class="form-control" id="m_initial" name="m_initial" placeholder="M." maxlength="2">
+              <input type="text" class="form-control" id="m_initial" name="inputMname" placeholder="M." maxlength="2">
             </div>
             <div class="col">
               <label for="lname" class="form-label">Last Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" required>
+              <input type="text" class="form-control" id="lname" name="inputLname" placeholder="Enter Last Name" required>
             </div>
           </div>
           
           <div class="row mt-3">
             <div class="col">
               <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="email@example.com" required>
+              <input type="email" name="inputEmail" id="email" class="form-control" placeholder="email@example.com" required>
             </div>
             <div class="col">
               <label for="contact_no" class="form-label">Contact No. <span class="text-danger">*</span></label>
-              <input type="text" name="contact_no" id="contact_no" class="form-control" placeholder="09XX XXX XXXX" required>
+              <input type="text" name="inputContact" id="contact_no" class="form-control" placeholder="09XX XXX XXXX" required>
             </div>
           </div>
           
           <div class="row mt-4">
             <div class="col">
-              <label for="department" class="form-label">Department</label>
-              <input type="text" class="form-control" name="department" id="department" 
-                     value="<?= htmlspecialchars($_SESSION['user_department'] ?? '') ?>" readonly>
+              <label for="inputDepartment" class="form-label">Department</label>
+              <input type="text" class="form-control" name="inputDepartment" id="inputDepartment" value="<?= htmlspecialchars($_SESSION['user_department']) ?>" readonly>
             </div>
             <div class="col">
-              <label for="campus" class="form-label">Campus</label>
-              <input type="text" class="form-control" name="campus" id="campus" 
-                     value="<?= htmlspecialchars($_SESSION['user_campus'] ?? '') ?>" readonly>
+              <label for="inputCampus" class="form-label">Campus</label>
+              <input type="text" class="form-control" name="inputCampus" id="inputCampus" value="<?= htmlspecialchars($_SESSION['user_campus']) ?>" readonly>
             </div>
           </div>
           
           <div class="row mt-4">
             <div class="col">
               <label for="birthday" class="form-label">Birthdate <span class="text-danger">*</span></label>
-              <input type="date" class="form-control" name="birthday" id="birthday" required>
+              <input type="date" class="form-control" name="inputBirthdate" id="birthday" required>
             </div>
             <div class="col">
               <label for="priority_status" class="form-label">Priority Status</label>
-              <select name="priority_status" id="priority_status" class="form-select">
+              <select name="inputPriority" id="priority_status" class="form-select">
                 <option value="None">None</option>
                 <option value="PWD">PWD</option>
                 <option value="Senior Citizen">Senior Citizen</option>
@@ -74,7 +72,7 @@
           <div class="row mt-3">
             <div class="col">
               <label for="address" class="form-label">Complete Address <span class="text-danger">*</span></label>
-              <input type="text" name="address" id="address" 
+              <input type="text" name="inputAddress" id="address" 
                      placeholder="Street, Barangay, City, Province" class="form-control" required>
             </div>
           </div>
@@ -82,7 +80,7 @@
           <div class="row mt-4">
             <div class="col">
               <label for="marital_status" class="form-label">Marital Status <span class="text-danger">*</span></label>
-              <select name="marital_status" id="marital_status" class="form-select" required>
+              <select name="inputMaritalStatus" id="marital_status" class="form-select" required>
                 <option value="" disabled selected>Select Marital Status</option>
                 <option value="Single">Single</option>
                 <option value="Married">Married</option>
@@ -91,7 +89,7 @@
             </div>
             <div class="col">
               <label for="size" class="form-label">Clothing Size</label>
-              <select name="size" id="size" class="form-select">
+              <select name="inputSize" id="size" class="form-select">
                 <option value="" disabled selected>Select Size</option>
                 <option value="S">Small</option>
                 <option value="M">Medium</option>
@@ -110,7 +108,7 @@
           <div class="row">
             <div class="col">
               <label for="sex" class="form-label">Sex <span class="text-danger">*</span></label>
-              <select name="sex" id="sex" class="form-select" required>
+              <select name="inputSex" id="sex" class="form-select" required>
                 <option value="" disabled selected>Select Sex</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -121,7 +119,7 @@
           <div class="row mt-4">
             <div class="col">
               <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
-              <select class="form-select" id="gender" name="gender" required>
+              <select class="form-select" id="gender" name="inputGender" required>
                 <option value="" disabled selected>Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -135,7 +133,7 @@
           <div class="row mt-4">
             <div class="col">
               <label for="income" class="form-label">Monthly Income</label>
-              <select name="income" id="income" class="form-select">
+              <select name="inputIncome" id="income" class="form-select">
                 <option value="" disabled selected>Select Income Range</option>
                 <option value="Below 10000">Below ₱10,000</option>
                 <option value="10000-30000">₱10,000 - ₱30,000</option>
@@ -169,7 +167,7 @@
       <div class="row mt-3" id="childrenNumCol" style="display: none;">
         <div class="col-md-4">
           <label for="children_num" class="form-label">Number of Dependents:</label>
-          <input type="number" id="children_num" class="form-control" name="children_num" 
+          <input type="number" id="children_num" class="form-control" name="inputChildrenNum" 
                  placeholder="0" min="0" max="20">
         </div>
       </div>
@@ -178,7 +176,7 @@
         <div class="col">
           <label for="concern" class="form-label">Special Needs or Concerns (Optional):</label>
           <textarea class="form-control" style="height: 100px; resize: none;" 
-                    id="concern" name="concern" placeholder="Enter any special concerns here..."></textarea>
+                    id="concern" name="inputConcern" placeholder="Enter any special concerns here..."></textarea>
         </div>
       </div>
 
@@ -200,8 +198,6 @@
 </div>
 
 <script>
-
-  
 $(document).ready(function() {
   // Show/hide LGBTQIA+ specify field
   $('#gender').on('change', function() {
