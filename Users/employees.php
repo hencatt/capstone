@@ -13,81 +13,6 @@ $currentPosition = $user['position'];
 doubleCheck($currentPosition);
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
-    $fname = $_POST['inputFname'] ?? '';
-    $mname = $_POST['inputMname'] ?? '';
-    $lname = $_POST['inputLname'] ?? '';
-    $email = $_POST['inputEmail'] ?? '';
-    $contact_no = $_POST['inputContact'] ?? '';
-    $department = $_POST['inputDepartment'] ?? '';
-    $campus = $_POST['inputCampus'] ?? '';
-    $status = 'Active';
-
-    $street = $_POST['inputStAddress'] ?? '';
-    $city = $_POST['inputCity'] ?? '';
-    $province = $_POST['inputProvince'] ?? '';
-    $address = trim($street . ', ' . $city . ', ' . $province, ', ');
-
-    $birthdate = $_POST['inputBirthdate'] ?? '';
-    $marital_status = $_POST['inputMaritalStatus'] ?? '';
-    $sex = $_POST['inputSex'] ?? '';
-
-    $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+')
-        ? ($_POST['otherGender'] ?? '')
-        : ($_POST['inputGender'] ?? '');
-
-    $size = $_POST['inputSize'] ?? '';
-    $income = $_POST['inputIncome'] ?? '';
-    $priority_status = $_POST['inputPriority'] ?? '';
-    $childrenNum = isset($_POST['inputChildrenNum']) ? (int) $_POST['inputChildrenNum'] : 0;
-    $concern = !empty($_POST['inputConcern']) ? $_POST['inputConcern'] : 'N/A';
-
-    if (empty($email)) {
-        echo "<script>alert('❌ Email is required!');</script>";
-        exit();
-    }
-
-    // --- INSERT employee_tbl
-    $stmt_emp = $con->prepare("INSERT INTO employee_tbl 
-        (email, contact_no, department, campus, status) 
-        VALUES (?, ?, ?, ?, ?)");
-    $stmt_emp->bind_param("sssss", $email, $contact_no, $department, $campus, $status);
-
-    if ($stmt_emp->execute()) {
-        $employee_id = $con->insert_id;
-
-        // --- INSERT employee_info
-        $stmt_info = $con->prepare("INSERT INTO employee_info 
-            (fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt_info->bind_param(
-            "sssssssssssiis",
-            $fname,
-            $mname,
-            $lname,
-            $address,
-            $birthdate,
-            $marital_status,
-            $sex,
-            $gender,
-            $priority_status,
-            $size,
-            $income,
-            $employee_id,
-            $childrenNum,
-            $concern
-        );
-
-        if ($stmt_info->execute()) {
-            echo "<script>alert('✅ Employee added successfully!');</script>";
-        } else {
-            echo "<script>alert('❌ Insert employee_info failed: " . addslashes($stmt_info->error) . "');</script>";
-        }
-    } else {
-        echo "<script>alert('❌ Insert employee_tbl failed: " . addslashes($stmt_emp->error) . "');</script>";
-    }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['fname']) && isset($_POST['lname']) && !isset($_POST['add_employee'])) {
         // Add Account Logic
@@ -214,46 +139,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $conn->close();
 }
-// Update Account Logic
-if (isset($_POST['update_account'])) {
-    $userId = $_POST['edit_id'];
-    $fname = $_POST['edit_fname'];
-    $lname = $_POST['edit_lname'];
-    $username = $_POST['edit_username'];
-    $email = $_POST['edit_email'];
-    $password = !empty($_POST['edit_password']) ? password_hash($_POST['edit_password'], PASSWORD_DEFAULT) : null;
-    $position = $_POST['edit_position'];
-    $department = $_POST['edit_department'];
+// // Update Account Logic
+// if (isset($_POST['update_account'])) {
+//     $userId = $_POST['edit_id'];
+//     $fname = $_POST['edit_fname'];
+//     $lname = $_POST['edit_lname'];
+//     $username = $_POST['edit_username'];
+//     $email = $_POST['edit_email'];
+//     $password = !empty($_POST['edit_password']) ? password_hash($_POST['edit_password'], PASSWORD_DEFAULT) : null;
+//     $position = $_POST['edit_position'];
+//     $department = $_POST['edit_department'];
 
-    $conn = new mysqli('localhost', 'root', '', 'gad_portal');
+//     $conn = new mysqli('localhost', 'root', '', 'gad_portal');
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+//     if ($conn->connect_error) {
+//         die("Connection failed: " . $conn->connect_error);
+//     }
 
-    if ($password) {
-        $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, pass = ?, position = ?, department = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssi", $fname, $lname, $username, $email, $password, $position, $department, $userId);
-    } else {
-        $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, position = ?, department = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssi", $fname, $lname, $username, $email, $position, $department, $userId);
-    }
+//     if ($password) {
+//         $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, pass = ?, position = ?, department = ? WHERE id = ?";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("sssssssi", $fname, $lname, $username, $email, $password, $position, $department, $userId);
+//     } else {
+//         $sql = "UPDATE accounts_tbl SET fname = ?, lname = ?, username = ?, email = ?, position = ?, department = ? WHERE id = ?";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("ssssssi", $fname, $lname, $username, $email, $position, $department, $userId);
+//     }
 
-    if ($stmt->execute()) {
-        alertSuccess("Updated", "Account updated successfully!");
-    } else {
-        alertError("Error", "There has been an error updating account");
-    }
+//     if ($stmt->execute()) {
+//         alertSuccess("Updated", "Account updated successfully!");
+//     } else {
+//         alertError("Error", "There has been an error updating account");
+//     }
 
-    $stmt->close();
-    $conn->close();
+//     $stmt->close();
+//     $conn->close();
 
-    // Redirect to the same page to prevent form resubmission
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
+//     // Redirect to the same page to prevent form resubmission
+//     header("Location: " . $_SERVER['PHP_SELF']);
+//     exit();
+// }
 
 $conn = new mysqli('localhost', 'root', '', 'gad_portal');
 if ($conn->connect_error) {
@@ -923,13 +848,13 @@ if ($conn->connect_error) {
                 function loadEmployeeTable() {
                     $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
                         filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
-                 
+
                     });
                 }
 
                 function loadAccountsTable() {
                     $('#showEmployeeTable').load('./reusableHTML/accountsTable.php', function () {
-                     
+
                     });
                 }
 
@@ -1076,6 +1001,23 @@ if ($conn->connect_error) {
                 addAccountModal.style.display = "none";
                 document.body.style.overflow = "";
             }
+        });
+        
+        $(document).on('click', '#saveInfo', function (e) {
+            e.preventDefault();
+
+            const formData = $('#modal form').serialize(); // gets all form inputs including hidden emp_id
+
+            $.post('../phpFunctions/updateEmployee.php', formData, function (resp) {
+                if (resp.success) {
+                    alert(resp.message);
+                    $('#modal').removeClass('open'); // or use Bootstrap: $('#modal').modal('hide');
+                    document.body.style.overflow = '';
+                    location.reload(); // refresh to see changes
+                } else {
+                    alert(resp.error || 'Failed to update employee.');
+                }
+            }, 'json').fail(() => alert('Request failed'));
         });
     });
 </script>

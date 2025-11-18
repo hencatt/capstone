@@ -335,42 +335,6 @@ $(document).ready(function() {
     }
   });
 
-  // ------------------------------
-  // AJAX Save
-  // ------------------------------
-  $('#employeeForm').submit(function(e) {
-    e.preventDefault();
-    const formData = $(this).serialize();
-
-    $.post('../phpFunctions/updateEmployee.php', formData, function(resp) {
-      if(resp.success) {
-        alert(resp.message);
-        $('#modal').removeClass('open');
-        document.body.style.overflow = '';
-        location.reload(); // refresh to show updated info
-      } else {
-        alert(resp.error || 'Failed to update employee.');
-      }
-    }, 'json').fail(() => alert('Request failed'));
-  });
-
-   $(document).on('click', '#saveInfo', function(e) {
-    e.preventDefault();
-
-    const formData = $('#modal form').serialize(); // gets all form inputs including hidden emp_id
-
-    $.post('../phpFunctions/updateEmployee.php', formData, function(resp) {
-        if (resp.success) {
-            alert(resp.message);
-            $('#modal').removeClass('open'); // or use Bootstrap: $('#modal').modal('hide');
-            document.body.style.overflow = '';
-            location.reload(); // refresh to see changes
-        } else {
-            alert(resp.error || 'Failed to update employee.');
-        }
-    }, 'json').fail(() => alert('Request failed'));
-});
-
 });
 </script>
 
