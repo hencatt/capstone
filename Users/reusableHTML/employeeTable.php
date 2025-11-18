@@ -40,7 +40,6 @@ $result = $con->query($sql);
                 <th>Full Name</th>
                 <th>Department</th>
                 <th>Campus</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="employeeTableBody">
@@ -50,41 +49,6 @@ $result = $con->query($sql);
                         <td class="empName"><?= htmlspecialchars($row['full_name']) ?></td>
                         <td><?= htmlspecialchars($row['department']) ?></td>
                         <td><?= htmlspecialchars($row['campus']) ?></td>
-                        <td class="empEmail"><?= htmlspecialchars($row['email']) ?></td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" 
-                                        class="btn btn-outline-primary view-btn"
-                                        title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-
-                                <button type="button"
-                                        class="btn btn-outline-success editEmployeeBtn"
-                                        data-id="<?= htmlspecialchars($row['emp_id']) ?>"
-                                        title="Edit Employee">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-
-                                <?php 
-                                if (!$row['account_id'] && ($currentPosition === 'Director' || $currentPosition === 'Technical Assistant')):
-                                     ?>
-                                    <button type="button"
-                                            class="btn btn-outline-info assignBtn"
-                                            data-id="<?= htmlspecialchars($row['emp_id']) ?>"
-                                            title="Assign Account">
-                                        <i class="fas fa-user-plus"></i> Assign
-                                    </button>
-                                <?php endif; ?>
-
-                                <button type="button"
-                                        class="btn btn-outline-danger delete-btn"
-                                        data-id="<?= htmlspecialchars($row['emp_id']) ?>"
-                                        title="Delete Employee">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
                     </tr>
                 <?php endwhile; ?>
             <?php else: ?>

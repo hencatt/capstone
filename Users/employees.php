@@ -503,47 +503,43 @@ if ($conn->connect_error) {
 
 
     <!-- Modals -->
-    
-<div class="modals" id="add_account_modal" style="display: none;">
-    <div class="modal_add_account">
-        <div class="modal_title">
-            <h2><?= ($currentPosition === "Focal Person") ? "Add Researcher" : "Add Account" ?></h2>
-        </div>
-        
-        <form method="post" class="form_add_account" novalidate>
-            <!-- Hidden field for existing employee ID (used when assigning account) -->
-            <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
-            
-            <input type="text" name="fname" placeholder="First Name" required>
-            <input type="text" name="lname" placeholder="Last Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="username" placeholder="Username" required style="display:none;">
-            <input type="password"
-                   name="pass"
-                   id="password"
-                   placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)"
-                   required
-                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}"
-                   maxlength="64"
-                   title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
-            
-            <?php if ($currentPosition !== "Focal Person"): ?>
-                <!-- Position Select (visible for Director/TA) -->
-                <select name="pos" id="position" required>
-                    <option value="" disabled selected>Select Position</option>
-                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                        <option value="Technical Assistant">Technical Assistant</option>
-                        <option value="Focal Person">Focal Person</option>
-                        <option value="Panel">Panel</option>
-                        <option value="RET Chair">RET Chair</option>
-                    <?php endif; ?>
-                </select>
 
-                <!-- Department Select (visible for Director/TA) -->
-                <select name="dept" id="department" required>
-                    <option value="" disabled selected>Select Department</option>
-                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                        <option value="CPADM">College of Public Administration and Disaster Management</option>
+    <div class="modals" id="add_account_modal" style="display: none;">
+        <div class="modal_add_account">
+            <div class="modal_title">
+                <h2><?= ($currentPosition === "Focal Person") ? "Add Researcher" : "Add Account" ?></h2>
+            </div>
+
+            <form method="post" class="form_add_account" novalidate>
+                <!-- Hidden field for existing employee ID (used when assigning account) -->
+                <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
+
+                <input type="text" name="fname" placeholder="First Name" required>
+                <input type="text" name="lname" placeholder="Last Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="username" placeholder="Username" required style="display:none;">
+                <input type="password" name="pass" id="password"
+                    placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)" required
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" maxlength="64"
+                    title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
+
+                <?php if ($currentPosition !== "Focal Person"): ?>
+                    <!-- Position Select (visible for Director/TA) -->
+                    <select name="pos" id="position" required>
+                        <option value="" disabled selected>Select Position</option>
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                            <option value="Technical Assistant">Technical Assistant</option>
+                            <option value="Focal Person">Focal Person</option>
+                            <option value="Panel">Panel</option>
+                            <option value="RET Chair">RET Chair</option>
+                        <?php endif; ?>
+                    </select>
+
+                    <!-- Department Select (visible for Director/TA) -->
+                    <select name="dept" id="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                            <option value="CPADM">College of Public Administration and Disaster Management</option>
                             <option value="CMBT">College of Management and Business Technology</option>
                             <option value="CoArch">College of Architecture</option>
                             <option value="CoEd">College of Education</option>
@@ -557,35 +553,35 @@ if ($conn->connect_error) {
                             <option value="IOLL">Institute of Linguistics and Literature</option>
                             <option value="CON">College Of Nursing</option>
                             <option value="GS">Graduate School</option>
-                    <?php endif; ?>
-                </select>
+                        <?php endif; ?>
+                    </select>
 
-                <!-- Campus Select (visible for Director/TA) -->
-                <select name="campus" id="campus" required>
-                    <option value="" disabled selected>Select Campus</option>
-                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                        <option value="Sumacab">Sumacab</option>
-                        <option value="GT">Gen. Tinio</option>
-                        <option value="San Isidro">San Isidro</option>
-                        <option value="Gabaldon">Gabaldon</option>
-                        <option value="Atate">Atate</option>
-                        <option value="Fort Magsaysay">Fort Magsaysay</option>
-                    <?php endif; ?>
-                </select>
-            <?php else: ?>
-                <!-- Hidden fields for Focal Person -->
-                <input type="hidden" name="pos" value="Researcher">
-                <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
-                <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
-            <?php endif; ?>
-            
-            <div class="buttons">
-                <button type="submit" class="btn btn-outline-success">Add</button>
-                <button type="button" class="add_btn_close" id="close_add_account">Close</button>
-            </div>
-        </form>
+                    <!-- Campus Select (visible for Director/TA) -->
+                    <select name="campus" id="campus" required>
+                        <option value="" disabled selected>Select Campus</option>
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                            <option value="Sumacab">Sumacab</option>
+                            <option value="GT">Gen. Tinio</option>
+                            <option value="San Isidro">San Isidro</option>
+                            <option value="Gabaldon">Gabaldon</option>
+                            <option value="Atate">Atate</option>
+                            <option value="Fort Magsaysay">Fort Magsaysay</option>
+                        <?php endif; ?>
+                    </select>
+                <?php else: ?>
+                    <!-- Hidden fields for Focal Person -->
+                    <input type="hidden" name="pos" value="Researcher">
+                    <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
+                    <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
+                <?php endif; ?>
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-outline-success">Add</button>
+                    <button type="button" class="add_btn_close" id="close_add_account">Close</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
 
 
@@ -940,6 +936,7 @@ if ($conn->connect_error) {
 
                 function loadEmployeeTable() {
                     $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
+                        filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
                         initializeTable('#employee_table');
                     });
                 }
@@ -1358,55 +1355,55 @@ if ($conn->connect_error) {
 </script>
 
 <script>
-$(document).ready(function() {
-    // Open Add Account Modal
-    $('#add_account').on('click', function() {
-        $('#add_account_modal').css('display', 'flex');
-        document.body.style.overflow = 'hidden';
-        
-        // Clear form
-        $('.form_add_account')[0].reset();
-        $('#existing_employee_id').val('');
-        $('input[name="email"]').prop('readonly', false);
-        $('#assign-note').remove();
-    });
+    $(document).ready(function () {
+        // Open Add Account Modal
+        $('#add_account').on('click', function () {
+            $('#add_account_modal').css('display', 'flex');
+            document.body.style.overflow = 'hidden';
 
-    // Close Add Account Modal
-    $('#close_add_account').on('click', function() {
-        $('#add_account_modal').css('display', 'none');
-        document.body.style.overflow = '';
-        
-        // Clear form
-        $('.form_add_account')[0].reset();
-        $('#existing_employee_id').val('');
-        $('input[name="email"]').prop('readonly', false);
-        $('#assign-note').remove();
-    });
+            // Clear form
+            $('.form_add_account')[0].reset();
+            $('#existing_employee_id').val('');
+            $('input[name="email"]').prop('readonly', false);
+            $('#assign-note').remove();
+        });
 
-    // Close modal on outside click
-    $('#add_account_modal').on('click', function(e) {
-        if (e.target === this) {
-            $(this).css('display', 'none');
+        // Close Add Account Modal
+        $('#close_add_account').on('click', function () {
+            $('#add_account_modal').css('display', 'none');
             document.body.style.overflow = '';
-        }
-    });
 
-    // Auto-fill username from email
-    $('input[name="email"]').on('blur', function() {
-        const email = $(this).val().trim();
-        if (email && !$('input[name="username"]').val()) {
-            $('input[name="username"]').val(email);
-        }
-    });
+            // Clear form
+            $('.form_add_account')[0].reset();
+            $('#existing_employee_id').val('');
+            $('input[name="email"]').prop('readonly', false);
+            $('#assign-note').remove();
+        });
 
-    // Prevent form interaction for Focal Person on hidden selects
-    <?php if ($currentPosition === "Focal Person"): ?>
-    $('#position, #department, #campus').on('mousedown keydown', function(e) {
-        e.preventDefault();
-        return false;
+        // Close modal on outside click
+        $('#add_account_modal').on('click', function (e) {
+            if (e.target === this) {
+                $(this).css('display', 'none');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Auto-fill username from email
+        $('input[name="email"]').on('blur', function () {
+            const email = $(this).val().trim();
+            if (email && !$('input[name="username"]').val()) {
+                $('input[name="username"]').val(email);
+            }
+        });
+
+        // Prevent form interaction for Focal Person on hidden selects
+        <?php if ($currentPosition === "Focal Person"): ?>
+            $('#position, #department, #campus').on('mousedown keydown', function (e) {
+                e.preventDefault();
+                return false;
+            });
+        <?php endif; ?>
     });
-    <?php endif; ?>
-});
 </script>
 
 

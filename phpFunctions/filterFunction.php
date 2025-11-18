@@ -237,8 +237,9 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                         <i class="fas fa-trash"></i> Delete
                     </button>
 
-                    <button type="button" class="btn btn-outline-secondary btn-sm assignBtn">
-                    Assign
+                    <button type="button" class="btn btn-outline-secondary btn-sm assignBtn"
+                    title="Assign Account">
+                    <i class="fas fa-user-plus"></i>Assign
                     </button>
 
                 </td>';
