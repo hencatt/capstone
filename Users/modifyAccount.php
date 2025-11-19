@@ -34,7 +34,6 @@ if (isset($_POST["saveBtn"])) {
         $params[] = $newEmail;
     }
 
-
     // Password Update Logic
     if (!empty($oldPassword) && !empty($newPassword) && !empty($confirmPassword)) {
         if ($newPassword === $confirmPassword) {
@@ -177,6 +176,135 @@ if (isset($_POST["saveInfo"])) {
 
 <head>
     <?= headerLinks("Modify Account") ?>
+    <style>
+        :root {
+            --primary-blue: #0a7afa;
+            --primary-pink: #db0fe2;
+        }
+
+        .account-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .account-header h1 {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(10, 122, 250, 0.15);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-pink) 100%);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        /* .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(10, 122, 250, 0.3);
+            color: white;
+        }
+
+        .btn-outline-gradient {
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-gradient:hover {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-pink) 100%);
+            border-color: transparent;
+            color: white;
+        } */
+
+        .profile-card {
+            background-color: #ffffffff;
+            border-radius: 20px;
+            padding: 30px;
+            color: black;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            background: rgba(78, 102, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .profile-info label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .profile-info div {
+            font-weight: 600;
+        }
+
+        .password-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -187,140 +315,104 @@ if (isset($_POST["saveInfo"])) {
         </div>
         
         <!-- MAIN CONTENTS -->
-        <div class="col-10 mt-lg-3 mainContent">
+        <div class="col-10 mt-3 mainContent">
+            <?php topbar($currentUser, $currentPosition, "account") ?>
+
             <div id="contents">
                 <div class="row">
-                    <div class="col">
-                        <h1>Account</h1>
-                    </div>
-                </div>
-                
-                <div class="row mt-lg-3" style="background-color: white; padding: 30px; border-radius: 10px">
-                    <div class="col">
-                        <!-- ACCOUNT INFO FORM -->
-                        <form method="POST" class="form-inline">
-                            <div class="form-group row">
-                                <div class="col">
-                                    <h5>Account Information</h5>
-                                </div>
-                                <div class="col d-flex justify-content-end gap-3">
-                                    <button type="button" name="personalInfoButton" id="personalInfoButton"
-                                        class="btn btn-outline-primary">Edit Personal Info</button>
-                                    <button type="button" name="editBtn" id="editBtn" class="btn btn-outline-secondary">Edit</button>
-                                </div>
-
-                                <div class="row mt-2">
-                                    <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
-                                        <label for="inputEmail" class="col-form-label col-sm-3">Email:</label>
-                                        <input type="text" name="inputEmail" id="inputEmail" disabled
-                                            placeholder="<?= $currentEmail ?>" class="form-control">
-                                    </div>
-                                </div>
-
-                                <div class="row mt-5">
-                                    <h5>Change Password</h5>
-                                </div>
-                                
-                                <div class="row mt-2">
-                                    <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-3">
-                                        <label for="inputOldPassword" class="col-sm-3 col-form-control">Old Password:</label>
-                                        <input type="password" name="inputOldPassword" id="inputOldPassword"
-                                            placeholder="Enter Old Password" class="form-control" disabled>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mt-2">
-                                    <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
-                                        <label for="inputNewPassword" class="col-form-label col-sm-3">New Password:</label>
-                                        <input type="password" name="inputNewPassword" id="inputNewPassword"
-                                            placeholder="Enter New Password" class="form-control" disabled>
-                                    </div>
-                                </div>
-                                
-                                <div class="row mt-2">
-                                    <div class="row-lg-4 form-group d-flex flex-row align-items-center gy-2">
-                                        <label for="inputConfirmPassword" class="col-sm-3 col-form-label">Confirm Password</label>
-                                        <input type="password" name="inputConfirmPassword" id="inputConfirmPassword"
-                                            placeholder="Confirm Password" class="form-control" disabled>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SAVE BUTTON ROW -->
-                            <div class="row mt-3">
-                                <div class="row-8 d-flex align-items-center justify-content-end">
-                                    <button type="submit" name="saveBtn" id="saveBtn" class="btn btn-outline-success"
-                                        disabled style="display: none;">Save Changes 
-                                        <span class="material-symbols-outlined">check</span>
+                    <!-- Main Account Section -->
+                    <div class="col-lg-8">
+                        <div class="account-container">
+                            <div class="account-header">
+                                <h1>Account</h1>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-info" id="personalInfoButton">
+                                        <i class="fas fa-user-edit"></i> Edit Personal Info
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="editBtn">
+                                        <i class="fas fa-edit"></i> Edit
                                     </button>
                                 </div>
                             </div>
-                        </form>
+
+                            <!-- ACCOUNT INFO FORM -->
+                            <form method="POST">
+                                <h5 class="section-title">Account Information</h5>
+                                
+                                <div class="form-group">
+                                    <label for="inputEmail">Email Address</label>
+                                    <input type="text" name="inputEmail" id="inputEmail" 
+                                           placeholder="<?= $currentEmail ?>" class="form-control" disabled>
+                                </div>
+
+                                <div class="password-section">
+                                    <h5 class="section-title" style="margin-top: 0;">Change Password</h5>
+                                    
+                                    <div class="form-group">
+                                        <label for="inputOldPassword">Old Password</label>
+                                        <input type="password" name="inputOldPassword" id="inputOldPassword"
+                                               placeholder="Enter Old Password" class="form-control" disabled>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="inputNewPassword">New Password</label>
+                                        <input type="password" name="inputNewPassword" id="inputNewPassword"
+                                               placeholder="Enter New Password" class="form-control" disabled>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="inputConfirmPassword">Confirm Password</label>
+                                        <input type="password" name="inputConfirmPassword" id="inputConfirmPassword"
+                                               placeholder="Confirm Password" class="form-control" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- SAVE BUTTON -->
+                                <div class="text-end mt-4">
+                                    <button type="submit" name="saveBtn" id="saveBtn" 
+                                            class="btn btn-gradient" disabled style="display: none;">
+                                        <i class="fas fa-save"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <!-- PROFILE SIDEBAR -->
-                    <div class="col-lg-4" style="border: black solid 1px; padding: 10px; border-radius: 10px;">
-                        <div class="row">
-                            <div class="col text-center">
+                    <div class="col-lg-4">
+                        <div class="profile-card">
+                            <div class="text-center">
                                 <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F005%2F544%2F718%2Foriginal%2Fprofile-icon-design-free-vector.jpg&f=1&nofb=1&ipt=a3a03e1e1c2a147e5b78c95b25acf2b7a4edf938f68908367342f6caf5625631"
-                                    alt="Profile Photo" style="width:150px; height:150px; border-radius:50%; border: solid black 1px;">
+                                     alt="Profile Photo" class="profile-img">
                             </div>
-                        </div>
-                        
-                        <div class="row mt-5">
-                            <div class="col">
-                                <?php
-                                $conn = newCon();
-                                $sql = "SELECT ei.*, et.* FROM employee_info AS ei 
-                                        INNER JOIN employee_tbl AS et ON et.id = ei.employee_id 
-                                        WHERE ei.employee_id = $currentUserId";
-                                $stmt = $conn->query($sql);
-                                $row = $stmt->fetch_assoc();
-                                ?>
+                            
+                            <?php
+                            $conn = newCon();
+                            $sql = "SELECT ei.*, et.* FROM employee_info AS ei 
+                                    INNER JOIN employee_tbl AS et ON et.id = ei.employee_id 
+                                    WHERE ei.employee_id = $currentUserId";
+                            $stmt = $conn->query($sql);
+                            $row = $stmt->fetch_assoc();
+                            ?>
 
-                                <div class="row">
-                                    <div class="col">
-                                        <!-- NAME -->
-                                        <div class="row">
-                                            <div class="col-6 text-end">
-                                                <label for="">Name:</label>
-                                            </div>
-                                            <div class="col">
-                                                <?= $row["fname"] . " " . $row["lname"]; ?>
-                                            </div>
-                                        </div>
+                            <div class="profile-info">
+                                <label>Name</label>
+                                <div><?= $row["fname"] . " " . $row["lname"]; ?></div>
+                            </div>
 
-                                        <!-- CAMPUS -->
-                                        <div class="row mt-2">
-                                            <div class="col-6 text-end">
-                                                <label for="">Campus:</label>
-                                            </div>
-                                            <div class="col">
-                                                <?= $row["campus"]; ?>
-                                            </div>
-                                        </div>
+                            <div class="profile-info">
+                                <label>Campus</label>
+                                <div><?= $row["campus"]; ?></div>
+                            </div>
 
-                                        <!-- DEPT -->
-                                        <div class="row mt-2">
-                                            <div class="col-6 text-end">
-                                                <label for="">Department:</label>
-                                            </div>
-                                            <div class="col">
-                                                <?= $row["department"]; ?>
-                                            </div>
-                                        </div>
+                            <div class="profile-info">
+                                <label>Department</label>
+                                <div><?= $row["department"]; ?></div>
+                            </div>
 
-                                        <!-- BIRTHDAY -->
-                                        <div class="row mt-2">
-                                            <div class="col-6 text-end">
-                                                <label for="">Birthday:</label>
-                                            </div>  
-                                            <div class="col">
-                                                <?= $row["birthday"]; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="profile-info">
+                                <label>Birthday</label>
+                                <div><?= $row["birthday"]; ?></div>
                             </div>
                         </div>
                     </div>
@@ -342,17 +434,13 @@ if (isset($_POST["saveInfo"])) {
 
             // Open modal and load current user data
             personalBtn.addEventListener("click", () => {
-                // Fetch current employee data
                 $.post('../phpFunctions/getEmployeeDetails.php', { id: <?= $currentUserId ?> }, function(resp) {
                     if (!resp || resp.error) {
                         alert(resp?.error || 'Unable to fetch your information.');
                         return;
                     }
 
-                    // Change modal title to "Edit Personal Info"
                     $('#modalTitle').text('Edit Personal Information');
-                    
-                    // Set hidden employee ID
                     $('#emp_id').val(<?= $currentUserId ?>);
 
                     // Fill form fields
@@ -370,12 +458,10 @@ if (isset($_POST["saveInfo"])) {
                     $('#income').val(resp.income || '');
                     $('#children_num').val(resp.children_num || '');
                     $('#concern').val(resp.concern || '');
-                    
-                    // Set department and campus values
                     $('#department').val(resp.department || '');
                     $('#campus').val(resp.campus || '');
                     
-                    // Handle gender - check if it's a custom LGBTQIA+ value
+                    // Handle gender
                     if (resp.gender && !['Male', 'Female'].includes(resp.gender)) {
                         $('#gender').val('LGBTQIA+');
                         $('#otherGender').val(resp.gender).show();
@@ -383,7 +469,7 @@ if (isset($_POST["saveInfo"])) {
                         $('#gender').val(resp.gender || '');
                     }
 
-                    // Handle children radio buttons
+                    // Handle children
                     if (resp.children_num > 0) {
                         $('#hasChildrenYes').prop('checked', true);
                         $('#childrenNumCol, #childConcernCol').show();
@@ -415,14 +501,11 @@ if (isset($_POST["saveInfo"])) {
             });
 
             // Gender toggle
-            const genderSelect = $("#gender");
-            const otherGender = $("#otherGender");
-
-            genderSelect.off('change').on("change", function () {
+            $("#gender").off('change').on("change", function () {
                 if ($(this).val() === "LGBTQIA+") {
-                    otherGender.show();
+                    $("#otherGender").show();
                 } else {
-                    otherGender.val("").hide();
+                    $("#otherGender").val("").hide();
                 }
             });
 
@@ -440,29 +523,19 @@ if (isset($_POST["saveInfo"])) {
                 }
             }
 
-            $('input[name="hasChildren"]').off('change').on('change', function () {
-                toggleChildOptions();
-            });
-            
-            // Initialize toggles
+            $('input[name="hasChildren"]').off('change').on('change', toggleChildOptions);
             toggleChildOptions();
 
-            // Submit personal info form for modifyAccount page
+            // Submit personal info form
             $('#employeeForm').off('submit').on('submit', function(e) {
                 e.preventDefault();
-                
-                // Check if we're on modifyAccount page (not employees page)
                 const isModifyAccountPage = window.location.pathname.includes('modifyAccount');
                 
                 if (isModifyAccountPage) {
-                    // Add the saveInfo button to the form data
                     const formData = $(this).serialize() + '&saveInfo=1';
-
                     $.post('', formData, function(resp) {
                         location.reload();
-                    }).fail(() => {
-                        alert('Failed to update personal information.');
-                    });
+                    }).fail(() => alert('Failed to update personal information.'));
                 }
             });
         });
@@ -479,12 +552,8 @@ if (isset($_POST["saveInfo"])) {
                     $('#inputEmail, #inputOldPassword, #inputNewPassword, #inputConfirmPassword').val('');
                 }
 
-                $('#editBtn').text(isDisabled ? 'Cancel' : 'Edit');
-                if (isDisabled) {
-                    $('#saveBtn').show();
-                } else {
-                    $('#saveBtn').hide();
-                }
+                $('#editBtn').html(isDisabled ? '<i class="fas fa-times"></i> Cancel' : '<i class="fas fa-edit"></i> Edit');
+                $('#saveBtn').toggle(isDisabled);
             });
 
             $('#saveBtn').click(function () {

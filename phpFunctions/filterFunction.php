@@ -196,7 +196,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
             if ($noFilters) {
                 echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['department']) . '</td>';
-                echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
+                // echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
                 if ($generate === "report" && $position === "Focal Person") {
                     echo '<td></td>';
                 }
@@ -238,7 +238,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                     </button>
 
                     <button type="button" class="btn btn-outline-secondary btn-sm assignBtn"
-                    title="Assign Account">
+                    data-id="' . $idAttr . '"title="Assign Account">
                     <i class="fas fa-user-plus"></i>Assign
                     </button>
 

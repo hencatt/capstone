@@ -42,7 +42,7 @@ $currentUserId = $user['id'];
 
                 <div class="row mt-2">
                     <div class="col">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, eius?
+                        <p>Review and vote on research submissions for events you're assigned to as a panel member.</p>
                     </div>
                 </div>
 
@@ -67,10 +67,12 @@ $currentUserId = $user['id'];
                 <!-- TABLE -->
                 <div class="row mt-4">
                     <div class="col">
-                        <div class="table-responsive" style="background-color: white; padding: 10px; border-radius: 10px;">
+                        <div class="table-responsive"
+                            style="background-color: white; padding: 10px; border-radius: 10px;">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
+                                        <th style="text-align: center;">Event</th>
                                         <th style="text-align: center;">Vote Status</th>
                                         <th style="text-align: center;">Title</th>
                                         <th style="text-align: center;">Authors</th>
@@ -83,8 +85,21 @@ $currentUserId = $user['id'];
                                 <tbody id="approvalTableBody">
                                     <?php
                                     $con = con();
-                                    $sql = "SELECT * FROM research_tbl";
-                                    $result = $con->query($sql);
+
+                                    // MODIFIED QUERY: Only show researches for events where this panel member is assigned
+                                    $sql = "SELECT 
+                                                r.*,
+                                                a.announceTitle as event_title
+                                            FROM research_tbl r
+                                            INNER JOIN announcement_tbl a ON r.event_id = a.id
+                                            INNER JOIN event_panel_tbl ep ON ep.eventId = r.event_id
+                                            WHERE ep.panelId = ?
+                                            ORDER BY r.date_submitted DESC";
+
+                                    $stmt = $con->prepare($sql);
+                                    $stmt->bind_param("i", $currentUserId);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
 
                                     if ($result->num_rows > 0) {
 
@@ -97,6 +112,9 @@ $currentUserId = $user['id'];
                                         while ($row = $result->fetch_assoc()) {
 
                                             echo '<tr data-category="' . htmlspecialchars($row['research_category']) . '">';
+
+                                            // Event Name
+                                            echo '<td style="text-align: center;">' . htmlspecialchars($row['event_title']) . '</td>';
 
                                             // Check if user already voted
                                             $stmt2->bind_param("ii", $currentUserId, $row['id']);
@@ -115,23 +133,38 @@ $currentUserId = $user['id'];
                                                 $voteStyle = ($voteValue === "Reject") ? "color:red;" : "color:green;";
                                                 $voteValue = ($voteValue === "Reject") ? "Rejected" : "Approved";
 
-                                                echo '<td style="text-align: center; ' . $voteStyle . '">' . $voteValue . '</td>';
+                                                echo '<td style="text-align: center; ' . $voteStyle . '"><strong>' . $voteValue . '</strong></td>';
 
                                             } else {
-                                                echo '<td style="text-align: center;">Not Voted Yet</td>';
+                                                echo '<td style="text-align: center;"><span class="badge bg-warning text-dark">Not Voted Yet</span></td>';
                                             }
 
                                             echo '
                                                 <td style="text-align: center;">' . htmlspecialchars($row['research_title']) . '</td>
-                                                <td style="text-align: center;">' . htmlspecialchars($row['author']) . ', ' . htmlspecialchars($row['co_author']) . '</td>
+                                                <td style="text-align: center;">' . htmlspecialchars($row['author']) .
+                                                (!empty($row['co_author']) ? ', ' . htmlspecialchars($row['co_author']) : '') . '</td>
                                                 <td style="text-align: center;">' . htmlspecialchars($row['date_started']) . '</td>
                                                 <td style="text-align: center;">' . htmlspecialchars($row['research_category']) . '</td>
                                                 <td style="text-align: center;">
-                                                    <a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=Approval" style="color: #5f8cecff;">View</a>
+                                                    <a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=Approval" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
                                                 </td>
                                             </tr>';
                                         }
+
+                                        $stmt2->close();
+                                        $stmt3->close();
+                                    } else {
+                                        echo '<tr><td colspan="7" style="text-align: center;">
+                                                <div class="alert alert-info" role="alert">
+                                                    <i class="fas fa-info-circle"></i> No research submissions found for events you\'re assigned to.
+                                                </div>
+                                              </td></tr>';
                                     }
+
+                                    $stmt->close();
+                                    $con->close();
                                     ?>
                                 </tbody>
 
@@ -149,25 +182,36 @@ $currentUserId = $user['id'];
 
 <!-- TOGGLE SCRIPT -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const toggleButtons = document.querySelectorAll('input[name="toggleOptions"]');
-    const rows = document.querySelectorAll('#approvalTableBody tr');
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleButtons = document.querySelectorAll('input[name="toggleOptions"]');
+        const rows = document.querySelectorAll('#approvalTableBody tr');
 
-    function filterTable(category) {
-        rows.forEach(row => {
-            row.style.display = (row.dataset.category === category) ? "" : "none";
-        });
-    }
+        function filterTable(category) {
+            let visibleCount = 0;
+            rows.forEach(row => {
+                if (row.dataset.category) {
+                    if (row.dataset.category === category) {
+                        row.style.display = "";
+                        visibleCount++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
 
-    // Default view: Proposal
-    filterTable("Proposal");
+            // If no rows match the filter, you could optionally show a message
+            // But the initial "no data" message will handle that
+        }
 
-    toggleButtons.forEach(btn => {
-        btn.addEventListener("change", () => {
-            filterTable(btn.value);
+        // Default view: Proposal
+        filterTable("Proposal");
+
+        toggleButtons.forEach(btn => {
+            btn.addEventListener("change", () => {
+                filterTable(btn.value);
+            });
         });
     });
-});
 </script>
 
 </html>

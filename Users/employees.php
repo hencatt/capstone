@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = 'Active';
 
         // Validate required fields
-        if (empty($fname) || empty($lname) || empty($email) ||  empty($plainPassword)) {
+        if (empty($fname) || empty($lname) || empty($email) || empty($plainPassword)) {
             alertError("Error", "All fields are required");
             exit();
         }
@@ -616,89 +616,33 @@ if ($conn->connect_error) {
     </div>
 
     <?php include('../phpFunctions/alerts.php'); ?>
-    <script>
-        $(document).ready(function () {
-            const position = <?= json_encode($currentPosition) ?>;
-            const campus = <?= json_encode($currentCampus) ?>;
-            const dept = <?= json_encode($currentDepartment) ?>;
-            // Load filters, table, buttons first
-            $('#filters').load("./reusableHTML/filters.php", function () {
-                resetFilterFunction(position);
-                restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
-
-                $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
-
-                    $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
-                        // Now everything exists → safe to run
-                        filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
-
-                    });
-                });
-            });
-        });
-    </script>
-
-    <script>
-        window.addEventListener("pageshow", function (event) {
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                window.location.reload();
-            }
-        });
-
-        // Edit script
-        document.addEventListener('DOMContentLoaded', () => {
-            const editIcons = document.querySelectorAll('.edit-icon');
-            const editModal = document.querySelector('#edit_account_modal');
-            const closeEditModalButton = document.querySelector('#close_edit_account');
-
-            const editIdInput = document.querySelector('#edit_id');
-            const editFnameInput = document.querySelector('#edit_fname');
-            const editLnameInput = document.querySelector('#edit_lname');
-            const editUsernameInput = document.querySelector('#edit_username');
-            const editEmailInput = document.querySelector('#edit_email');
-            const editPasswordInput = document.querySelector('#edit_password');
-            const editPositionSelect = document.querySelector('#edit_position');
-            const editDepartmentSelect = document.querySelector('#edit_department');
-
-            // Open the modal and populate fields
-            editIcons.forEach(icon => {
-                icon.addEventListener('click', () => {
-                    const userId = icon.getAttribute('data-id');
-
-                    // Fetch user details via AJAX
-                    fetch(`../get_user_details.php?id=${userId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Populate the modal fields
-                            editIdInput.value = data.id;
-                            editUsernameInput.value = data.username;
-                            editEmailInput.value = data.email;
-                            editPasswordInput.value = ''; // Leave password empty for security
-                            editPositionSelect.value = data.position;
-                            editDepartmentSelect.value = data.department;
-
-                            // Show the modal
-                            editModal.style.display = 'flex';
-                        })
-                        .catch(error => console.error('Error fetching user details:', error));
-                });
-            });
-
-            // Close the modal
-            if (closeEditModalButton) {
-                closeEditModalButton.addEventListener('click', () => {
-                    editModal.style.display = 'none';
-                });
-            }
-        });
-    </script>
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <scrip nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js">
         </script>
+        <script>
+            $(document).ready(function () {
+                const position = <?= json_encode($currentPosition) ?>;
+                const campus = <?= json_encode($currentCampus) ?>;
+                const dept = <?= json_encode($currentDepartment) ?>;
+                // Load filters, table, buttons first
+                $('#filters').load("./reusableHTML/filters.php", function () {
+                    resetFilterFunction(position);
+                    restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
+
+                    $('#showEmployeeTable').load("./reusableHTML/employeeTable.php", function () {
+
+                        $('#filterButton').load("./reusableHTML/filtersButton.php", function () {
+                            // Now everything exists → safe to run
+                            filterFunction("employee", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter", "#searchBtn");
+
+                        });
+                    });
+                });
+            });
+        </script>
+
         <script>
             console.log('script.js is loaded');
             document.addEventListener('DOMContentLoaded', () => {
@@ -869,155 +813,188 @@ if ($conn->connect_error) {
             });
         </script>
 
+        <?php require('./reusableHTML/personalInfoModal.php'); ?>
 
+        <script>
+            $(document).ready(function () {
+                /* -------------------------------
+                   EMPLOYEE INFO MODAL (Personal Info Modal - for Add Employee button)
+                -------------------------------- */
+                const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+                const modal = document.getElementById('modal');
 
-</body>
+                if (addEmployeeBtn && modal) {
+                    $(addEmployeeBtn).off('click').on('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-<?php require('./reusableHTML/personalInfoModal.php'); ?>
+                        // Close add account modal if open
+                        $('#add_account_modal').css('display', 'none');
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+                        // Open personal info modal
+                        $(modal).addClass('open');
+                        document.body.style.overflow = 'hidden';
+                    });
+                }
 
-        /* -------------------------------
-           EMPLOYEE INFO MODAL (your main modal)
-        -------------------------------- */
-        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-        const modal = document.getElementById('modal');
-        const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
+                // Close personal info modal
+                if (modal) {
+                    const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
+                    closeBtns.forEach(function (btn) {
+                        btn.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            modal.classList.remove('open');
+                            document.body.style.overflow = '';
+                        });
+                    });
 
-        if (addEmployeeBtn && modal) {
-            addEmployeeBtn.addEventListener('click', function () {
-                modal.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            });
-        }
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) {
+                            modal.classList.remove('open');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                }
 
-        closeBtns.forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                modal.classList.remove('open');
-                document.body.style.overflow = '';
-            });
-        });
+                /* -------------------------------
+                   ADD ACCOUNT MODAL (Assign Button)
+                -------------------------------- */
+                const addAccountModal = document.getElementById('add_account_modal');
 
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                modal.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-        });
+                // Handle Assign Button Click
+                $(document).on('click', '.assignBtn', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const row = $(this).closest('tr');
 
+                    // Get employee data from the row
+                    const employeeId = $(this).data('id');
+                    const fullName = row.find('.empName').text().trim();
+                    const email = row.find('.empEmail').text().trim();
 
+                    // Find department and campus - they're in different positions depending on filters
+                    let department = '';
+                    let campus = '';
 
-        /* -------------------------------
-           ADD ACCOUNT MODAL (Assign Button)
-        -------------------------------- */
-        const addAccountModal = document.getElementById('add_account_modal');
+                    // Try to get campus (usually 2nd column after name)
+                    const campusCell = row.find('td').eq(2);
+                    if (campusCell.length && !campusCell.hasClass('empEmail')) {
+                        campus = campusCell.text().trim();
+                    }
 
-        $(document).on('click', '.assignBtn', function () {
-            const row = $(this).closest('tr');
+                    // Try to get department (usually 3rd column after name)
+                    const deptCell = row.find('td').eq(3);
+                    if (deptCell.length) {
+                        department = deptCell.text().trim();
+                    }
 
-            // Get employee data from the row
-            const employeeId = $(this).data('id'); // Make sure to add data-id attribute to the button
-            const fullName = row.find('.empName').text().trim();
-            const email = row.find('.empEmail').text().trim();
-            const department = row.find('td:eq(1)').text().trim(); // Adjust index as needed
-            const campus = row.find('td:eq(2)').text().trim(); // Adjust index as needed
-
-            // Split name
-            const nameParts = fullName.split(' ');
-            const fname = nameParts[0];
-            const lname = nameParts.slice(1).join(' ');
-
-            // Check if account already exists for this email
-            $.ajax({
-                url: '../phpFunctions/checkAccountExists.php',
-                type: 'POST',
-                data: { email: email },
-                dataType: 'json',
-                success: function (resp) {
-                    if (resp.exists) {
-                        alert('⚠️ This employee already has an account!');
+                    // Validate email exists
+                    if (!email || email === '') {
+                        alert('⚠️ No email found for this employee!');
                         return;
                     }
 
-                    // Open modal and fill fields
-                    $('#add_account_modal').css('display', 'flex');
-                    document.body.style.overflow = 'hidden';
+                    // Split name into first and last
+                    const nameParts = fullName.split(' ');
+                    const fname = nameParts[0] || '';
+                    const lname = nameParts.slice(1).join(' ') || '';
 
-                    // Fill form with employee data
-                    $('input[name="fname"]').val(fname);
-                    $('input[name="lname"]').val(lname);
-                    $('input[name="email"]').val(email).prop('readonly', true);
+                    // Check if account already exists for this email
+                    $.ajax({
+                        url: '../phpFunctions/checkAccountExists.php',
+                        type: 'POST',
+                        data: { email: email },
+                        dataType: 'json',
+                        success: function (resp) {
+                            if (resp.exists) {
+                                alert('⚠️ This employee already has an account!\nPosition: ' + resp.position);
+                                return;
+                            }
 
-                    // Auto-generate password from email
-                    const autoPassword = generatePasswordFromEmail(email);
-                    $('input[name="pass"]').val(autoPassword);
+                            // Account doesn't exist - open modal and fill fields
+                            // CLOSE any other open modals first
+                            $('#modal').removeClass('open'); // Close personal info modal if open
+                            $('.modal').modal('hide'); // Close any Bootstrap modals
 
-                    // Set department and campus
-                    $('select[name="dept"]').val(department);
-                    $('select[name="campus"]').val(campus);
+                            $('#add_account_modal').css('display', 'flex');
+                            document.body.style.overflow = 'hidden';
 
-                    // Store employee_id in a hidden field
-                    if ($('#existing_employee_id').length === 0) {
-                        $('form.form_add_account').prepend('<input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">');
-                    }
-                    $('#existing_employee_id').val(employeeId);
+                            // Clear form first
+                            $('form.form_add_account')[0].reset();
 
-                    // Add note
-                    if ($('#assign-note').length === 0) {
-                        $('form.form_add_account').prepend('<div id="assign-note" class="alert alert-info mb-3"><i class="fas fa-info-circle"></i> Creating account for existing employee</div>');
-                    }
-                },
-                error: function () {
-                    alert('❌ Failed to check account status');
+                            // Fill form with employee data
+                            $('input[name="fname"]').val(fname);
+                            $('input[name="lname"]').val(lname);
+                            $('input[name="email"]').val(email).prop('readonly', true);
+
+                            // Set password same as email
+                            $('input[name="pass"]').val(email);
+
+                            // Set department and campus (if selects exist)
+                            if ($('select[name="dept"]').length > 0) {
+                                $('select[name="dept"]').val(department);
+                            }
+                            if ($('select[name="campus"]').length > 0) {
+                                $('select[name="campus"]').val(campus);
+                            }
+
+                            // Store employee_id in hidden field for reference
+                            if ($('#existing_employee_id').length === 0) {
+                                $('form.form_add_account').prepend(
+                                    '<input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">'
+                                );
+                            }
+                            $('#existing_employee_id').val(employeeId);
+
+                            // Add informational note
+                            if ($('#assign-note').length === 0) {
+                                $('form.form_add_account').prepend(
+                                    '<div id="assign-note" class="alert alert-info mb-3" style="font-size: 0.9rem;">' +
+                                    '<i class="fas fa-info-circle"></i> Creating account for existing employee<br>' +
+                                    '<small>Default password is set to the email address</small>' +
+                                    '</div>'
+                                );
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error:', error);
+                            alert('❌ Failed to check account status. Please try again.');
+                        }
+                    });
+                });
+
+                // Close add-account modal and cleanup
+                $('#close_add_account').on('click', function () {
+                    // Remove readonly attribute
+                    $('input[name="email"]').prop('readonly', false);
+
+                    // Remove temporary elements
+                    $('#existing_employee_id').remove();
+                    $('#assign-note').remove();
+
+                    // Reset form
+                    $('form.form_add_account')[0].reset();
+
+                    // Hide modal
+                    $('#add_account_modal').css('display', 'none');
+                    document.body.style.overflow = '';
+                });
+
+                // Close modal when clicking overlay
+                if (addAccountModal) {
+                    addAccountModal.addEventListener('click', function (e) {
+                        if (e.target === addAccountModal) {
+                            // Trigger close button click to cleanup
+                            $('#close_add_account').click();
+                        }
+                    });
                 }
             });
-        });
+        </script>
 
-        // Generate password from email
-        function generatePasswordFromEmail(email) {
-            if (!email) return '';
+</body>
 
-            // Take first part of email before @, capitalize first letter, add "123"
-            const emailPart = email.split('@')[0];
-            const password = emailPart.charAt(0).toUpperCase() + emailPart.slice(1) + '123';
 
-            return password;
-        }
-
-        // Clear readonly and hidden fields when modal closes
-        $('#close_add_account').on('click', function () {
-            $('input[name="email"]').prop('readonly', false);
-            $('#existing_employee_id').remove();
-            $('#assign-note').remove();
-        });
-
-        // Close add-account modal when clicking overlay  
-        addAccountModal.addEventListener("click", function (e) {
-            if (e.target === addAccountModal) {
-                addAccountModal.style.display = "none";
-                document.body.style.overflow = "";
-            }
-        });
-        
-        $(document).on('click', '#saveInfo', function (e) {
-            e.preventDefault();
-
-            const formData = $('#modal form').serialize(); // gets all form inputs including hidden emp_id
-
-            $.post('../phpFunctions/updateEmployee.php', formData, function (resp) {
-                if (resp.success) {
-                    alert(resp.message);
-                    $('#modal').removeClass('open'); // or use Bootstrap: $('#modal').modal('hide');
-                    document.body.style.overflow = '';
-                    location.reload(); // refresh to see changes
-                } else {
-                    alert(resp.error || 'Failed to update employee.');
-                }
-            }, 'json').fail(() => alert('Request failed'));
-        });
-    });
-</script>
 
 
 <!-- Try lang -->

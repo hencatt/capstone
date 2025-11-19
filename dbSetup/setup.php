@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
-  // 8. RESEARCH
+  // 8. RESEARCH (UPDATED WITH event_id)
   "research_tbl" => "
 CREATE TABLE IF NOT EXISTS `research_tbl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -149,7 +149,10 @@ CREATE TABLE IF NOT EXISTS `research_tbl` (
   `research_grant` enum('Yes','No') NOT NULL DEFAULT 'No',
   `research_grant_times` int(2) NOT NULL DEFAULT 0,
   `research_resubmission_status` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  PRIMARY KEY (`id`)
+  `event_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_research_event` (`event_id`),
+  CONSTRAINT `fk_research_event` FOREIGN KEY (`event_id`) REFERENCES `announcement_tbl` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 
@@ -162,7 +165,8 @@ CREATE TABLE IF NOT EXISTS `comments_tbl` (
   `commentor_name` varchar(100) NOT NULL,
   `comment_datetime` datetime NOT NULL,
   PRIMARY KEY (`comment_id`),
-  CONSTRAINT `fk_research` FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`) ON DELETE CASCADE
+  KEY `fk_comments_research` (`research_id`),
+  CONSTRAINT `fk_comments_research` FOREIGN KEY (`research_id`) REFERENCES `research_tbl` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ",
 

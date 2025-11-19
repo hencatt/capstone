@@ -107,6 +107,10 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
             $category = "Home";
             $locationLabel = "Dashboard";
             break;
+        case "account":
+            $category = "Settings";
+            $locationLabel = "Personal";
+            break;
         case "events":
             $category = "General";
             $locationLabel = "Events";

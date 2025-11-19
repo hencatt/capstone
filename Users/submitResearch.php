@@ -454,7 +454,7 @@ if (isset($_POST['submitResearch'])) {
                 // Fetch and display panel members
                 if (eventId) {
                     $.ajax({
-                        url: 'getPanelMembers.php',
+                        url: '../phpFunctions/getPanelMembers.php',
                         type: 'GET',
                         data: { eventId: eventId },
                         success: function (response) {
