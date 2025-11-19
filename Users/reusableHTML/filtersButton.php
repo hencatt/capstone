@@ -9,6 +9,6 @@
     <input type="checkbox" id="checkboxShowSummary" name="checkboxShowSummary" class="form-check-input"
         value="Show Summary">
 </div>
-<div class="col d-flex flex-row justify-content-end align-items-center gap-3">
+<!-- <div class="col d-flex flex-row justify-content-end align-items-center gap-3">
     <button type="submit" name="resetFilter" id="resetFilter" class="btn btn-outline-danger">Reset Filters</button>
-</div>
+</div> -->
