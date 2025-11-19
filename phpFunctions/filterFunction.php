@@ -12,8 +12,8 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $generate = $_POST['whatGenerate'];
     $location = $_POST['currentPage'];
     $search = null;
-    
-    if (isset($_POST['searchQuery'],)) {
+
+    if (isset($_POST['searchQuery'], )) {
         $search = $_POST['searchQuery'];
     }
 
@@ -191,7 +191,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
         while ($row = $result->fetch_assoc()) {
             echo '<tr>';
             echo '<td class="empName">' . htmlspecialchars($row['full_name']) . '</td>';
-            echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
+            echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email']) . '</td>';
 
             if ($noFilters) {
                 echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
@@ -224,14 +224,16 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                         data-id="' . $idAttr . '" data-bs-toggle="modal" data-bs-target="#viewEmployeeModal"
                         title="View Details">
                         <i class="fas fa-eye"></i> View
-                    </button>
-
-                    <button type="button"
+                    </button>';
+                if ($position === "Focal Person") {
+                    echo
+                        '  <button type="button"
                                     class="btn btn-outline-success btn-sm editEmployeeBtn"
                                     data-id="' . $idAttr . '" title="Edit Record">
                                 <i class="fas fa-edit"></i> Edit
-                    </button>
-
+                    </button>';
+                }
+                echo '
                     <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
                         data-id="' . $idAttr . '" title="Delete Record">
                         <i class="fas fa-trash"></i> Delete
