@@ -1080,6 +1080,7 @@ if ($conn->connect_error) {
                             font-size: 0.875em;
                             font-family: monospace;
                             box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+                            color:black;
                         }
                         
                         .keyboard-hint {
@@ -1588,6 +1589,7 @@ if ($conn->connect_error) {
             font-family: monospace;
             box-shadow: 0 1px 0 rgba(0,0,0,0.1);
             display: inline-block;
+            color:black;
         }
         
         .alert hr {
