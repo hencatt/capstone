@@ -11,6 +11,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentPosition = $user['position'];
 doubleCheck($currentPosition);
+// single role
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
