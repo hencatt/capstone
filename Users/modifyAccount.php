@@ -370,7 +370,7 @@ if (isset($_POST["saveInfo"])) {
                                 <!-- SAVE BUTTON -->
                                 <div class="text-end mt-4">
                                     <button type="submit" name="saveBtn" id="saveBtn" 
-                                            class="btn btn-gradient" disabled style="display: none;">
+                                            class="btn btn-outline-success" disabled style="display: none;">
                                         <i class="fas fa-save"></i> Save Changes
                                     </button>
                                 </div>
