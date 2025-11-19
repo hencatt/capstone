@@ -159,6 +159,10 @@ option:hover {
   }
 }
 
+.swal2-container {
+  z-index: 10000 !important;
+}
+
 .date-badge {
   width: 84px;
   min-width: 84px;

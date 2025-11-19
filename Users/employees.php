@@ -621,6 +621,10 @@ if ($conn->connect_error) {
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <scrip nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js">
         </script>
+
+
+
+
         <script>
             $(document).ready(function () {
                 const position = <?= json_encode($currentPosition) ?>;
@@ -990,14 +994,389 @@ if ($conn->connect_error) {
                     });
                 }
             });
+
+        </script>
+
+        <!-- CLAUDE CODE -->
+
+
+        <script>
+            $(document).ready(function () {
+
+                /* ========================================
+                   HANDLE FORM SUBMISSION (ADD/EDIT EMPLOYEE)
+                ======================================== */
+                $('#employeeForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    // Validate required fields before submission
+                    let isValid = true;
+                    $(this).find('input[required], select[required], textarea[required]').each(function () {
+                        if (!$(this).val() || $(this).val().trim() === '') {
+                            $(this).addClass('is-invalid');
+                            isValid = false;
+                        } else {
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+
+                    if (!isValid) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Missing Information',
+                            text: 'Please fill in all required fields marked with *',
+                            confirmButtonColor: '#ffc107'
+                        });
+                        return;
+                    }
+
+                    // Get form data
+                    const formData = new FormData(this);
+                    const empId = $('#emp_id').val();
+                    const isEdit = empId && empId !== '';
+
+                    // Show loading state
+                    const submitBtn = $('#saveInfo');
+                    const originalBtnText = submitBtn.html();
+                    submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+             
+                    // Send AJAX request
+                    $.ajax({
+                        url: '../phpFunctions/insertEmployee.php',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.success) {
+                                // Show success message
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: response.message,
+                                    confirmButtonColor: '#28a745',
+                                    timer: 2000
+                                }).then(() => {
+                                    // Close modal
+                                    $('#modal').removeClass('open');
+                                    document.body.style.overflow = '';
+
+                                    // Reset form
+                                    resetEmployeeForm();
+
+                                    // Reload employee table
+                                    reloadEmployeeTable();
+                                });
+                            } else {
+                                // Show error message
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to save employee information',
+                                    confirmButtonColor: '#dc3545'
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error:', error);
+                            console.error('Response:', xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while saving employee information. Please try again.',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        },
+                        complete: function () {
+                            // Restore button state
+                            submitBtn.prop('disabled', false).html(originalBtnText);
+                        }
+                    });
+                });
+
+                /* ========================================
+                   EDIT EMPLOYEE BUTTON HANDLER
+                   (Works with the editEmployeeBtn from filterFunction.php)
+                ======================================== */
+                $(document).on('click', '.editEmployeeBtn', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const employeeId = $(this).data('id');
+
+                    if (!employeeId) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Employee ID not found',
+                            confirmButtonColor: '#dc3545'
+                        });
+                        return;
+                    }
+
+                    // Load employee data for editing
+                    loadEmployeeForEdit(employeeId);
+                });
+
+                /* ========================================
+                   LOAD EMPLOYEE DATA FOR EDITING
+                ======================================== */
+                window.loadEmployeeForEdit = function (employeeId) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Loading...',
+                        text: 'Fetching employee information',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        url: '../phpFunctions/getEmployeeDetails.php',
+                        type: 'POST',
+                        data: { id: employeeId },
+                        dataType: 'json',
+                        success: function (resp) {
+                            console.log("Employee Data:", resp);
+
+                            if (!resp || resp.error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: resp ? resp.error : 'Failed to load employee information',
+                                    confirmButtonColor: '#dc3545'
+                                });
+                                return;
+                            }
+
+                            // Close loading
+                            Swal.close();
+
+                            // Update modal title
+                            $('#modalTitle').text('Edit Employee');
+
+                            // Fill form fields
+                            $('#emp_id').val(resp.id || employeeId);
+                            $('#fname').val(resp.fname || '');
+                            $('#m_initial').val(resp.m_initial || '');
+                            $('#lname').val(resp.lname || '');
+                            $('#email').val(resp.email || '');
+                            $('#contact_no').val(resp.contact_no || '');
+                            $('#birthday').val(resp.birthdate || resp.birthday || '');
+                            $('#sex').val(resp.sex || '');
+                            $('#gender').val(resp.gender || '');
+                            $('#address').val(resp.address || '');
+                            $('#marital_status').val(resp.marital_status || '');
+                            $('#size').val(resp.size || '');
+                            $('#priority_status').val(resp.priority_status || 'None');
+                            $('#income').val(resp.monthly_income || resp.income || '');
+
+                            // Handle LGBTQIA+ other gender
+                            if (resp.gender && !['Male', 'Female', 'LGBTQIA+'].includes(resp.gender)) {
+                                $('#gender').val('LGBTQIA+');
+                                $('#otherGender').val(resp.gender).show();
+                            } else if (resp.gender === 'LGBTQIA+') {
+                                $('#otherGender').show();
+                            } else {
+                                $('#otherGender').hide();
+                            }
+
+                            // Handle children fields
+                            if (resp.has_children === 'Yes') {
+                                $('#hasChildrenYes').prop('checked', true);
+                                $('#childrenNumCol, #childConcernCol').show();
+                                $('#children_num').val(resp.num_of_children || resp.children_num || 0);
+                                $('#concern').val(resp.concern || '');
+                            } else {
+                                $('#hasChildrenNo').prop('checked', true);
+                                $('#childrenNumCol, #childConcernCol').hide();
+                            }
+
+                            // Open modal
+                            $('#modal').addClass('open');
+                            document.body.style.overflow = 'hidden';
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading employee:', error);
+                            console.error('Response:', xhr.responseText);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to load employee information. Please try again.',
+                                confirmButtonColor: '#dc3545'
+                            });
+                        }
+                    });
+                };
+
+                /* ========================================
+                   FORM VALIDATION
+                ======================================== */
+
+                // Required field validation on blur
+                $('#employeeForm input[required], #employeeForm select[required]').on('blur', function () {
+                    if ($(this).val().trim() === '') {
+                        $(this).addClass('is-invalid');
+                        if ($(this).next('.invalid-feedback').length === 0) {
+                            $(this).after('<div class="invalid-feedback">This field is required</div>');
+                        }
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                });
+
+                // Email validation
+                $('#email').on('blur', function () {
+                    const email = $(this).val().trim();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                    if (email && !emailRegex.test(email)) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after('<div class="invalid-feedback">Please enter a valid email address</div>');
+                    } else if (!email) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after('<div class="invalid-feedback">Email is required</div>');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                });
+
+                // Contact number validation (Philippine format - 11 digits)
+                $('#contact_no').on('input', function () {
+                    let value = $(this).val().replace(/\D/g, ''); // Remove non-digits
+
+                    // Limit to 11 digits
+                    if (value.length > 11) {
+                        value = value.substring(0, 11);
+                    }
+
+                    $(this).val(value);
+                });
+
+                $('#contact_no').on('blur', function () {
+                    const value = $(this).val();
+
+                    if (value.length > 0 && value.length !== 11) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after('<div class="invalid-feedback">Contact number must be exactly 11 digits</div>');
+                    } else if (value.length === 0) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after('<div class="invalid-feedback">Contact number is required</div>');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                });
+
+                // Birthdate validation (must be 18+ years old)
+                $('#birthday').on('change', function () {
+                    const birthdate = new Date($(this).val());
+                    const today = new Date();
+                    let age = today.getFullYear() - birthdate.getFullYear();
+                    const monthDiff = today.getMonth() - birthdate.getMonth();
+
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+                        age--;
+                    }
+
+                    if (age < 18) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after('<div class="invalid-feedback">Employee must be at least 18 years old</div>');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                });
+
+                // Middle initial validation (max 2 characters with period)
+                $('#m_initial').on('input', function () {
+                    let value = $(this).val().toUpperCase();
+
+                    // Remove any characters that aren't letters or periods
+                    value = value.replace(/[^A-Z.]/g, '');
+
+                    // Limit to 2 characters
+                    if (value.length > 2) {
+                        value = value.substring(0, 2);
+                    }
+
+                    $(this).val(value);
+                });
+
+                // Children number validation
+                $('#children_num').on('input', function () {
+                    let value = parseInt($(this).val());
+
+                    if (value < 0) {
+                        $(this).val(0);
+                    } else if (value > 20) {
+                        $(this).val(20);
+                    }
+                });
+
+                /* ========================================
+                   RESET FORM FUNCTION
+                ======================================== */
+                function resetEmployeeForm() {
+                    $('#employeeForm')[0].reset();
+                    $('#emp_id').val('');
+                    $('#otherGender').hide();
+                    $('#childrenNumCol, #childConcernCol').hide();
+                    $('#hasChildrenNo').prop('checked', true);
+
+                    // Remove all validation classes
+                    $('#employeeForm .is-invalid').removeClass('is-invalid');
+                    $('#employeeForm .invalid-feedback').remove();
+
+                    // Update modal title back to "Add Employee"
+                    $('#modalTitle').text('Add Employee');
+                }
+
+                /* ========================================
+                   RELOAD EMPLOYEE TABLE FUNCTION
+                ======================================== */
+                function reloadEmployeeTable() {
+                    const position = '<?= $currentPosition ?>';
+                    const campus = '<?= $currentCampus ?>';
+                    const dept = '<?= $currentDepartment ?>';
+
+                    $('#showEmployeeTable').load('./reusableHTML/employeeTable.php', function () {
+                        filterFunction("employee", "#searchBar", "#checkboxShowSummary",
+                            "#filterCampus", "#filterDept", "#filterSize", "#filterGender",
+                            position, "#employeeTable", "no", "filter", "#searchBtn");
+                    });
+                }
+
+                /* ========================================
+                   RESET FORM WHEN MODAL CLOSES
+                ======================================== */
+                $('#modal .close-btn, #cancelInfo').on('click', function () {
+                    resetEmployeeForm();
+                });
+
+                // Close modal when clicking overlay
+                $('#modal').on('click', function (e) {
+                    if (e.target === this) {
+                        resetEmployeeForm();
+                        $(this).removeClass('open');
+                        document.body.style.overflow = '';
+                    }
+                });
+
+            });
         </script>
 
 </body>
-
-
-
-
-<!-- Try lang -->
-
 
 </html>
