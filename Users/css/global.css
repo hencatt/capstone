@@ -57,6 +57,9 @@ body {
 
 #contents {
   display: none;
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
 }
 
 .mainContent {
@@ -112,10 +115,26 @@ option:hover {
 }
 
 .tableOverview {
-  background-color: white;
-  padding: 25px 20px;
-  border-radius: 20px;
+  position: relative; /* required if you want to position the line */
 }
+
+.tableOverview::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #ccc; /* hr color */
+  margin-bottom: 10px; /* spacing like <hr> */
+}
+.tableOverview::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #ccc; /* hr color */
+  margin-top: 10px; /* spacing like <hr> */
+}
+
 
 .relative {
   position: relative;
@@ -140,9 +159,12 @@ option:hover {
 
 .summaryOverview {
   background-color: white;
+  position: relative;
   border-radius: 10px;
   padding: 10px;
+  border: 1px solid rgb(42, 148, 254);
 }
+
 
 .custom-loader {
   width: 50px;

@@ -202,7 +202,7 @@ $con->close();
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", $currentPosition, "eventDetails", $eventTitle, $previousPage) ?>
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row">
                     <div class="col">
                         <h1><?= $eventTitle ?></h1>
                     </div>
@@ -330,7 +330,7 @@ $con->close();
                 <?php endif; ?>
             </div>
 
-            <?php if ($eventCategory === "Research Event"): ?>
+            <?php if ($eventCategory === "Research Event" && $currentPosition === "Director"): ?>
                 <div class="row mt-4">
                     <div class="col">
                         <button class="btn btn-outline-primary" id="addPanelBtn">

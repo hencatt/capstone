@@ -103,7 +103,7 @@ if (isset($_POST["deleteBtn"])) {
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", $currentPosition, "events") ?>
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <div class="col">
                         <h1>Events <span class="material-symbols-outlined">
                                 event

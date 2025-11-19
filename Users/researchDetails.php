@@ -255,11 +255,10 @@ if (isset($_POST['confirmBtnReject'])) {
         }
 
         .event-card {
-            /* background: linear-gradient(135deg, #ffffffff 0%, #f5576c 100%); */
-            background-color: white;
+            background: linear-gradient(135deg, #8a6fffff 0%, #f5576c 100%);
             border-radius: 15px;
             padding: 20px;
-            color: black;
+            color: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
@@ -353,13 +352,13 @@ if (isset($_POST['confirmBtnReject'])) {
                         <div class="event-card">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 style="color: rgba(12, 12, 12, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
+                                    <h6 style="color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
                                         <i class="fas fa-calendar-alt"></i> Research Event
                                     </h6>
                                     <h4 style="margin: 0; font-weight: 600;"><?= $eventTitle ?></h4>
                                 </div>
                                 <div class="text-end">
-                                    <h6 style="color: rgba(26, 26, 26, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
+                                    <h6 style="color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
                                         <i class="fas fa-presentation"></i> Presentation Date
                                     </h6>
                                     <h5 style="margin: 0;"><?= $presentationDate ?></h5>
@@ -511,7 +510,8 @@ if (isset($_POST['confirmBtnReject'])) {
                         ?>
 
 
-                        <div class="row " style="padding: 20px; border-radius: 10px;">
+                        <div class="row "
+                            style="background-color: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                             <div class="col">
 
                                 <!-- loop comments here -->
@@ -567,7 +567,7 @@ if (isset($_POST['confirmBtnReject'])) {
                     </div>
 
                     <div class="col-3 d-flex flex-column"
-                        style="background-color: white; padding: 25px; border-radius: 10px; max-height:330px;">
+                        style="background-color: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-height:330px;">
                         <h5><i class="fas fa-users"></i> Authors</h5>
                         <div class="row">
                             <div class="col d-flex flex-column justify-content-center">
@@ -760,7 +760,7 @@ if (isset($_POST['confirmBtnReject'])) {
                 };
             }
 
-            const status = "<?php echo $row['research_resubmission_status']; ?>";
+            const status = <?php echo json_encode($row['research_resubmission_status'] ?? null); ?>;
             const section = document.getElementById("reSubmitPdf");
             if (section) section.style.display = (status === "Yes") ? "block" : "none";
 

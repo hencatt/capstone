@@ -92,7 +92,7 @@ updateResearchStatus();
             <?php topbar($currentUser, $currentPosition, "researchView") ?>
 
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <h1>Researches <span class="material-symbols-outlined">
                             article_person
                         </span></h1>

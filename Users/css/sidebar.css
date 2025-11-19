@@ -4,7 +4,7 @@
 
 .sidebar {
   color: #f5f5f5;
-  background-color: #0a7afa;
+  background-color: #951df0;
   position: fixed;
   width: 300px;
   top: 0;
@@ -15,7 +15,7 @@
 .sidebarHide {
 
   color: #f5f5f5;
-  background-color: #0a7afa;
+  background-color: #860afa;
   top: 0;
   height: 100vh;
   overflow-y: auto;
@@ -34,7 +34,7 @@
 }
 
 a.categoryItem:hover {
-  background-color: #73c7ff83;
+  background-color: #b273ff83;
   border-radius: 10px;
   cursor: pointer;
 }

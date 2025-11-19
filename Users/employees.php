@@ -352,266 +352,272 @@ if ($conn->connect_error) {
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "employees") ?>
             <div id="contents">
-                <div class="row mt-4">
-                    <div class="col">
-                        <h1>Employees</h1>
-                    </div>
-                </div>
-                <?php
-                if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                    <div class="col d-flex justify-content-end">
-                        <button id="add_account" class="btn btn-outline-success">
-                            Add Account
-                            <ion-icon name="add-outline" class="add-icon"></ion-icon>
-                        </button>
-                    </div>
-                </div>
+                <div>
 
-            <?php elseif ($currentPosition === "Focal Person"): ?>
-
-                <div class="row mt-2">
-                    <div class="col d-flex justify-content-end">
-                        <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
-                            Add Employee
-                        </button>
-                    </div>
-                    <!-- <div class="col-2">
-                            <button id="add_account" class="btn btn-outline-success">
-                                Add Researcher
-                            </button>
-                        </div> -->
-                </div>
-                <?php
-                endif;
-                ?>
-            <!-- FiltersHere -->
-            <div class="row mt-3">
-                <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
-                </div>
-            </div>
-            <div class="row mt-3 justify-content-between" id="filterButton">
-
-                <!-- FILTER BUTTONS HERE -->
-            </div>
-            <div class="row">
-                <div class="row mt-3 d-flex justify-content-end">
-                    <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                    <div class="row mt-4">
                         <div class="col">
-                            <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
-                                        checked>
-                                    Employees
-                                </label>
-                                <label class="btn btn-secondary">
-                                    <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
-                                    Accounts
-                                </label>
-                            </div>
+                            <h1>Employees</h1>
                         </div>
-                        <?php
+                    </div>
+                    <?php
+                    if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                        <div class="col d-flex justify-content-end">
+                            <button id="add_account" class="btn btn-outline-success">
+                                Add Account
+                                <ion-icon name="add-outline" class="add-icon"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                <?php elseif ($currentPosition === "Focal Person"): ?>
+
+                    <div class="row mt-2">
+                        <div class="col d-flex justify-content-end">
+                            <button type="button" class="btn btn-outline-success" id="addEmployeeBtn">
+                                Add Employee
+                            </button>
+                        </div>
+                        <!-- <div class="col-2">
+                                <button id="add_account" class="btn btn-outline-success">
+                                    Add Researcher
+                                </button>
+                            </div> -->
+                    </div>
+                    <?php
                     endif;
                     ?>
-                </div>
-
-
-                <!-- TableHere -->
-                <div class="row mt-2 tableOverview">
-                    <div class="col" id="showEmployeeTable">
-                        <!-- TABLES HERE -->
+                <!-- FiltersHere -->
+                <div class="row mt-3">
+                    <div class="col d-flex flex-row justify-content-end align-items-center gap-3" id="filters">
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div class="row mt-3 justify-content-between" id="filterButton">
 
-
-
-    <!-- Modals -->
-
-    <div class="modals" id="add_account_modal" style="display: none;">
-        <div class="modal_add_account">
-            <div class="modal_title">
-                <h2><?= ($currentPosition === "Focal Person") ? "Add Researcher" : "Add Account" ?></h2>
-            </div>
-
-            <form method="post" class="form_add_account" novalidate>
-                <!-- Hidden field for existing employee ID (used when assigning account) -->
-                <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
-
-                <input type="text" name="fname" placeholder="First Name" required>
-                <input type="text" name="lname" placeholder="Last Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="pass" id="password"
-                    placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)" required
-                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" maxlength="64"
-                    title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
-
-                <?php if ($currentPosition !== "Focal Person"): ?>
-                    <!-- Position Select (visible for Director/TA) -->
-                    <select name="pos" id="position" required>
-                        <option value="" disabled selected>Select Position</option>
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <option value="Technical Assistant">Technical Assistant</option>
-                            <option value="Focal Person">Focal Person</option>
-                            <option value="Panel">Panel</option>
-                            <option value="RET Chair">RET Chair</option>
-                        <?php endif; ?>
-                    </select>
-
-                    <!-- Department Select (visible for Director/TA) -->
-                    <select name="dept" id="department" required>
-                        <option value="" disabled selected>Select Department</option>
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <option value="CPADM">College of Public Administration and Disaster Management</option>
-                            <option value="CMBT">College of Management and Business Technology</option>
-                            <option value="CoArch">College of Architecture</option>
-                            <option value="CoEd">College of Education</option>
-                            <option value="Crim">Criminology</option>
-                            <option value="COE">College of Engineering</option>
-                            <option value="CICT">College of Infomations and Communications Technology</option>
-                            <option value="IPE">Interprofessional Education</option>
-                            <option value="LHS">Laboratory High School</option>
-                            <option value="CIT">College of Industrial Technology</option>
-                            <option value="CAS">College of Arts and Science</option>
-                            <option value="IOLL">Institute of Linguistics and Literature</option>
-                            <option value="CON">College Of Nursing</option>
-                            <option value="GS">Graduate School</option>
-                        <?php endif; ?>
-                    </select>
-
-                    <!-- Campus Select (visible for Director/TA) -->
-                    <select name="campus" id="campus" required>
-                        <option value="" disabled selected>Select Campus</option>
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <option value="Sumacab">Sumacab</option>
-                            <option value="GT">Gen. Tinio</option>
-                            <option value="San Isidro">San Isidro</option>
-                            <option value="Gabaldon">Gabaldon</option>
-                            <option value="Atate">Atate</option>
-                            <option value="Fort Magsaysay">Fort Magsaysay</option>
-                        <?php endif; ?>
-                    </select>
-                <?php else: ?>
-                    <!-- Hidden fields for Focal Person -->
-                    <input type="hidden" name="pos" value="Researcher">
-                    <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
-                    <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
-                <?php endif; ?>
-
-                <div class="buttons">
-                    <button type="submit" class="btn btn-outline-success">Add</button>
-                    <button type="button" class="add_btn_close" id="close_add_account">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-
-
-
-
-    <!-- qwerty -->
-    <!-- Edit Account Modal -->
-    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg rounded-3 border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="editAccountModalLabel">
-                        <i class="fas fa-user-edit me-2"></i> Edit Account
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <!-- FILTER BUTTONS HERE -->
                 </div>
 
-                <form id="editAccountForm">
-                    <div class="modal-body">
-                        <input type="hidden" name="acc_id" id="acc_id">
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-control" id="acc_username" name="acc_username" required>
+                <div class="row">
+                    <div class="row mt-3 d-flex justify-content-end">
+                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                            <div class="col">
+                                <div class="btn-group btn-group-toggle" data-toggle="toggleButtons">
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="employee_toggle" autocomplete="off"
+                                            checked>
+                                        Employees
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="toggleOptions" id="account_toggle" autocomplete="off">
+                                        Accounts
+                                    </label>
+                                </div>
                             </div>
+                            <?php
+                        endif;
+                        ?>
+                    </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-control" id="acc_password" name="acc_password"
-                                    placeholder="Leave blank to keep current">
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="acc_fname" name="acc_fname" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="acc_lname" name="acc_lname" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="acc_email" name="acc_email" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Position</label>
-                                <select class="form-select" id="acc_position" name="acc_position" required>
-                                    <option value="" disabled selected>Select Position</option>
-                                    <!-- <option value="Director">Director</option> -->
-                                    <option value="Technical Assistant">Technical Assistant</option>
-                                    <option value="Focal Person">Focal Person</option>
-                                    <option value="Panel">Panel</option>
-                                    <option value="RET Chair">RET Chair</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Department</label>
-                                <select class="form-select" id="acc_department" name="acc_department" required>
-                                    <option value="" disabled selected>Select Department</option>
-                                    <option value="CPADM">CPADM</option>
-                                    <option value="CMBT">CMBT - BA, HM</option>
-                                    <option value="CoArch">CoArch</option>
-                                    <option value="CoEd">CoEd</option>
-                                    <option value="Crim">Crim</option>
-                                    <option value="COE">COE</option>
-                                    <option value="CICT">CICT</option>
-                                    <option value="IPE">IPE</option>
-                                    <option value="LHS">LHS</option>
-                                    <option value="CIT">CIT</option>
-                                    <option value="CAS">CAS</option>
-                                    <option value="IOLL">IOLL</option>
-                                    <option value="CON">CON</option>
-                                    <option value="GS">GS</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Campus</label>
-                                <select class="form-select" id="acc_campus" name="acc_campus" required>
-                                    <option value="" disabled selected>Select Campus</option>
-                                    <option value="Sumacab">Sumacab</option>
-                                    <option value="GT">Gen. Tinio</option>
-                                    <option value="San Isidro">San Isidro</option>
-                                    <option value="Gabaldon">Gabaldon</option>
-                                    <option value="Atate">Atate</option>
-                                    <option value="Fort Magsaysay">Fort Magsaysay</option>
-                                </select>
-                            </div>
+                    <!-- TableHere -->
+                    <div class="row mt-2 tableOverview">
+                        <div class="col" id="showEmployeeTable">
+                            <!-- TABLES HERE -->
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Save Changes
-                        </button>
+
+
+        <!-- Modals -->
+
+        <div class="modals" id="add_account_modal" style="display: none;">
+            <div class="modal_add_account">
+                <div class="modal_title">
+                    <h2><?= ($currentPosition === "Focal Person") ? "Add Researcher" : "Add Account" ?></h2>
+                </div>
+
+                <form method="post" class="form_add_account" novalidate>
+                    <!-- Hidden field for existing employee ID (used when assigning account) -->
+                    <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
+
+                    <input type="text" name="fname" placeholder="First Name" required>
+                    <input type="text" name="lname" placeholder="Last Name" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="pass" id="password"
+                        placeholder="Password (at least 8 characters with uppercase, lowercase, and a number)" required
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" maxlength="64"
+                        title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
+
+                    <?php if ($currentPosition !== "Focal Person"): ?>
+                        <!-- Position Select (visible for Director/TA) -->
+                        <select name="pos" id="position" required>
+                            <option value="" disabled selected>Select Position</option>
+                            <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                                <option value="Technical Assistant">Technical Assistant</option>
+                                <option value="Focal Person">Focal Person</option>
+                                <option value="Panel">Panel</option>
+                                <option value="RET Chair">RET Chair</option>
+                            <?php endif; ?>
+                        </select>
+
+                        <!-- Department Select (visible for Director/TA) -->
+                        <select name="dept" id="department" required>
+                            <option value="" disabled selected>Select Department</option>
+                            <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                                <option value="CPADM">College of Public Administration and Disaster Management</option>
+                                <option value="CMBT">College of Management and Business Technology</option>
+                                <option value="CoArch">College of Architecture</option>
+                                <option value="CoEd">College of Education</option>
+                                <option value="Crim">Criminology</option>
+                                <option value="COE">College of Engineering</option>
+                                <option value="CICT">College of Infomations and Communications Technology</option>
+                                <option value="IPE">Interprofessional Education</option>
+                                <option value="LHS">Laboratory High School</option>
+                                <option value="CIT">College of Industrial Technology</option>
+                                <option value="CAS">College of Arts and Science</option>
+                                <option value="IOLL">Institute of Linguistics and Literature</option>
+                                <option value="CON">College Of Nursing</option>
+                                <option value="GS">Graduate School</option>
+                            <?php endif; ?>
+                        </select>
+
+                        <!-- Campus Select (visible for Director/TA) -->
+                        <select name="campus" id="campus" required>
+                            <option value="" disabled selected>Select Campus</option>
+                            <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                                <option value="Sumacab">Sumacab</option>
+                                <option value="GT">Gen. Tinio</option>
+                                <option value="San Isidro">San Isidro</option>
+                                <option value="Gabaldon">Gabaldon</option>
+                                <option value="Atate">Atate</option>
+                                <option value="Fort Magsaysay">Fort Magsaysay</option>
+                            <?php endif; ?>
+                        </select>
+                    <?php else: ?>
+                        <!-- Hidden fields for Focal Person -->
+                        <input type="hidden" name="pos" value="Researcher">
+                        <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
+                        <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
+                    <?php endif; ?>
+
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-outline-success">Add</button>
+                        <button type="button" class="add_btn_close" id="close_add_account">Close</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+
+
+
+
+
+        <!-- qwerty -->
+        <!-- Edit Account Modal -->
+        <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg rounded-3 border-0">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="editAccountModalLabel">
+                            <i class="fas fa-user-edit me-2"></i> Edit Account
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+
+                    <form id="editAccountForm">
+                        <div class="modal-body">
+                            <input type="hidden" name="acc_id" id="acc_id">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="acc_username" name="acc_username"
+                                        required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="acc_password" name="acc_password"
+                                        placeholder="Leave blank to keep current">
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="acc_fname" name="acc_fname" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="acc_lname" name="acc_lname" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="acc_email" name="acc_email" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Position</label>
+                                    <select class="form-select" id="acc_position" name="acc_position" required>
+                                        <option value="" disabled selected>Select Position</option>
+                                        <!-- <option value="Director">Director</option> -->
+                                        <option value="Technical Assistant">Technical Assistant</option>
+                                        <option value="Focal Person">Focal Person</option>
+                                        <option value="Panel">Panel</option>
+                                        <option value="RET Chair">RET Chair</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" id="acc_department" name="acc_department" required>
+                                        <option value="" disabled selected>Select Department</option>
+                                        <option value="CPADM">CPADM</option>
+                                        <option value="CMBT">CMBT - BA, HM</option>
+                                        <option value="CoArch">CoArch</option>
+                                        <option value="CoEd">CoEd</option>
+                                        <option value="Crim">Crim</option>
+                                        <option value="COE">COE</option>
+                                        <option value="CICT">CICT</option>
+                                        <option value="IPE">IPE</option>
+                                        <option value="LHS">LHS</option>
+                                        <option value="CIT">CIT</option>
+                                        <option value="CAS">CAS</option>
+                                        <option value="IOLL">IOLL</option>
+                                        <option value="CON">CON</option>
+                                        <option value="GS">GS</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Campus</label>
+                                    <select class="form-select" id="acc_campus" name="acc_campus" required>
+                                        <option value="" disabled selected>Select Campus</option>
+                                        <option value="Sumacab">Sumacab</option>
+                                        <option value="GT">Gen. Tinio</option>
+                                        <option value="San Isidro">San Isidro</option>
+                                        <option value="Gabaldon">Gabaldon</option>
+                                        <option value="Atate">Atate</option>
+                                        <option value="Fort Magsaysay">Fort Magsaysay</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
