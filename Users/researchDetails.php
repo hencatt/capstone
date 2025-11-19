@@ -1,4 +1,6 @@
 <?php
+// At the top of researchDetails.php, update the user section:
+
 require_once 'includes.php';
 require_once '../phpFunctions/email.php';
 session_start();
@@ -8,8 +10,14 @@ $user = getUser();
 $currentUserId = $user['id'];
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
+$currentPosition2 = $user['position2']; // Secondary role
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
+
+// Check if user has Panel role (either primary or secondary)
+$isPanel = hasRole("Panel");
+$isRETChair = hasRole("RET Chair");
+$isResearcher = hasRole("Researcher");
 
 $currentResearch = "";
 $previousPage = "";
@@ -316,220 +324,227 @@ if (isset($_POST['confirmBtnReject'])) {
                     </div>
                     <div class="col d-flex justify-content-end align-items-center gap-3">
 
-                        <div id="approvalBtn" class="gap-3">
-                            <?php
-                            if ($currentPosition === "Panel"): ?>
-                                <button class="btn btn-success" name="approveBtn" id="approveBtn">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
+                        <div class="col d-flex justify-content-end align-items-center gap-3">
+                            <div id="approvalBtn" class="gap-3">
                                 <?php
-                            endif;
-                            ?>
-                        </div>
-
-                        <?php
-                        if ($currentPosition === "RET Chair" || $currentPosition === "Researcher"):
-                            ?>
-                            <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPd"
-                                style="display: none;">
-                                <i class="fas fa-redo"></i> Re-submit PDF
-                            </button>
-                            <?php
-                        endif;
-                        ?>
-                        <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">
-                            <i class="fas fa-file-pdf"></i> View PDF
-                        </button>
-                        <div id="pdfContainer" style="margin-top: 20px;"></div>
-                    </div>
-                </div>
-
-                <!-- EVENT INFORMATION CARD -->
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="event-card">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 style="color: rgba(12, 12, 12, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
-                                        <i class="fas fa-calendar-alt"></i> Research Event
-                                    </h6>
-                                    <h4 style="margin: 0; font-weight: 600;"><?= $eventTitle ?></h4>
-                                </div>
-                                <div class="text-end">
-                                    <h6 style="color: rgba(26, 26, 26, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
-                                        <i class="fas fa-presentation"></i> Presentation Date
-                                    </h6>
-                                    <h5 style="margin: 0;"><?= $presentationDate ?></h5>
-                                </div>
+                                // UPDATED: Show approve/reject buttons only if:
+                                // 1. User has Panel role AND
+                                // 2. They came from the Approval page (not Research View)
+                                if ($isPanel && $previousPage === "Approval"): ?>
+                                    <button class="btn btn-success" name="approveBtn" id="approveBtn">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn btn-danger" name="rejectBtn" id="rejectBtn">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                <?php elseif ($isPanel && $previousPage !== "Approval"): ?>
+                                    <!-- Show disabled buttons with tooltip when coming from Research View -->
+                                    <button class="btn btn-secondary" disabled
+                                        title="Please go to the Approval page to vote on research">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn btn-secondary" disabled
+                                        title="Please go to the Approval page to vote on research">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="fas fa-info-circle"></i>
+                                        Go to <a href="researchApproval.php">Approval page</a> to vote
+                                    </small>
+                                <?php endif; ?>
                             </div>
+
+                            <?php
+                            // Show re-submit button if user has RET Chair or Researcher role
+                            if ($isRETChair || $isResearcher): ?>
+                                <button class="btn btn-outline-secondary" id="reSubmitPdf" name="reSubmitPdf"
+                                    style="display: none;">
+                                    <i class="fas fa-redo"></i> Re-submit PDF
+                                </button>
+                            <?php endif; ?>
+
+                            <button class="btn btn-outline-primary" id="viewPdf" name="viewPdf">
+                                <i class="fas fa-file-pdf"></i> View PDF
+                            </button>
+                            <div id="pdfContainer" style="margin-top: 20px;"></div>
                         </div>
                     </div>
-                </div>
 
-
-                <?php
-                if ($currentPosition === "RET Chair"):
-                    ?>
+                    <!-- EVENT INFORMATION CARD -->
                     <div class="row mt-3">
-                        <div class="col d-flex flex-row align-items-center gap-3">
-                            <button class="btn btn-primary" id="changeGrantStatus" name="changeGrantStatus">
-                                <i class="fas fa-hand-holding-usd"></i> Change Grant Status
-                            </button>
-                            <button class="btn btn-outline-secondary" id="changeResubmissionStatus"
-                                name="changeResubmissionStatus">
-                                <i class="fas fa-folder-open"></i> Open Re-Submission
-                            </button>
-                        </div>
-                    </div>
-                    <?php
-                endif;
-                ?>
-
-                <!-- SDG AND RESEARCH AGENDA -->
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="info-card">
-                            <h6><i class="fas fa-leaf"></i> SUSTAINABLE DEVELOPMENT GOALS</h6>
-                            <div class="badge-container">
-                                <?php
-                                $sdgs = explode(", ", $sdg);
-                                foreach ($sdgs as $sdgItem):
-                                    ?>
-                                    <span class="custom-badge sdg-badge">
-                                        <i class="fas fa-check-circle"></i> <?= trim($sdgItem) ?>
-                                    </span>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-card">
-                            <h6><i class="fas fa-lightbulb"></i> NEUST RESEARCH AGENDA</h6>
-                            <div class="badge-container">
-                                <?php
-                                $agendas = explode(", ", $agenda);
-                                foreach ($agendas as $agendaItem):
-                                    ?>
-                                    <span class="custom-badge agenda-badge">
-                                        <i class="fas fa-star"></i> <?= trim($agendaItem) ?>
-                                    </span>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GRANT INFORMATION -->
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div class="grant-info-box">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="grant-status <?= $granted ? 'status-granted' : 'status-not-granted' ?>">
-                                        <i class="fas fa-<?= $granted ? 'check-circle' : 'times-circle' ?>"></i>
-                                        <div>
-                                            <small class="text-muted d-block">Grant Status</small>
-                                            <strong><?= $granted ? "Granted" : "Not Granted" ?></strong>
-                                        </div>
+                        <div class="col-12">
+                            <div class="event-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6
+                                            style="color: rgba(12, 12, 12, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
+                                            <i class="fas fa-calendar-alt"></i> Research Event
+                                        </h6>
+                                        <h4 style="margin: 0; font-weight: 600;"><?= $eventTitle ?></h4>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="grant-status">
-                                        <i class="fas fa-money-bill-wave text-success"></i>
-                                        <div>
-                                            <small class="text-muted d-block">Total Amount</small>
-                                            <strong>
-                                                <?php if ($grant === "No"): ?>
-                                                    N/A
-                                                <?php else: ?>
-                                                    ₱
-                                                    <?= number_format(htmlspecialchars($row['research_grant_times']) * 5000, 2) ?>
-                                                <?php endif; ?>
-                                            </strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="grant-status">
-                                        <i class="fas fa-sync-alt text-primary"></i>
-                                        <div>
-                                            <small class="text-muted d-block">Re-Submission Status</small>
-                                            <strong>
-                                                <?= ($row['research_resubmission_status'] === "Yes") ? "Open" : "Closed"; ?>
-                                            </strong>
-                                        </div>
+                                    <div class="text-end">
+                                        <h6
+                                            style="color: rgba(26, 26, 26, 0.9); font-size: 0.9rem; margin-bottom: 5px;">
+                                            <i class="fas fa-presentation"></i> Presentation Date
+                                        </h6>
+                                        <h5 style="margin: 0;"><?= $presentationDate ?></h5>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- DESCRIPTION -->
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <div
-                            style="background-color: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <h5 class="mb-3"><i class="fas fa-align-left"></i> Research Description</h5>
-                            <p style="text-align: justify; line-height: 1.8;"><?= $researchDescription ?></p>
+
+                    <?php if ($isRETChair): ?>
+                        <div class="row mt-3">
+                            <div class="col d-flex flex-row align-items-center gap-3">
+                                <button class="btn btn-primary" id="changeGrantStatus" name="changeGrantStatus">
+                                    <i class="fas fa-hand-holding-usd"></i> Change Grant Status
+                                </button>
+                                <button class="btn btn-outline-secondary" id="changeResubmissionStatus"
+                                    name="changeResubmissionStatus">
+                                    <i class="fas fa-folder-open"></i> Open Re-Submission
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- SDG AND RESEARCH AGENDA -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-leaf"></i> SUSTAINABLE DEVELOPMENT GOALS</h6>
+                                <div class="badge-container">
+                                    <?php
+                                    $sdgs = explode(", ", $sdg);
+                                    foreach ($sdgs as $sdgItem):
+                                        ?>
+                                        <span class="custom-badge sdg-badge">
+                                            <i class="fas fa-check-circle"></i> <?= trim($sdgItem) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="fas fa-lightbulb"></i> NEUST RESEARCH AGENDA</h6>
+                                <div class="badge-container">
+                                    <?php
+                                    $agendas = explode(", ", $agenda);
+                                    foreach ($agendas as $agendaItem):
+                                        ?>
+                                        <span class="custom-badge agenda-badge">
+                                            <i class="fas fa-star"></i> <?= trim($agendaItem) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-
-                <div class="row mt-3 gap-5">
-                    <div class="col d-flex flex-column"
-                        style="background-color: white; padding: 25px; border-radius: 10px;">
-                        <h5><i class="fas fa-comments"></i> Comments</h5>
-
-
-                        <?php if ($currentPosition === "Panel") { ?>
-                            <form method="POST">
-                                <div class="row d-flex align-items-center">
-                                    <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center"
-                                        style="margin-left: 1.3rem">
-                                        <textarea style="
-                                            overflow: hidden;
-                                            box-sizing: border-box;
-                                            resize: none;
-                                            border: 1px solid gray;
-                                            padding: 10px;
-                                            border-radius: 10px;
-                                            width: 100%;" rows="1" cols="50" name="comments" id="comments"
-                                            placeholder="Enter comment here..."></textarea>
-                                        <button class="btn btn-outline-primary" id="comment_send" name="comment_send">
-                                            <i class="fas fa-paper-plane"></i> Send
-                                        </button>
+                    <!-- GRANT INFORMATION -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="grant-info-box">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div
+                                            class="grant-status <?= $granted ? 'status-granted' : 'status-not-granted' ?>">
+                                            <i class="fas fa-<?= $granted ? 'check-circle' : 'times-circle' ?>"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Grant Status</small>
+                                                <strong><?= $granted ? "Granted" : "Not Granted" ?></strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="grant-status">
+                                            <i class="fas fa-money-bill-wave text-success"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Total Amount</small>
+                                                <strong>
+                                                    <?php if ($grant === "No"): ?>
+                                                        N/A
+                                                    <?php else: ?>
+                                                        ₱
+                                                        <?= number_format(htmlspecialchars($row['research_grant_times']) * 5000, 2) ?>
+                                                    <?php endif; ?>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="grant-status">
+                                            <i class="fas fa-sync-alt text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Re-Submission Status</small>
+                                                <strong>
+                                                    <?= ($row['research_resubmission_status'] === "Yes") ? "Open" : "Closed"; ?>
+                                                </strong>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </form>
-                            <?php
-                        }
-                        ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div
+                                style="background-color: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <h5 class="mb-3"><i class="fas fa-align-left"></i> Research Description</h5>
+                                <p style="text-align: justify; line-height: 1.8;"><?= $researchDescription ?></p>
+                            </div>
+                        </div>
+                    </div>
 
 
-                        <div class="row " style="padding: 20px; border-radius: 10px;">
-                            <div class="col">
+                    <div class="row mt-3 gap-5">
+                        <div class="col d-flex flex-column"
+                            style="background-color: white; padding: 25px; border-radius: 10px;">
+                            <h5><i class="fas fa-comments"></i> Comments</h5>
 
-                                <!-- loop comments here -->
-                                <?php
-                                $con = con();
-                                $sql = "SELECT c.comment_id, c.commentor_name, c.comment, c.comment_datetime
+
+                            <?php if ($isPanel): ?>
+                                <form method="POST">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-8 mt-4 d-flex flex-row gap-2 align-items-center"
+                                            style="margin-left: 1.3rem">
+                                            <textarea
+                                                style="overflow: hidden; box-sizing: border-box; resize: none; border: 1px solid gray; padding: 10px; border-radius: 10px; width: 100%;"
+                                                rows="1" cols="50" name="comments" id="comments"
+                                                placeholder="Enter comment here..."></textarea>
+                                            <button class="btn btn-outline-primary" id="comment_send" name="comment_send">
+                                                <i class="fas fa-paper-plane"></i> Send
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            <?php endif; ?>
+
+
+                            <div class="row " style="padding: 20px; border-radius: 10px;">
+                                <div class="col">
+
+                                    <!-- loop comments here -->
+                                    <?php
+                                    $con = con();
+                                    $sql = "SELECT c.comment_id, c.commentor_name, c.comment, c.comment_datetime
                                         FROM comments_tbl c
                                         JOIN research_tbl r ON c.research_id = r.id
                                         WHERE r.id = ?";
 
-                                $stmt = $con->prepare($sql);
-                                $stmt->bind_param("i", $currentResearch);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-                                $rows = mysqli_num_rows($result);
-                                if ($rows > 0) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo '
+                                    $stmt = $con->prepare($sql);
+                                    $stmt->bind_param("i", $currentResearch);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $rows = mysqli_num_rows($result);
+                                    if ($rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            echo '
                                 <div style="border: solid 1px gray; margin-top: 1.3rem; padding:20px; border-radius: 10px">
                                     <div class="row d-flex flex-row">
                                         <div class="d-flex flex-row" style="width:max-content;">
@@ -552,110 +567,113 @@ if (isset($_POST['confirmBtnReject'])) {
                                     
                                 </div>
                                 ';
-                                    }
-                                } else {
-                                    echo '<div class="row mt-1">
+                                        }
+                                    } else {
+                                        echo '<div class="row mt-1">
                                         <div class="col" style="text-align:center; overflow-wrap: anywhere; white-space: normal;
                                             display: -webkit-box;">
                                             <i>No comments yet.</i>
                                         </div>
                                     </div>';
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-3 d-flex flex-column"
-                        style="background-color: white; padding: 25px; border-radius: 10px; max-height:330px;">
-                        <h5><i class="fas fa-users"></i> Authors</h5>
-                        <div class="row">
-                            <div class="col d-flex flex-column justify-content-center">
-                                <ul>
-                                    <?php
-                                    echo "<li class='mt-4' style='list-style-type: none'> <span class='material-symbols-outlined'>
-                                                person
-                                                </span><span style='margin-left: 1rem'>" . htmlspecialchars($mainAuthor) . "</span></li>";
-                                    if (!empty($researchAuthors)) {
-                                        $researchAuthorsArray = explode(", ", $researchAuthors);
-                                        foreach ($researchAuthorsArray as $coAuth) {
-                                            if (!empty(trim($coAuth))) {
-                                                echo "<li class='mt-3' style='list-style-type: none'> <span class='material-symbols-outlined'>
-                                                        person
-                                                        </span><span style='margin-left: 1rem'>" . htmlspecialchars($coAuth) . "</span></li>";
-                                            }
-                                        }
                                     }
                                     ?>
-                                </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-3 d-flex flex-column"
+                            style="background-color: white; padding: 25px; border-radius: 10px; max-height:330px;">
+                            <h5><i class="fas fa-users"></i> Authors</h5>
+                            <div class="row">
+                                <div class="col d-flex flex-column justify-content-center">
+                                    <ul>
+                                        <?php
+                                        echo "<li class='mt-4' style='list-style-type: none'> <span class='material-symbols-outlined'>
+                                                person
+                                                </span><span style='margin-left: 1rem'>" . htmlspecialchars($mainAuthor) . "</span></li>";
+                                        if (!empty($researchAuthors)) {
+                                            $researchAuthorsArray = explode(", ", $researchAuthors);
+                                            foreach ($researchAuthorsArray as $coAuth) {
+                                                if (!empty(trim($coAuth))) {
+                                                    echo "<li class='mt-3' style='list-style-type: none'> <span class='material-symbols-outlined'>
+                                                        person
+                                                        </span><span style='margin-left: 1rem'>" . htmlspecialchars($coAuth) . "</span></li>";
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- MODALS -->
-    <div class="modalConfirmation" style="padding:20px; border: gray 1px solid; border-radius:10px;">
-        <div class="modalConfirmation-content" style="width: 20%;">
-            <div class="row">
-                <div class="col">
-                    <h6>Are you sure you want to do this?</h6>
+        <!-- MODALS -->
+        <div class="modalConfirmation" style="padding:20px; border: gray 1px solid; border-radius:10px;">
+            <div class="modalConfirmation-content" style="width: 20%;">
+                <div class="row">
+                    <div class="col">
+                        <h6>Are you sure you want to do this?</h6>
+                    </div>
                 </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col gap-3 d-flex justify-content-end">
-                    <form method="POST">
-                        <button class="btn btn-outline-danger" type="button" name="cancelBtn"
-                            id="cancelBtn">Cancel</button>
-                        <button class="btn btn-outline-success" name="confirmBtnApprove"
-                            id="confirmBtnApprove">Confirm</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modalConfirmationReject" style="padding:20px; border: gray 1px solid; border-radius:10px;">
-        <div class="modalConfirmation-content" style="width: 20%;">
-            <div class="row">
-                <div class="col">
-                    <h6>Are you sure you want to do this?</h6>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col gap-3 d-flex justify-content-end">
-                    <form method="POST">
-                        <button class="btn btn-outline-danger" type="button" name="cancelBtnReject"
-                            id="cancelBtnReject">Cancel</button>
-                        <button class="btn btn-outline-success" name="confirmBtnReject"
-                            id="confirmBtnApprove">Confirm</button>
-                    </form>
+                <div class="row mt-4">
+                    <div class="col gap-3 d-flex justify-content-end">
+                        <form method="POST">
+                            <button class="btn btn-outline-danger" type="button" name="cancelBtn"
+                                id="cancelBtn">Cancel</button>
+                            <button class="btn btn-outline-success" name="confirmBtnApprove"
+                                id="confirmBtnApprove">Confirm</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <?php include('../phpFunctions/alerts.php'); ?>
+        <div class="modalConfirmationReject" style="padding:20px; border: gray 1px solid; border-radius:10px;">
+            <div class="modalConfirmation-content" style="width: 20%;">
+                <div class="row">
+                    <div class="col">
+                        <h6>Are you sure you want to do this?</h6>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col gap-3 d-flex justify-content-end">
+                        <form method="POST">
+                            <button class="btn btn-outline-danger" type="button" name="cancelBtnReject"
+                                id="cancelBtnReject">Cancel</button>
+                            <button class="btn btn-outline-success" name="confirmBtnReject"
+                                id="confirmBtnApprove">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("aaaaaaaaaaaaaaaaaaaaa");
-            const grantBtn = document.getElementById("changeGrantStatus");
-            const resubmitBtn = document.getElementById("changeResubmissionStatus");
+        <?php include('../phpFunctions/alerts.php'); ?>
 
-            // trigger modals
-            if (grantBtn) grantBtn.addEventListener("click", openGrantModal);
-            if (resubmitBtn) resubmitBtn.addEventListener("click", openReSubmitModal);
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                console.log("aaaaaaaaaaaaaaaaaaaaa");
+                const grantBtn = document.getElementById("changeGrantStatus");
+                const resubmitBtn = document.getElementById("changeResubmissionStatus");
+                const isPanel = <?php echo $isPanel ? 'true' : 'false'; ?>;
+                const isRETChair = <?php echo $isRETChair ? 'true' : 'false'; ?>;
 
 
-            // ------------ GRANT MODAL ------------------
-            function openGrantModal() {
-                const modal = document.createElement("div");
-                modal.className = "modal fade show";
-                modal.style.display = "block";
-                modal.innerHTML = `
+                // trigger modals
+                if (grantBtn) grantBtn.addEventListener("click", openGrantModal);
+                if (resubmitBtn) resubmitBtn.addEventListener("click", openReSubmitModal);
+
+
+                // ------------ GRANT MODAL ------------------
+                function openGrantModal() {
+                    const modal = document.createElement("div");
+                    modal.className = "modal fade show";
+                    modal.style.display = "block";
+                    modal.innerHTML = `
         <div class="modal-dialog">
             <div class="modal-content p-3">
                 <h5>Change Grant Status</h5>
@@ -675,46 +693,46 @@ if (isset($_POST['confirmBtnReject'])) {
             </div>
         </div>
     `;
-                document.body.appendChild(modal);
+                    document.body.appendChild(modal);
 
-                const grantSwitch = document.getElementById("grantSwitch");
-                const grantTimesDiv = document.getElementById("grantTimesDiv");
+                    const grantSwitch = document.getElementById("grantSwitch");
+                    const grantTimesDiv = document.getElementById("grantTimesDiv");
 
-                grantSwitch.addEventListener("change", () => {
-                    grantTimesDiv.style.display = grantSwitch.checked ? "block" : "none";
-                });
+                    grantSwitch.addEventListener("change", () => {
+                        grantTimesDiv.style.display = grantSwitch.checked ? "block" : "none";
+                    });
 
-                document.getElementById("cancelGrant").onclick = () => modal.remove();
+                    document.getElementById("cancelGrant").onclick = () => modal.remove();
 
-                document.getElementById("saveGrant").onclick = () => {
-                    const grant = grantSwitch.checked ? "Yes" : "No";
-                    const times = grantSwitch.checked ? document.getElementById("grantCount").value : 0;
+                    document.getElementById("saveGrant").onclick = () => {
+                        const grant = grantSwitch.checked ? "Yes" : "No";
+                        const times = grantSwitch.checked ? document.getElementById("grantCount").value : 0;
 
-                    fetch("../phpFunctions/updateResearch.php", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            action: "grant",
-                            research_id: <?= json_encode($researchId ?? null) ?>,
-                            research_grant: grant,
-                            research_grant_times: times
+                        fetch("../phpFunctions/updateResearch.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "grant",
+                                research_id: <?= json_encode($researchId ?? null) ?>,
+                                research_grant: grant,
+                                research_grant_times: times
+                            })
                         })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            alert(data.message);
-                            modal.remove();
-                            location.reload();
-                        });
-                };
-            }
+                            .then(res => res.json())
+                            .then(data => {
+                                alert(data.message);
+                                modal.remove();
+                                location.reload();
+                            });
+                    };
+                }
 
-            // ------------ RESUBMISSION MODAL ------------------
-            function openReSubmitModal() {
-                const modal = document.createElement("div");
-                modal.className = "modal fade show";
-                modal.style.display = "block";
-                modal.innerHTML = `
+                // ------------ RESUBMISSION MODAL ------------------
+                function openReSubmitModal() {
+                    const modal = document.createElement("div");
+                    modal.className = "modal fade show";
+                    modal.style.display = "block";
+                    modal.innerHTML = `
         <div class="modal-dialog">
             <div class="modal-content p-3">
                 <h5>Re-Submission Status</h5>
@@ -730,200 +748,208 @@ if (isset($_POST['confirmBtnReject'])) {
         </div>
     `;
 
-                document.body.appendChild(modal);
+                    document.body.appendChild(modal);
 
-                document.getElementById("cancelRe").onclick = () => modal.remove();
+                    document.getElementById("cancelRe").onclick = () => modal.remove();
 
-                document.getElementById("saveRe").onclick = () => {
-                    const status = document.getElementById("reSubmitSwitch").checked ? "Yes" : "No";
+                    document.getElementById("saveRe").onclick = () => {
+                        const status = document.getElementById("reSubmitSwitch").checked ? "Yes" : "No";
 
-                    fetch("../phpFunctions/updateResearch.php", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            action: "resubmit",
-                            research_id: <?= json_encode($researchId ?? null) ?>,
-                            research_resubmission_status: status
+                        fetch("../phpFunctions/updateResearch.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "resubmit",
+                                research_id: <?= json_encode($researchId ?? null) ?>,
+                                research_resubmission_status: status
+                            })
                         })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            alert(data.message);
-                            modal.remove();
+                            .then(res => res.json())
+                            .then(data => {
+                                alert(data.message);
+                                modal.remove();
 
-                            // toggle visibility instantly without reload
-                            const box = document.getElementById("reSubmitPdf");
-                            if (box) box.style.display = (status === "Yes") ? "block" : "none";
+                                // toggle visibility instantly without reload
+                                const box = document.getElementById("reSubmitPdf");
+                                if (box) box.style.display = (status === "Yes") ? "block" : "none";
 
-                            location.reload();
-                        });
-                };
-            }
-
-            const status = "<?php echo $row['research_resubmission_status']; ?>";
-            const section = document.getElementById("reSubmitPdf");
-            if (section) section.style.display = (status === "Yes") ? "block" : "none";
-
-            function displayApproval() {
-                const currentPos = <?php echo json_encode($currentPosition ?? null); ?>;
-                const isVoted = <?php echo checkVoters($currentResearch, $currentUserId) ? 'true' : 'false'; ?>;
-
-                if (currentPos === "Panel") {
-                    const approvalBtn = document.getElementById("approvalBtn");
-                    approvalBtn.style.display = isVoted ? "none" : "flex";
+                                location.reload();
+                            });
+                    };
                 }
-            }
 
-            displayApproval();
+                const status = "<?php echo $row['research_resubmission_status']; ?>";
+                const section = document.getElementById("reSubmitPdf");
+                if (section) section.style.display = (status === "Yes") ? "block" : "none";
 
-            const commentArea = document.getElementById("comments");
-            const commentBtn = document.getElementById("comment_send");
-            const approveBtn = document.getElementById("approveBtn");
-            const rejectBtn = document.getElementById("rejectBtn");
-            const cancelBtn = document.getElementById("cancelBtn");
-            const cancelBtnReject = document.getElementById("cancelBtnReject")
-            const confirmModal = document.querySelectorAll(".modalConfirmation");
-            const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
-            const pos = <?php echo json_encode($currentPosition ?? null); ?>
+                function displayApproval() {
+                    const isVoted = <?php echo checkVoters($currentResearch, $currentUserId) ? 'true' : 'false'; ?>;
 
-            console.log("Panel Line reached");
-
-
-            if (pos === "Panel") {
-                commentArea.addEventListener("input", function () {
-                    this.style.height = "auto";
-                    this.style.height = this.scrollHeight + "px";
-                });
-
-                commentArea.addEventListener("keydown", (e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        commentBtn.click();
+                    if (isPanel) {
+                        const approvalBtn = document.getElementById("approvalBtn");
+                        if (approvalBtn) {
+                            approvalBtn.style.display = isVoted ? "none" : "flex";
+                        }
                     }
-                });
-
-
-                approveBtn.addEventListener("click", function () {
-                    console.log("clicked approve")
-                    confirmModal.forEach((modal) => {
-                        modal.classList.add("open");
-                    });
-                });
-
-                rejectBtn.addEventListener("click", function () {
-                    confirmModalReject.forEach((modal) => {
-                        modal.classList.add("open");
-                    });
-                });
-
-                cancelBtn.addEventListener("click", function () {
-                    confirmModal.forEach((modal) => {
-                        modal.classList.remove("open");
-                    });
-                });
-
-                cancelBtnReject.addEventListener("click", function () {
-                    confirmModalReject.forEach((modal) => {
-                        modal.classList.remove("open");
-                    });
-                });
-            }
-
-
-
-            // SHOW PDF
-            document.getElementById("viewPdf").addEventListener("click", function () {
-
-
-                <?php
-                $filePath = $file;
-                $fileData = file_exists($filePath) ? file_get_contents($filePath) : null;
-                ?>
-
-                const base64Data = <?php echo json_encode($fileData ? base64_encode($fileData) : null); ?>;
-
-                if (!base64Data) {
-                    alert("PDF file not found!");
-                    return;
                 }
 
-                // Decode base64 → binary
-                const byteCharacters = atob(base64Data);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                displayApproval();
+
+                const commentArea = document.getElementById("comments");
+                const commentBtn = document.getElementById("comment_send");
+                const approveBtn = document.getElementById("approveBtn");
+                const rejectBtn = document.getElementById("rejectBtn");
+                const cancelBtn = document.getElementById("cancelBtn");
+                const cancelBtnReject = document.getElementById("cancelBtnReject");
+                const confirmModal = document.querySelectorAll(".modalConfirmation");
+                const confirmModalReject = document.querySelectorAll(".modalConfirmationReject");
+
+                console.log("Panel Line reached");
+
+
+                if (isPanel) {
+                    if (commentArea) {
+                        commentArea.addEventListener("input", function () {
+                            this.style.height = "auto";
+                            this.style.height = this.scrollHeight + "px";
+                        });
+
+                        commentArea.addEventListener("keydown", (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                if (commentBtn) commentBtn.click();
+                            }
+                        });
+                    }
+
+                    if (approveBtn) {
+                        approveBtn.addEventListener("click", function () {
+                            confirmModal.forEach((modal) => {
+                                modal.classList.add("open");
+                            });
+                        });
+                    }
+
+                    if (rejectBtn) {
+                        rejectBtn.addEventListener("click", function () {
+                            confirmModalReject.forEach((modal) => {
+                                modal.classList.add("open");
+                            });
+                        });
+                    }
+
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener("click", function () {
+                            confirmModal.forEach((modal) => {
+                                modal.classList.remove("open");
+                            });
+                        });
+                    }
+
+                    if (cancelBtnReject) {
+                        cancelBtnReject.addEventListener("click", function () {
+                            confirmModalReject.forEach((modal) => {
+                                modal.classList.remove("open");
+                            });
+                        });
+                    }
                 }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], { type: "application/pdf" });
-                const pdfURL = URL.createObjectURL(blob);
 
-                // 🧠 Create modal overlay
-                const overlay = document.createElement("div");
-                overlay.style.position = "fixed";
-                overlay.style.top = "0";
-                overlay.style.left = "0";
-                overlay.style.width = "100%";
-                overlay.style.height = "100%";
-                overlay.style.backgroundColor = "rgba(0,0,0,0.6)";
-                overlay.style.backdropFilter = "blur(4px)";
-                overlay.style.display = "flex";
-                overlay.style.justifyContent = "center";
-                overlay.style.alignItems = "center";
-                overlay.style.zIndex = "9999";
 
-                // 🪟 Modal box
-                const modal = document.createElement("div");
-                modal.style.width = "80%";
-                modal.style.height = "85%";
-                modal.style.backgroundColor = "#fff";
-                modal.style.borderRadius = "10px";
-                modal.style.overflow = "hidden";
-                modal.style.position = "relative";
-                modal.style.boxShadow = "0 0 20px rgba(0,0,0,0.3)";
-                modal.style.display = "flex";
-                modal.style.flexDirection = "column";
 
-                // ❌ Close button
-                const closeBtn = document.createElement("button");
-                closeBtn.textContent = "×";
-                closeBtn.style.position = "absolute";
-                closeBtn.style.top = "10px";
-                closeBtn.style.right = "15px";
-                closeBtn.style.border = "none";
-                closeBtn.style.background = "transparent";
-                closeBtn.style.fontSize = "28px";
-                closeBtn.style.cursor = "pointer";
-                closeBtn.style.zIndex = "10";
-                closeBtn.addEventListener("click", () => {
-                    URL.revokeObjectURL(pdfURL);
-                    overlay.remove();
-                });
+                // SHOW PDF
+                document.getElementById("viewPdf").addEventListener("click", function () {
 
-                // 🧾 PDF viewer inside modal
-                const pdfViewer = document.createElement("object");
-                pdfViewer.data = pdfURL;
-                pdfViewer.type = "application/pdf";
-                pdfViewer.width = "100%";
-                pdfViewer.height = "100%";
-                pdfViewer.style.border = "none";
-                pdfViewer.innerHTML = "<div style='padding:20px;text-align:center;'>No PDF viewer available</div>";
 
-                modal.appendChild(closeBtn);
-                modal.appendChild(pdfViewer);
-                overlay.appendChild(modal);
-                document.body.appendChild(overlay);
+                    <?php
+                    $filePath = $file;
+                    $fileData = file_exists($filePath) ? file_get_contents($filePath) : null;
+                    ?>
 
-                // ✨ Optional: click outside to close
-                overlay.addEventListener("click", (e) => {
-                    if (e.target === overlay) {
+                    const base64Data = <?php echo json_encode($fileData ? base64_encode($fileData) : null); ?>;
+
+                    if (!base64Data) {
+                        alert("PDF file not found!");
+                        return;
+                    }
+
+                    // Decode base64 → binary
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: "application/pdf" });
+                    const pdfURL = URL.createObjectURL(blob);
+
+                    // 🧠 Create modal overlay
+                    const overlay = document.createElement("div");
+                    overlay.style.position = "fixed";
+                    overlay.style.top = "0";
+                    overlay.style.left = "0";
+                    overlay.style.width = "100%";
+                    overlay.style.height = "100%";
+                    overlay.style.backgroundColor = "rgba(0,0,0,0.6)";
+                    overlay.style.backdropFilter = "blur(4px)";
+                    overlay.style.display = "flex";
+                    overlay.style.justifyContent = "center";
+                    overlay.style.alignItems = "center";
+                    overlay.style.zIndex = "9999";
+
+                    // 🪟 Modal box
+                    const modal = document.createElement("div");
+                    modal.style.width = "80%";
+                    modal.style.height = "85%";
+                    modal.style.backgroundColor = "#fff";
+                    modal.style.borderRadius = "10px";
+                    modal.style.overflow = "hidden";
+                    modal.style.position = "relative";
+                    modal.style.boxShadow = "0 0 20px rgba(0,0,0,0.3)";
+                    modal.style.display = "flex";
+                    modal.style.flexDirection = "column";
+
+                    // ❌ Close button
+                    const closeBtn = document.createElement("button");
+                    closeBtn.textContent = "×";
+                    closeBtn.style.position = "absolute";
+                    closeBtn.style.top = "10px";
+                    closeBtn.style.right = "15px";
+                    closeBtn.style.border = "none";
+                    closeBtn.style.background = "transparent";
+                    closeBtn.style.fontSize = "28px";
+                    closeBtn.style.cursor = "pointer";
+                    closeBtn.style.zIndex = "10";
+                    closeBtn.addEventListener("click", () => {
                         URL.revokeObjectURL(pdfURL);
                         overlay.remove();
-                    }
-                });
-            });
+                    });
 
-        });
-    </script>
+                    // 🧾 PDF viewer inside modal
+                    const pdfViewer = document.createElement("object");
+                    pdfViewer.data = pdfURL;
+                    pdfViewer.type = "application/pdf";
+                    pdfViewer.width = "100%";
+                    pdfViewer.height = "100%";
+                    pdfViewer.style.border = "none";
+                    pdfViewer.innerHTML = "<div style='padding:20px;text-align:center;'>No PDF viewer available</div>";
+
+                    modal.appendChild(closeBtn);
+                    modal.appendChild(pdfViewer);
+                    overlay.appendChild(modal);
+                    document.body.appendChild(overlay);
+
+                    // ✨ Optional: click outside to close
+                    overlay.addEventListener("click", (e) => {
+                        if (e.target === overlay) {
+                            URL.revokeObjectURL(pdfURL);
+                            overlay.remove();
+                        }
+                    });
+                });
+
+            });
+        </script>
 </body>
 
 </html>

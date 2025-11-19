@@ -1,21 +1,19 @@
 <?php
 /**
  * Update Account Handler
- * Handles updating user account information including optional password change
+ * Handles updating user account information including optional password change and multi-role support
  */
 
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // Don't display errors in production
+ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
 require_once 'gad_portal.php';
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in and authorized
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Unauthorized access']);
     exit;
@@ -27,7 +25,6 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['error' => 'Invalid request method']);
     exit;
@@ -35,23 +32,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 try {
     // Sanitize and validate input
-    $id         = isset($_POST['acc_id']) ? intval($_POST['acc_id']) : 0;
-    $username   = trim($_POST['acc_username'] ?? '');
-    $email      = trim($_POST['acc_email'] ?? '');
-    $fname      = trim($_POST['acc_fname'] ?? '');
-    $lname      = trim($_POST['acc_lname'] ?? '');
-    $position   = trim($_POST['acc_position'] ?? '');
+    $id = isset($_POST['acc_id']) ? intval($_POST['acc_id']) : 0;
+    $username = trim($_POST['acc_username'] ?? '');
+    $email = trim($_POST['acc_email'] ?? '');
+    $fname = trim($_POST['acc_fname'] ?? '');
+    $lname = trim($_POST['acc_lname'] ?? '');
+
+    // UPDATED: Handle multi-role position (comes as comma-separated string from frontend)
+    $position = trim($_POST['acc_position'] ?? '');
+
     $department = trim($_POST['acc_department'] ?? '');
-    $campus     = trim($_POST['acc_campus'] ?? '');
-    $password   = trim($_POST['acc_password'] ?? ''); // Optional: leave blank to keep current
+    $campus = trim($_POST['acc_campus'] ?? '');
+    $password = trim($_POST['acc_password'] ?? '');
 
     // Validate required fields
     if ($id <= 0) {
         throw new Exception('Invalid account ID');
     }
-    
+
     if (empty($username) || empty($email) || empty($fname) || empty($lname)) {
         throw new Exception('Username, Email, First Name, and Last Name are required');
+    }
+
+    if (empty($position)) {
+        throw new Exception('At least one position is required');
     }
 
     // Validate email format
@@ -64,7 +68,7 @@ try {
     $checkEmail->bind_param("si", $email, $id);
     $checkEmail->execute();
     $checkEmail->store_result();
-    
+
     if ($checkEmail->num_rows > 0) {
         throw new Exception('Email already exists for another account');
     }
@@ -75,7 +79,7 @@ try {
     $checkUsername->bind_param("si", $username, $id);
     $checkUsername->execute();
     $checkUsername->store_result();
-    
+
     if ($checkUsername->num_rows > 0) {
         throw new Exception('Username already exists for another account');
     }
@@ -86,8 +90,7 @@ try {
         if (strlen($password) < 8) {
             throw new Exception('Password must be at least 8 characters long');
         }
-        
-        // Check password complexity
+
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
             throw new Exception('Password must contain at least one uppercase letter, one lowercase letter, and one number');
         }
@@ -107,12 +110,12 @@ try {
                     department = ?, 
                     campus = ?
                 WHERE id = ?";
-        
+
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new Exception('Database prepare failed: ' . $conn->error);
         }
-        
+
         $stmt->bind_param(
             "ssssssssi",
             $username,
@@ -136,12 +139,12 @@ try {
                     department = ?, 
                     campus = ?
                 WHERE id = ?";
-        
+
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new Exception('Database prepare failed: ' . $conn->error);
         }
-        
+
         $stmt->bind_param(
             "sssssssi",
             $username,
@@ -162,28 +165,25 @@ try {
 
     // Check if any rows were affected
     if ($stmt->affected_rows === 0) {
-        // This could mean no changes were made or account doesn't exist
         $checkExists = $conn->prepare("SELECT id FROM accounts_tbl WHERE id = ?");
         $checkExists->bind_param("i", $id);
         $checkExists->execute();
         $checkExists->store_result();
-        
+
         if ($checkExists->num_rows === 0) {
             throw new Exception('Account not found');
         }
         $checkExists->close();
-        
-        // Account exists but no changes were made
+
         echo json_encode([
             'success' => true,
             'message' => 'No changes were made to the account',
             'no_changes' => true
         ]);
     } else {
-        // Update was successful
         echo json_encode([
             'success' => true,
-            'message' => 'Account updated successfully',
+            'message' => 'Account updated successfully with position(s): ' . $position,
             'updated_id' => $id
         ]);
     }
@@ -191,9 +191,8 @@ try {
     $stmt->close();
 
 } catch (Exception $e) {
-    // Log error for debugging (optional)
     error_log("Update Account Error: " . $e->getMessage());
-    
+
     echo json_encode([
         'error' => $e->getMessage()
     ]);

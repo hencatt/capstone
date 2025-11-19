@@ -7,6 +7,7 @@ session_start();
 $user = getUser();
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
+$currentPosition2 = $user['position2']; // Secondary role
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 

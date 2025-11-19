@@ -82,6 +82,9 @@ $formattedCurrentDate = $explodeCurrentDate[1] . ". " . $explodeCurrentDate[2] .
 
 function topbar($user, $role, $location, $pageTitle = null, $previousTitle = null)
 {
+    // UPDATED: Handle multi-role display
+    $displayRole = is_array($role) ? implode(', ', $role) : $role;
+
     if ($GLOBALS['closestEventDate'] < $GLOBALS['date']) {
         $eventStatus = "<label>No upcoming events</label>";
     } elseif ($GLOBALS['closestEventDate'] != $GLOBALS['date']) {
@@ -222,7 +225,7 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
                                 </div>
                                 <div class="col d-flex flex-column align-items-start justify-content-start">
                                     <label class="fw-semibold">$user</label>
-                                    <label class="fw-light fst-italic">$role</label>
+                                    <label class="fw-light fst-italic">$displayRole</label>
                                 </div>
                             </div>
                         </a>
@@ -235,6 +238,15 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
 // subPage = page title of said subpage
 function sidebar($active, $role, $currentPage = null, $subPage = null)
 {
+    // UPDATED: Convert role to array if it's a string for multi-role support
+    $roles = is_array($role) ? $role : array_map('trim', explode(',', $role));
+    $primaryRole = $roles[0]; // Use primary role for main navigation logic
+
+    // UPDATED: Helper function to check if user has a specific role
+    $hasRole = function ($checkRole) use ($roles) {
+        return in_array($checkRole, $roles);
+    };
+
     $dashboardOption = "";
     $employeeOption = "";
     $inventoryOption = "";
@@ -340,14 +352,19 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         }
     }
 
-    if ($role === "Director") {
+    // UPDATED: Determine destination based on primary/highest priority role
+    if ($hasRole("Director")) {
         $destination = "director.php";
-    } else if ($role === "Focal Person") {
-        $destination = "focalPerson.php";
-    } else if ($role === "Technical Assistant") {
+    } else if ($hasRole("Technical Assistant")) {
         $destination = "TA.php";
-    } else if ($role === "RET Chair") {
-        $destination = "retChair.php";
+    } else if ($hasRole("Focal Person")) {
+        $destination = "focalPerson.php";
+    } else if ($hasRole("RET Chair")) {
+        $destination = "events.php";
+    } else if ($hasRole("Panel")) {
+        $destination = "researchApproval.php";
+    } else if ($hasRole("Researcher")) {
+        $destination = "researchView.php";
     } else {
         $destination = "../index.php";
     }
@@ -498,8 +515,9 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
 
     ];
 
-    // Focal Person Sidebar
-    if ($role === "Focal Person") {
+    // UPDATED: Use your original logic but with multi-role support
+    // Focal Person Sidebar (now supports "Focal Person" OR "Focal Person, Panel")
+    if ($hasRole("Focal Person")) {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
 
@@ -512,7 +530,14 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         echo $sidebar['events'];
 
         echo $sidebar['category.research'];
+
+        // UPDATED: If they also have Panel role, show approval first
+        if ($hasRole("Panel")) {
+            echo $sidebar['approval'];
+        }
+
         echo $sidebar['researchView'];
+        echo $sidebar['researchGallery'];
 
         echo $sidebar['category.settings'];
         echo $sidebar['report'];
@@ -521,7 +546,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
     }
 
     // RET CHAIR SIDEBAR
-    if ($role === "RET Chair") {
+    else if ($hasRole("RET Chair")) {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
         echo $sidebar['category.home'];
@@ -540,8 +565,8 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         echo $sidebar['wrapperBottom'];
     }
 
-    // PANEL
-    if ($role === "Panel") {
+    // PANEL (standalone or with other non-Focal roles)
+    else if ($hasRole("Panel") && !$hasRole("Focal Person")) {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
 
@@ -555,7 +580,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
 
 
     // Director and TechnicalAssistant Sidebar
-    if ($role === "Director" || $role === "Technical Assistant") {
+    else if ($hasRole("Director") || $hasRole("Technical Assistant")) {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
 
@@ -577,9 +602,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         echo $sidebar['report'];
         echo $sidebar['logout'];
         echo $sidebar['wrapperBottom'];
-    }
-
-    if ($role === "Researcher") {
+    } else if ($hasRole("Researcher")) {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
 

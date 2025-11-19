@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check for failed login attempts in the last 15 minutes
-    // $cooldownPeriod = 15; // minutes
     $maxAttempts = 5;
     $currentTime = date('Y-m-d H:i:s');
 
@@ -49,7 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (password_verify($password, $hashedPassword)) {
                     session_start();
                     $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_position'] = $user['position'];
+
+                    // UPDATED: Handle multi-role positions
+                    $userPosition = $user['position'];
+                    $positions = array_map('trim', explode(',', $userPosition));
+
+                    $_SESSION['user_position'] = $positions[0]; // Primary position
+                    $_SESSION['all_positions'] = $positions; // Store all positions
                     $_SESSION['user_fname'] = $user['fname'];
                     $_SESSION['user_lname'] = $user['lname'];
                     $_SESSION['fullname'] = $_SESSION['user_fname'] . " " . $_SESSION['user_lname'];
@@ -61,8 +66,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Log user login
                     insertLog($_SESSION['fullname'], "User Login", date('Y-m-d H:i:s'));
 
-                    // Redirect based on user position
-                    switch ($_SESSION['user_position']) {
+                    // UPDATED: Redirect based on primary position (first in the list)
+                    // Priority order for multi-role users
+                    $redirectPriority = [
+                        'Director',
+                        'Technical Assistant',
+                        'RET Chair',
+                        'Focal Person',
+                        'Panel',
+                        'Researcher'
+                    ];
+
+                    // Find the highest priority role
+                    $redirectRole = null;
+                    foreach ($redirectPriority as $priority) {
+                        if (in_array($priority, $positions)) {
+                            $redirectRole = $priority;
+                            break;
+                        }
+                    }
+
+                    // Redirect based on the highest priority role
+                    switch ($redirectRole) {
                         case "Director":
                             header("Location: ./Users/director.php");
                             break;
@@ -85,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             echo "Invalid Position";
                             break;
                     }
+                    exit();
                 } else {
                     echo '<div class="alert alert-danger">Invalid password.</div>';
                     // Log the failed attempt
@@ -101,7 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bind_param("ss", $ipAddress, $currentTime);
                 $stmt->execute();
             }
-            // } ## else ennd
         }
     }
 }
@@ -121,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https:/     /fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="variables.php" type="php">
 </head>
@@ -187,16 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
     <div class="container" style="overflow-y: hidden;">
-        <!-- <div class="row">
-            <div class="col-md-10 col-lg-8 col-xl-6 headerNEUST">
-                <img src=<?php echo "$neustLogo" ?> alt="neustlogo">
-                <h5>NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</h5>
-                <img src="assets/GADLogo.jpg" alt="">
-            </div>
-        </div> -->
-
         <div class="wrapperMain">
-
             <div style="
            position:fixed;
             top: 50%;
@@ -258,7 +274,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </body>

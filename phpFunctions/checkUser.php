@@ -20,7 +20,6 @@ function checkUser($userId)
     $result = $stmt->get_result();
 
     if ($result->num_rows < 1) {
-        // alertError("Error", "Please log in again");
         header("Location: ../index.php");
         exit();
     }
@@ -55,17 +54,37 @@ function getUser()
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+
+        // Split position by comma to support multiple roles
+        $positions = array_map('trim', explode(',', $row['position']));
+
         return [
             "id" => $currentId,
             "fname" => htmlspecialchars($row["fname"]),
             "lname" => htmlspecialchars($row["lname"]),
             "email" => htmlspecialchars($row["email"]),
             "fullname" => htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']),
-            "position" => htmlspecialchars($row['position']),
+            "position" => htmlspecialchars($positions[0]), // Primary position
+            "position2" => isset($positions[1]) ? htmlspecialchars($positions[1]) : null, // Secondary position
+            "all_positions" => $positions, // Array of all positions
             "campus" => htmlspecialchars_decode($row['campus']),
             "department" => htmlspecialchars($row['department']),
         ];
     } else {
         echo "<script>console.log('No UserID Found')</script>";
     }
+}
+
+/**
+ * Check if user has a specific role (supports multi-role)
+ * @param string $role - The role to check for
+ * @return bool
+ */
+function hasRole($role)
+{
+    $user = getUser();
+    if (!$user)
+        return false;
+
+    return in_array($role, $user['all_positions']);
 }

@@ -128,7 +128,7 @@ if (isset($_POST['submitResearch'])) {
         </div>
 
         <div class="col-lg-10 col-sm-8 col-xs-6 mt-lg-3 mainContent">
-            <?php echo topbar("$currentUser", $currentPosition, "researchSubmit") ?>
+            <?php echo topbar("$currentUser", $fullPosition, "researchSubmit") ?>
 
             <div id="contents">
                 <div class="row mt-5">

@@ -37,7 +37,7 @@ if ($currentPosition !== "Director") {
 
         <!-- Main Content -->
         <div class="col-10 mt-lg-3 mainContent">
-            <?= topbar($currentUser, $currentPosition, "logs") ?>
+            <?= topbar($currentUser, $fullPosition, "logs") ?>
             <div id="contents">
 
                 <div class="row mt-4">

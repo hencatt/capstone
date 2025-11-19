@@ -36,7 +36,7 @@ $currentCampus = $user['campus'];
 
         <!-- MAIN CONTENT -->
         <div class="col-10 mt-lg-3 mainContent">
-            <?php echo topbar("$currentUser", "$currentPosition", "dashboard") ?>
+            <?php echo topbar("$currentUser", "$fullPosition", "dashboard") ?>
             <div id="contents">
                 <div class="row gap-3 mt-3">
                     <div class="col summaryOverview">

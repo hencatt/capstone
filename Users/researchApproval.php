@@ -3,16 +3,26 @@ require_once "includes.php";
 session_start();
 
 checkUser($_SESSION['user_id']);
-doubleCheck("Panel");
 
+// Get user with multi-role support
 $user = getUser();
 $currentUser = $user['fullname'];
 $currentPosition = $user['position'];
+$currentPosition2 = $user['position2']; // Secondary role
 $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
 $currentUserId = $user['id'];
+
+// Check if user is a Panel (either primary or secondary role)
+$isPanel = hasRole("Panel");
+
+// If not a panel member, redirect
+if (!$isPanel) {
+    header("Location: ../index.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -198,9 +208,6 @@ $currentUserId = $user['id'];
                     }
                 }
             });
-
-            // If no rows match the filter, you could optionally show a message
-            // But the initial "no data" message will handle that
         }
 
         // Default view: Proposal

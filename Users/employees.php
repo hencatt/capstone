@@ -20,13 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lname = trim($_POST['lname'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $plainPassword = $_POST['pass'] ?? '';
-        $position = $_POST['pos'] ?? '';
+
+        // Handle multiple positions
+        $positions = $_POST['pos'] ?? [];
+
+        // Convert array to comma-separated string
+        if (is_array($positions)) {
+            $position = implode(', ', $positions);
+        } else {
+            $position = $positions;
+        }
 
         // Use null coalescing to handle undefined dept/campus
-        // If not set, use current user's department/campus
         $department = $_POST['dept'] ?? $currentDepartment;
         $campus = $_POST['campus'] ?? $currentCampus;
-
         $status = 'Active';
 
         // Validate required fields
@@ -43,14 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Validate position
         if (empty($position)) {
-            alertError("Error", "Position is required");
+            alertError("Error", "At least one position is required");
             exit();
         }
 
         // Hash password
         $password = password_hash($plainPassword, PASSWORD_DEFAULT);
-
-
 
         // Start transaction for data integrity
         $con->begin_transaction();
@@ -87,22 +92,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $insertInfo->close();
             }
 
-            // STEP 3: Now insert into accounts_tbl with the employee_id
-            $insertAccount = $con->prepare("INSERT INTO accounts_tbl (id, fname, lname, email, pass, position, department, campus, date_created, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)");
-            $insertAccount->bind_param("isssssss", $employee_id, $fname, $lname, $email, $password, $position, $department, $campus);
+            // STEP 3: Check if account already exists for this employee
+            $checkAccount = $con->prepare("SELECT id, position FROM accounts_tbl WHERE id = ?");
+            $checkAccount->bind_param("i", $employee_id);
+            $checkAccount->execute();
+            $checkAccount->bind_result($existing_account_id, $existing_position);
+            $checkAccount->fetch();
+            $checkAccount->close();
 
-            if (!$insertAccount->execute()) {
-                throw new Exception("Failed to create account: " . $insertAccount->error);
+            if ($existing_account_id) {
+                // UPDATED: Account exists - UPDATE it with new positions (Ctrl+Click mode)
+
+                // Merge existing positions with new ones (remove duplicates)
+                $existingPositions = array_map('trim', explode(',', $existing_position));
+                $newPositions = array_map('trim', explode(',', $position));
+                $mergedPositions = array_unique(array_merge($existingPositions, $newPositions));
+                $finalPosition = implode(', ', $mergedPositions);
+
+                $updateAccount = $con->prepare("UPDATE accounts_tbl SET position = ? WHERE id = ?");
+                $updateAccount->bind_param("si", $finalPosition, $employee_id);
+
+                if (!$updateAccount->execute()) {
+                    throw new Exception("Failed to update account positions: " . $updateAccount->error);
+                }
+                $updateAccount->close();
+
+                // Commit transaction
+                $con->commit();
+
+                alertSuccess("Updated", "Account positions updated successfully! New positions: " . $finalPosition);
+
+                // Log the update
+                error_log("Account positions updated for employee ID $employee_id: $existing_position → $finalPosition");
+
+            } else {
+                // STEP 4: Account doesn't exist - INSERT new account
+                $insertAccount = $con->prepare("INSERT INTO accounts_tbl (id, fname, lname, email, pass, position, department, campus, date_created, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)");
+                $insertAccount->bind_param("isssssss", $employee_id, $fname, $lname, $email, $password, $position, $department, $campus);
+
+                if (!$insertAccount->execute()) {
+                    throw new Exception("Failed to create account: " . $insertAccount->error);
+                }
+                $insertAccount->close();
+
+                // Commit transaction
+                $con->commit();
+
+                alertSuccess("Done", "Account Created Successfully with position(s): " . $position);
+
+                // Send credentials email to the new user
+                sendUserCredentials($email, $plainPassword, $fname, $lname);
             }
-            $insertAccount->close();
-
-            // Commit transaction
-            $con->commit();
-
-            alertSuccess("Done", "Account Created Successfully");
-
-            // Send credentials email to the new user
-            sendUserCredentials($email, $plainPassword, $fname, $lname);
 
             // Redirect to prevent form resubmission
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -112,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Rollback on error
             $con->rollback();
             alertError("Error", $e->getMessage());
-            error_log("Add Account Error: " . $e->getMessage());
+            error_log("Add/Update Account Error: " . $e->getMessage());
         }
     }
 } elseif (isset($_POST['id'])) {
@@ -338,6 +378,82 @@ if ($conn->connect_error) {
         .form_edit_account select:focus {
             border-color: #007bff;
         }
+
+        select[multiple] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+        }
+
+        select[multiple]:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        select[multiple] option {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+
+        select[multiple] option:hover {
+            background-color: #e9ecef;
+        }
+
+        select[multiple] option:checked {
+            background: linear-gradient(0deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Selected position indicator */
+        .position-indicator {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 2px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Form group styling */
+        .form-group label small {
+            display: block;
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+
+        /* Modal adjustments for multi-select */
+        #editAccountModal .modal-body select[multiple],
+        #add_account_modal select[multiple] {
+            width: 100%;
+            min-height: 120px;
+        }
+
+        /* Improve readability */
+        .form_add_account select[multiple] option,
+        #acc_position option {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Help text styling */
+        .form-text.text-muted {
+            font-size: 0.8rem;
+            color: #6c757d !important;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Icon styling in labels */
+        .form-label i {
+            margin-right: 5px;
+            color: #007bff;
+        }
     </style>
 
 
@@ -435,7 +551,6 @@ if ($conn->connect_error) {
             </div>
 
             <form method="post" class="form_add_account" novalidate>
-                <!-- Hidden field for existing employee ID (used when assigning account) -->
                 <input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">
 
                 <input type="text" name="fname" placeholder="First Name" required>
@@ -447,18 +562,27 @@ if ($conn->connect_error) {
                     title="Password must be 8-64 characters, with uppercase, lowercase, and a number.">
 
                 <?php if ($currentPosition !== "Focal Person"): ?>
-                    <!-- Position Select (visible for Director/TA) -->
-                    <select name="pos" id="position" required>
-                        <option value="" disabled selected>Select Position</option>
-                        <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
-                            <option value="Technical Assistant">Technical Assistant</option>
-                            <option value="Focal Person">Focal Person</option>
-                            <option value="Panel">Panel</option>
-                            <option value="RET Chair">RET Chair</option>
-                        <?php endif; ?>
-                    </select>
+                    <!-- UPDATED: Multiple Position Selection -->
+                    <div class="form-group">
+                        <label class="mb-2">
+                            <i class="fas fa-user-tag"></i> Select Position(s)
+                            <small class="text-muted">(Hold Ctrl/Cmd to select multiple)</small>
+                        </label>
+                        <select name="pos[]" id="position" multiple class="form-control" required
+                            style="min-height: 120px;">
+                            <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
+                                <option value="Technical Assistant">Technical Assistant</option>
+                                <option value="Focal Person">Focal Person</option>
+                                <option value="Panel">Panel</option>
+                                <option value="RET Chair">RET Chair</option>
+                                <option value="Researcher">Researcher</option>
+                            <?php endif; ?>
+                        </select>
+                        <small class="form-text text-muted">
+                            Selected positions will be combined (e.g., "Focal Person, Panel")
+                        </small>
+                    </div>
 
-                    <!-- Department Select (visible for Director/TA) -->
                     <select name="dept" id="department" required>
                         <option value="" disabled selected>Select Department</option>
                         <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
@@ -479,7 +603,6 @@ if ($conn->connect_error) {
                         <?php endif; ?>
                     </select>
 
-                    <!-- Campus Select (visible for Director/TA) -->
                     <select name="campus" id="campus" required>
                         <option value="" disabled selected>Select Campus</option>
                         <?php if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"): ?>
@@ -492,8 +615,7 @@ if ($conn->connect_error) {
                         <?php endif; ?>
                     </select>
                 <?php else: ?>
-                    <!-- Hidden fields for Focal Person -->
-                    <input type="hidden" name="pos" value="Researcher">
+                    <input type="hidden" name="pos[]" value="Researcher">
                     <input type="hidden" name="dept" value="<?= htmlspecialchars($currentDepartment) ?>">
                     <input type="hidden" name="campus" value="<?= htmlspecialchars($currentCampus) ?>">
                 <?php endif; ?>
@@ -556,16 +678,23 @@ if ($conn->connect_error) {
                                 <input type="email" class="form-control" id="acc_email" name="acc_email" required>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Position</label>
-                                <select class="form-select" id="acc_position" name="acc_position" required>
-                                    <option value="" disabled selected>Select Position</option>
-                                    <!-- <option value="Director">Director</option> -->
+                            <!-- UPDATED: Multiple Position Selection -->
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-user-tag"></i> Position(s)
+                                    <small class="text-muted">(Hold Ctrl/Cmd to select multiple)</small>
+                                </label>
+                                <select class="form-select" id="acc_position" name="acc_position[]" multiple required
+                                    style="min-height: 100px;">
                                     <option value="Technical Assistant">Technical Assistant</option>
                                     <option value="Focal Person">Focal Person</option>
                                     <option value="Panel">Panel</option>
                                     <option value="RET Chair">RET Chair</option>
+                                    <option value="Researcher">Researcher</option>
                                 </select>
+                                <small class="form-text text-muted">
+                                    Selected positions will be combined (e.g., "Focal Person, Panel")
+                                </small>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -589,7 +718,7 @@ if ($conn->connect_error) {
                                 </select>
                             </div>
 
-                            <div class="col-md-12 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Campus</label>
                                 <select class="form-select" id="acc_campus" name="acc_campus" required>
                                     <option value="" disabled selected>Select Campus</option>
@@ -631,6 +760,8 @@ if ($conn->connect_error) {
                 const campus = <?= json_encode($currentCampus) ?>;
                 const dept = <?= json_encode($currentDepartment) ?>;
                 // Load filters, table, buttons first
+
+
                 $('#filters').load("./reusableHTML/filters.php", function () {
                     resetFilterFunction(position);
                     restrictDeptAndCampus(position, dept, campus, "#filterDept", "#filterCampus");
@@ -646,6 +777,336 @@ if ($conn->connect_error) {
                 });
             });
         </script>
+
+
+        <!-- CLAUDE LATEST -->
+
+        <script>
+            // Add this script to handle the Edit Account Modal
+            $(document).ready(function () {
+                // Handle Edit Account Modal opening
+                $(document).on('click', '.edit-account-btn', function () {
+                    const accountId = $(this).data('id');
+
+                    // Fetch account details
+                    $.ajax({
+                        url: '../phpFunctions/getAccountDetails.php',
+                        type: 'POST',
+                        data: { id: accountId },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.error
+                                });
+                                return;
+                            }
+
+                            // Fill form fields
+                            $('#acc_id').val(data.id);
+                            $('#acc_username').val(data.username);
+                            $('#acc_email').val(data.email);
+                            $('#acc_fname').val(data.fname);
+                            $('#acc_lname').val(data.lname);
+                            $('#acc_department').val(data.department);
+                            $('#acc_campus').val(data.campus);
+                            $('#acc_password').val(''); // Clear password field
+
+                            // Handle multi-role selection
+                            if (data.position) {
+                                const positions = data.position.split(',').map(p => p.trim());
+                                $('#acc_position').val(positions);
+                            }
+
+                            // Show modal
+                            $('#editAccountModal').modal('show');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to load account details'
+                            });
+                        }
+                    });
+                });
+
+                // Handle Edit Account Form Submission
+                $('#editAccountForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    // Get selected positions and combine them
+                    const selectedPositions = $('#acc_position').val();
+                    const positionString = selectedPositions.join(', ');
+
+                    // Create form data
+                    const formData = new FormData(this);
+                    formData.delete('acc_position[]'); // Remove array
+                    formData.append('acc_position', positionString); // Add as string
+
+                    // Show loading
+                    Swal.fire({
+                        title: 'Updating...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    $.ajax({
+                        url: '../phpFunctions/updateAccount.php',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: response.message,
+                                    timer: 2000
+                                }).then(() => {
+                                    $('#editAccountModal').modal('hide');
+                                    // Reload accounts table
+                                    if ($('#account_toggle').is(':checked')) {
+                                        $('#showEmployeeTable').load('./reusableHTML/accountsTable.php');
+                                    }
+                                });
+                            } else if (response.error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.error
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to update account'
+                            });
+                        }
+                    });
+                });
+
+                $(document).ready(function () {
+
+                    /* ========================================
+                       MULTI-SELECT POSITION HANDLER
+                    ======================================== */
+
+                    // Function to display selected positions as badges
+                    function updatePositionDisplay(selectElement) {
+                        const selectedOptions = Array.from(selectElement.selectedOptions).map(opt => opt.value);
+                        const container = $(selectElement).closest('.form-group, .mb-3');
+
+                        // Remove existing indicator if present
+                        container.find('.selected-positions-display').remove();
+
+                        if (selectedOptions.length > 0) {
+                            const displayHtml = `
+                <div class="selected-positions-display mt-2">
+                    <small class="text-muted d-block mb-1">Selected:</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        ${selectedOptions.map(pos => `
+                            <span class="position-indicator">
+                                <i class="fas fa-check-circle me-1"></i>${pos}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+                            container.append(displayHtml);
+                        }
+                    }
+
+                    // Handle Add Account Modal position selection
+                    $('#position').on('change', function () {
+                        updatePositionDisplay(this);
+                    });
+
+                    // Handle Edit Account Modal position selection
+                    $('#acc_position').on('change', function () {
+                        updatePositionDisplay(this);
+                    });
+
+                    /* ========================================
+                       VALIDATION FOR MULTI-SELECT
+                    ======================================== */
+
+                    // Validate that at least one position is selected
+                    function validatePositionSelection(formId) {
+                        const positionSelect = $(formId).find('select[name="pos[]"], select[name="acc_position[]"]');
+
+                        if (positionSelect.length > 0) {
+                            const selectedPositions = positionSelect.val();
+
+                            if (!selectedPositions || selectedPositions.length === 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Position Required',
+                                    text: 'Please select at least one position',
+                                    confirmButtonColor: '#ffc107'
+                                });
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+
+                    // Add validation to Add Account form
+                    $('.form_add_account').on('submit', function (e) {
+                        const currentPos = '<?= $currentPosition ?>';
+
+                        // Skip validation for Focal Person (they only add Researchers)
+                        if (currentPos !== 'Focal Person') {
+                            if (!validatePositionSelection(this)) {
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+                    });
+
+                    // Add validation to Edit Account form
+                    $('#editAccountForm').on('submit', function (e) {
+                        if (!validatePositionSelection(this)) {
+                            e.preventDefault();
+                            return false;
+                        }
+                    });
+
+                    /* ========================================
+                       KEYBOARD SHORTCUTS FOR MULTI-SELECT
+                    ======================================== */
+
+                    // Add keyboard shortcuts hint
+                    function addKeyboardHint(selectElement) {
+                        const hint = `
+            <div class="keyboard-hint mt-1">
+                <small class="text-muted">
+                    <i class="fas fa-keyboard me-1"></i>
+                    <strong>Tip:</strong> Hold <kbd>Ctrl</kbd> (Windows) or <kbd>⌘ Cmd</kbd> (Mac) to select multiple
+                </small>
+            </div>
+        `;
+
+                        if ($(selectElement).next('.keyboard-hint').length === 0) {
+                            $(selectElement).after(hint);
+                        }
+                    }
+
+                    // Add hints to both modals
+                    $('#position, #acc_position').each(function () {
+                        addKeyboardHint(this);
+                    });
+
+                    /* ========================================
+                       SELECT ALL / DESELECT ALL FUNCTIONALITY
+                    ======================================== */
+
+                    // Add Select All / Deselect All buttons
+                    function addSelectAllButtons(selectElement) {
+                        const container = $(selectElement).closest('.form-group, .mb-3');
+
+                        if (container.find('.select-all-buttons').length === 0) {
+                            const buttonsHtml = `
+                <div class="select-all-buttons mb-2 d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary select-all-btn">
+                        <i class="fas fa-check-double"></i> Select All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary deselect-all-btn">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                </div>
+            `;
+
+                            $(selectElement).before(buttonsHtml);
+                        }
+                    }
+
+                    // Add buttons to position selects
+                    $('#position, #acc_position').each(function () {
+                        addSelectAllButtons(this);
+                    });
+
+                    // Handle Select All button
+                    $(document).on('click', '.select-all-btn', function () {
+                        const select = $(this).closest('.form-group, .mb-3').find('select[multiple]');
+                        select.find('option').prop('selected', true);
+                        select.trigger('change');
+                    });
+
+                    // Handle Deselect All button
+                    $(document).on('click', '.deselect-all-btn', function () {
+                        const select = $(this).closest('.form-group, .mb-3').find('select[multiple]');
+                        select.find('option').prop('selected', false);
+                        select.trigger('change');
+                    });
+
+                    /* ========================================
+                       DISPLAY CURRENT POSITION ON LOAD
+                    ======================================== */
+
+                    // When edit modal opens, show selected positions
+                    $('#editAccountModal').on('shown.bs.modal', function () {
+                        const posSelect = $('#acc_position')[0];
+                        if (posSelect) {
+                            updatePositionDisplay(posSelect);
+                        }
+                    });
+
+                    // When add modal opens, clear display
+                    $('#add_account').on('click', function () {
+                        $('.selected-positions-display').remove();
+                    });
+                });
+
+                // Add some custom styling for kbd tags
+                $('<style>')
+                    .text(`
+                        kbd {
+                            background-color: #f8f9fa;
+                            border: 1px solid #dee2e6;
+                            border-radius: 3px;
+                            padding: 2px 6px;
+                            font-size: 0.875em;
+                            font-family: monospace;
+                            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+                        }
+                        
+                        .keyboard-hint {
+                            margin-top: 5px;
+                        }
+                        
+                        .select-all-buttons {
+                            margin-top: 5px;
+                        }
+                        
+                        .select-all-buttons .btn {
+                            font-size: 0.8rem;
+                            padding: 4px 10px;
+                        }
+                        
+                        .gap-1 {
+                            gap: 0.25rem !important;
+                        }
+                        
+                        .gap-2 {
+                            gap: 0.5rem !important;
+                        }
+                    `)
+                    .appendTo('head');
+            });
+        </script>
+
 
         <script>
             console.log('script.js is loaded');
@@ -860,8 +1321,10 @@ if ($conn->connect_error) {
                     });
                 }
 
+                // CLAUDE LATEST 2
+
                 /* -------------------------------
-                   ADD ACCOUNT MODAL (Assign Button)
+                 ADD ACCOUNT MODAL (Assign Button with Ctrl Bypass)
                 -------------------------------- */
                 const addAccountModal = document.getElementById('add_account_modal');
 
@@ -869,24 +1332,24 @@ if ($conn->connect_error) {
                 $(document).on('click', '.assignBtn', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
+
                     const row = $(this).closest('tr');
+                    const ctrlPressed = e.ctrlKey || e.metaKey; // Ctrl on Windows/Linux, Cmd on Mac
 
                     // Get employee data from the row
                     const employeeId = $(this).data('id');
                     const fullName = row.find('.empName').text().trim();
                     const email = row.find('.empEmail').text().trim();
 
-                    // Find department and campus - they're in different positions depending on filters
+                    // Find department and campus
                     let department = '';
                     let campus = '';
 
-                    // Try to get campus (usually 2nd column after name)
                     const campusCell = row.find('td').eq(2);
                     if (campusCell.length && !campusCell.hasClass('empEmail')) {
                         campus = campusCell.text().trim();
                     }
 
-                    // Try to get department (usually 3rd column after name)
                     const deptCell = row.find('td').eq(3);
                     if (deptCell.length) {
                         department = deptCell.text().trim();
@@ -894,7 +1357,12 @@ if ($conn->connect_error) {
 
                     // Validate email exists
                     if (!email || email === '') {
-                        alert('⚠️ No email found for this employee!');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Email Found',
+                            text: 'This employee does not have an email address!',
+                            confirmButtonColor: '#ffc107'
+                        });
                         return;
                     }
 
@@ -911,79 +1379,131 @@ if ($conn->connect_error) {
                         dataType: 'json',
                         success: function (resp) {
                             if (resp.exists) {
-                                if (resp.position === "Director") {
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: 'Already Have Position',
-                                        text: `This employee is the ${resp.position}!`,
-                                        confirmButtonColor: '#ffc107'
-                                    });
+                                // UPDATED: Check if Ctrl was pressed
+                                if (ctrlPressed) {
+                                    // Ctrl+Click: Bypass warning and open modal for multi-role
+                                    openAssignModal(employeeId, fname, lname, email, department, campus, resp.position, true);
                                 } else {
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: 'Already Have Position',
-                                        text: `This employee's position is ${resp.position}`,
-                                        confirmButtonColor: '#ffc107'
-                                    });
+                                    // Normal click: Show warning with instructions
+                                    if (resp.position === "Director") {
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: 'Already Has Position',
+                                            html: `
+                                    <p>This employee is the <strong>${resp.position}</strong>!</p>
+                                    <hr>
+                                    <p class="text-muted" style="font-size: 0.9rem;">
+                                        <i class="fas fa-info-circle"></i> 
+                                        <strong>Tip:</strong> Hold <kbd>Ctrl</kbd> (or <kbd>⌘ Cmd</kbd> on Mac) 
+                                        and click <strong>Assign</strong> to add additional roles.
+                                    </p>
+                                `,
+                                            confirmButtonColor: '#ffc107'
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'info',
+                                            title: 'Already Has Position',
+                                            html: `
+                                    <p>This employee's current position is <strong>${resp.position}</strong></p>
+                                    <hr>
+                                    <p class="text-muted" style="font-size: 0.9rem;">
+                                        <i class="fas fa-info-circle"></i> 
+                                        <strong>Tip:</strong> Hold <kbd>Ctrl</kbd> (or <kbd>⌘ Cmd</kbd> on Mac) 
+                                        and click <strong>Assign</strong> to add additional roles.
+                                    </p>
+                                `,
+                                            confirmButtonColor: '#3085d6',
+                                            confirmButtonText: 'Got it'
+                                        });
+                                    }
                                 }
-
-                                return;
-
-                                // alert('⚠️ This employee already has an account!\nPosition: ' + resp.position);
-                                // return;
-                            }
-
-                            // Account doesn't exist - open modal and fill fields
-                            // CLOSE any other open modals first
-                            $('#modal').removeClass('open'); // Close personal info modal if open
-                            $('.modal').modal('hide'); // Close any Bootstrap modals
-
-                            $('#add_account_modal').css('display', 'flex');
-                            document.body.style.overflow = 'hidden';
-
-                            // Clear form first
-                            $('form.form_add_account')[0].reset();
-
-                            // Fill form with employee data
-                            $('input[name="fname"]').val(fname);
-                            $('input[name="lname"]').val(lname);
-                            $('input[name="email"]').val(email).prop('readonly', true);
-
-                            // Set password same as email
-                            $('input[name="pass"]').val(email);
-
-                            // Set department and campus (if selects exist)
-                            if ($('select[name="dept"]').length > 0) {
-                                $('select[name="dept"]').val(department);
-                            }
-                            if ($('select[name="campus"]').length > 0) {
-                                $('select[name="campus"]').val(campus);
-                            }
-
-                            // Store employee_id in hidden field for reference
-                            if ($('#existing_employee_id').length === 0) {
-                                $('form.form_add_account').prepend(
-                                    '<input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">'
-                                );
-                            }
-                            $('#existing_employee_id').val(employeeId);
-
-                            // Add informational note
-                            if ($('#assign-note').length === 0) {
-                                $('form.form_add_account').prepend(
-                                    '<div id="assign-note" class="alert alert-info mb-3" style="font-size: 0.9rem;">' +
-                                    '<i class="fas fa-info-circle"></i> Creating account for existing employee<br>' +
-                                    '<small>Default password is set to the email address</small>' +
-                                    '</div>'
-                                );
+                            } else {
+                                // Account doesn't exist - open modal normally
+                                openAssignModal(employeeId, fname, lname, email, department, campus, null, false);
                             }
                         },
                         error: function (xhr, status, error) {
                             console.error('AJAX Error:', error);
-                            alert('❌ Failed to check account status. Please try again.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to check account status. Please try again.',
+                                confirmButtonColor: '#dc3545'
+                            });
                         }
                     });
                 });
+
+                // Function to open the assign modal
+                function openAssignModal(employeeId, fname, lname, email, department, campus, existingPosition, isMultiRole) {
+                    // Close any other open modals first
+                    $('#modal').removeClass('open');
+                    $('.modal').modal('hide');
+
+                    $('#add_account_modal').css('display', 'flex');
+                    document.body.style.overflow = 'hidden';
+
+                    // Clear form first
+                    $('form.form_add_account')[0].reset();
+
+                    // Fill form with employee data
+                    $('input[name="fname"]').val(fname);
+                    $('input[name="lname"]').val(lname);
+                    $('input[name="email"]').val(email).prop('readonly', true);
+
+                    // Set password same as email
+                    $('input[name="pass"]').val(email);
+
+                    // Set department and campus
+                    if ($('select[name="dept"]').length > 0) {
+                        $('select[name="dept"]').val(department);
+                    }
+                    if ($('select[name="campus"]').length > 0) {
+                        $('select[name="campus"]').val(campus);
+                    }
+
+                    // Store employee_id in hidden field
+                    if ($('#existing_employee_id').length === 0) {
+                        $('form.form_add_account').prepend(
+                            '<input type="hidden" id="existing_employee_id" name="existing_employee_id" value="">'
+                        );
+                    }
+                    $('#existing_employee_id').val(employeeId);
+
+                    // UPDATED: Show different messages based on mode
+                    if (isMultiRole && existingPosition) {
+                        // Multi-role mode: Pre-select existing positions
+                        if ($('#position').length > 0 && $('#position').prop('multiple')) {
+                            const positions = existingPosition.split(',').map(p => p.trim());
+                            $('#position').val(positions);
+
+                            // Trigger change event to show selected positions
+                            $('#position').trigger('change');
+                        }
+
+                        // Show multi-role note
+                        if ($('#assign-note').length === 0) {
+                            $('form.form_add_account').prepend(
+                                `<div id="assign-note" class="alert alert-success mb-3" style="font-size: 0.9rem;">
+                        <i class="fas fa-user-plus"></i> <strong>Adding Additional Role(s)</strong><br>
+                        <small>Current position(s): <strong>${existingPosition}</strong></small><br>
+                        <small class="text-muted">Select additional positions or modify existing ones.</small>
+                    </div>`
+                            );
+                        }
+                    } else {
+                        // Normal mode: Creating new account
+                        if ($('#assign-note').length === 0) {
+                            $('form.form_add_account').prepend(
+                                `<div id="assign-note" class="alert alert-info mb-3" style="font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> Creating account for existing employee<br>
+                        <small>Default password is set to the email address</small>
+                    </div>`
+                            );
+                        }
+                    }
+                }
 
                 // Close add-account modal and cleanup
                 $('#close_add_account').on('click', function () {
@@ -1006,12 +1526,85 @@ if ($conn->connect_error) {
                 if (addAccountModal) {
                     addAccountModal.addEventListener('click', function (e) {
                         if (e.target === addAccountModal) {
-                            // Trigger close button click to cleanup
                             $('#close_add_account').click();
                         }
                     });
                 }
+
+                /* -------------------------------
+                   VISUAL INDICATOR FOR CTRL+CLICK
+                -------------------------------- */
+
+                // Add hover tooltip to Assign buttons
+                $(document).on('mouseenter', '.assignBtn', function () {
+                    if (!$(this).attr('title')) {
+                        $(this).attr('title', 'Click to assign position | Ctrl+Click to add multiple roles');
+                    }
+                });
+
+                // Add visual feedback when Ctrl is pressed
+                let ctrlHintShown = false;
+
+                $(document).on('keydown', function (e) {
+                    if ((e.ctrlKey || e.metaKey) && !ctrlHintShown) {
+                        // Show temporary hint when Ctrl is first pressed
+                        $('.assignBtn').addClass('ctrl-active');
+                        ctrlHintShown = true;
+                    }
+                });
+
+                $(document).on('keyup', function (e) {
+                    if (!e.ctrlKey && !e.metaKey) {
+                        $('.assignBtn').removeClass('ctrl-active');
+                        ctrlHintShown = false;
+                    }
+                });
             });
+
+            // Add CSS for visual feedback
+            $('<style>')
+                .text(`
+        .assignBtn.ctrl-active {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+            transform: scale(1.05);
+            transition: all 0.2s ease;
+        }
+        
+        .assignBtn.ctrl-active::after {
+            content: " (Multi-Role Mode)";
+            font-size: 0.8em;
+            font-weight: normal;
+        }
+        
+        kbd {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 0.875em;
+            font-family: monospace;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        
+        .alert hr {
+            margin: 10px 0;
+            opacity: 0.3;
+        }
+        
+        .assignBtn {
+            transition: all 0.2s ease;
+        }
+        
+        .assignBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    `)
+                .appendTo('head');
 
         </script>
 
