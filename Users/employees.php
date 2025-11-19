@@ -911,8 +911,26 @@ if ($conn->connect_error) {
                         dataType: 'json',
                         success: function (resp) {
                             if (resp.exists) {
-                                alert('⚠️ This employee already has an account!\nPosition: ' + resp.position);
+                                if (resp.position === "Director") {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Already Have Position',
+                                        text: `This employee is the ${resp.position}!`,
+                                        confirmButtonColor: '#ffc107'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Already Have Position',
+                                        text: `This employee's position is ${resp.position}`,
+                                        confirmButtonColor: '#ffc107'
+                                    });
+                                }
+
                                 return;
+
+                                // alert('⚠️ This employee already has an account!\nPosition: ' + resp.position);
+                                // return;
                             }
 
                             // Account doesn't exist - open modal and fill fields
@@ -1039,7 +1057,7 @@ if ($conn->connect_error) {
                     const submitBtn = $('#saveInfo');
                     const originalBtnText = submitBtn.html();
                     submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
-             
+
                     // Send AJAX request
                     $.ajax({
                         url: '../phpFunctions/insertEmployee.php',
