@@ -1,5 +1,5 @@
 <?php
-require_once "gad_portal.php";
+require_once "./gad_portal.php";
 
 if (isset($_POST['reportType'])) {
     $reportType = $_POST['reportType'];

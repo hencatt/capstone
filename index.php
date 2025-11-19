@@ -33,9 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verifyResponse = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$recaptchaResponse");
         $responseData = json_decode($verifyResponse);
 
-        if (!$responseData->success) {
-            echo '<div class="alert alert-danger">Please complete the reCAPTCHA.</div>';
-        } else {
+        // if (!$responseData->success) {
+        //     echo '<div class="alert alert-danger">Please complete the reCAPTCHA.</div>';
+        // } else {
 
             // Logic for login
             $input = trim($_POST['email']);
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
             }
             // } ## else ennd
-        }
+        // }
     }
 }
 ?>
