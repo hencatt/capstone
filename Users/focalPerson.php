@@ -49,32 +49,32 @@ deleteItemInventory("deleteItem", $currentUser);
 createEmployeeFocalPerson("add_employee", $currentUser);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
-    $fname        = $_POST['inputFname'] ?? '';
-    $mname        = $_POST['inputMname'] ?? '';
-    $lname        = $_POST['inputLname'] ?? '';
-    $email        = $_POST['inputEmail'] ?? '';
-    $contact_no   = $_POST['inputContact'] ?? '';
-    $department   = $_POST['inputDepartment'] ?? '';
-    $campus       = $_POST['inputCampus'] ?? '';
-    $status       = 'Active';
+    $fname = $_POST['inputFname'] ?? '';
+    $mname = $_POST['inputMname'] ?? '';
+    $lname = $_POST['inputLname'] ?? '';
+    $email = $_POST['inputEmail'] ?? '';
+    $contact_no = $_POST['inputContact'] ?? '';
+    $department = $_POST['inputDepartment'] ?? '';
+    $campus = $_POST['inputCampus'] ?? '';
+    $status = 'Active';
 
-    $street   = $_POST['inputStAddress'] ?? '';
-    $city     = $_POST['inputCity'] ?? '';
+    $street = $_POST['inputStAddress'] ?? '';
+    $city = $_POST['inputCity'] ?? '';
     $province = $_POST['inputProvince'] ?? '';
-    $address  = trim($street . ', ' . $city . ', ' . $province, ', ');
+    $address = trim($street . ', ' . $city . ', ' . $province, ', ');
 
-    $birthdate      = $_POST['inputBirthdate'] ?? '';
+    $birthdate = $_POST['inputBirthdate'] ?? '';
     $marital_status = $_POST['inputMaritalStatus'] ?? '';
-    $sex            = $_POST['inputSex'] ?? '';
+    $sex = $_POST['inputSex'] ?? '';
 
     $gender = (isset($_POST['inputGender']) && $_POST['inputGender'] === 'LGBTQIA+')
         ? ($_POST['otherGender'] ?? '')
         : ($_POST['inputGender'] ?? '');
 
-    $size            = $_POST['inputSize'] ?? '';
-    $income          = $_POST['inputIncome'] ?? '';
+    $size = $_POST['inputSize'] ?? '';
+    $income = $_POST['inputIncome'] ?? '';
     $priority_status = $_POST['inputPriority'] ?? '';
-    $childrenNum     = isset($_POST['inputChildrenNum']) ? (int)$_POST['inputChildrenNum'] : 0;
+    $childrenNum = isset($_POST['inputChildrenNum']) ? (int) $_POST['inputChildrenNum'] : 0;
     $concern = !empty($_POST['inputConcern']) ? $_POST['inputConcern'] : 'N/A';
 
     if (empty($email)) {
@@ -255,13 +255,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                                     </h4> -->
                         </div>
                     </div>
+
                     <div class="row tableOverview">
-                        <div class="col">
-                            <!-- inventory overview -->
-                            <h1>Inventory</h1>
+                        <div class="row">
+                            
+                            <div class="col">
+                                <!-- inventory overview -->
+                                <h1>Inventory</h1>
+                            </div>
                         </div>
-                        <div class="col d-flex justify-content-end">
-                            <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
+                        <div class="row mt-4">
+                            <div class="col-3 d-flex align-items-center justify-content-start gap-1">
+                                <input type="text" placeholder="Search" name="searchBar" id="searchBar"
+                                    class="form-control">
+                                <button type="button" class="btn btn-secondary" name="searchBtn" id="searchBtn"
+                                    style="background-color: #0a7afa;"> <span class="material-symbols-outlined">
+                                        search
+                                    </span></button>
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
+                            </div>
                         </div>
 
                         <!-- <div class="col d-flex align-items-center justify-content-end">
@@ -369,17 +383,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
     crossorigin="anonymous"></script>
+
+<script>
+    // Add this to your existing script section in inventory.php
+    // Add this to your existing script section in inventory.php
+    $(document).ready(function () {
+        const position = <?= json_encode($currentPosition) ?>;
+        const campus = <?= json_encode($currentCampus) ?>;
+        const dept = <?= json_encode($currentDepartment) ?>;
+
+        const searchBtn = $("#searchBtn");
+        const searchBar = $("#searchBar");
+        const inventoryButtonRow = $("#inventoryButtonsRow");
+
+        if (position === "Technical Assistant") {
+            $('#inventoryButtons').load("./reusableHTML/inventoryButtons.php", function () {
+                $("#viewMoreBtn").hide();
+            });
+        } else {
+            inventoryButtonRow.hide();
+        }
+
+        // Search function
+        function searchInventory() {
+            const searchTerm = searchBar.val().trim();
+
+            $.ajax({
+                url: './searchInventory.php',
+                type: 'GET',
+                data: { search: searchTerm },
+                beforeSend: function () {
+                    $('#inventoryTable').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+                success: function (response) {
+                    $('#inventoryTable').html(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Search error:', error);
+                    $('#inventoryTable').html('<div class="alert alert-danger">Error loading results. Please try again.</div>');
+                }
+            });
+        }
+
+        // Trigger search on button click
+        searchBtn.on("click", function () {
+            searchInventory();
+        });
+
+        // Optional: Trigger search on Enter key press
+        searchBar.on("keypress", function (e) {
+            if (e.which === 13) { // Enter key
+                e.preventDefault();
+                searchInventory();
+            }
+        });
+
+        // Optional: Clear search and reload all items
+        searchBar.on("input", function () {
+            if ($(this).val().trim() === "") {
+                searchInventory(); // Reload all items when search is cleared
+            }
+        });
+    });
+</script>
+
+
 <!-- SAVE FILTER FUNCTION -->
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         const position = <?= json_encode($currentPosition) ?>;
         const campus = <?= json_encode($currentCampus) ?>;
         const dept = <?= json_encode($currentDepartment) ?>;
 
         // $('#inventoryTable').load("./reusableHTML/inventoryTable.php");
         $('#inventoryFilters').load("./reusableHTML/inventoryFilterButton.php");
-        $('#filters').load("reusableHTML/filters.php", function() {
-            $('#filterButtons').load("./reusableHTML/filtersButton.php", function() {
+        $('#filters').load("reusableHTML/filters.php", function () {
+            $('#filterButtons').load("./reusableHTML/filtersButton.php", function () {
                 $('#department').prop('disabled', true);
                 $('#campus').prop('disabled', true);
                 filterFunction("dashboard", "#searchBar", "#checkboxShowSummary", "#filterCampus", "#filterDept", "#filterSize", "#filterGender", position, "#employeeTable", "no", "filter");
@@ -392,26 +471,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Modal logic
         const addEmployeeBtn = document.getElementById('addEmployeeBtn');
         const modal = document.getElementById('modal');
         const closeBtns = modal.querySelectorAll('.close-btn, #cancelInfo');
 
         if (addEmployeeBtn && modal) {
-            addEmployeeBtn.addEventListener('click', function() {
+            addEmployeeBtn.addEventListener('click', function () {
                 modal.classList.add('open');
             });
         }
 
-        closeBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        closeBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 modal.classList.remove('open');
 
             });
         });
 
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 modal.classList.remove('open');
 
@@ -419,11 +498,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
         });
 
         // jQuery logic for gender and child options
-        $(function() {
+        $(function () {
             const genderSelect = $("#inputGender");
             const otherGender = $("#otherGender");
 
-            genderSelect.on("change", function() {
+            genderSelect.on("change", function () {
                 if ($(this).val() === "LGBTQIA+") {
                     otherGender.show().attr("required", true);
                 } else {
@@ -445,7 +524,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
             }
 
             toggleChildOptions();
-            $('input[name="inputChildren"]').on('change', function() {
+            $('input[name="inputChildren"]').on('change', function () {
                 toggleChildOptions();
             });
         });
