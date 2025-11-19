@@ -141,6 +141,7 @@ if (isset($_POST['comment_send'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssi", $comment, $currentUser, $currentDate, $currentResearch);
     if ($stmt->execute()) {
+        insertLog($currentUser, "Comment", date('Y-m-d H:i:s'));
         alertSuccess("Success", "Your comment was posted");
     }
     ;
@@ -157,6 +158,7 @@ if (isset($_POST['confirmBtnApprove'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
+        insertLog($currentUser, "Accepted"+$currentResearch+" (Research)", date('Y-m-d H:i:s'));
         alertSuccess("Voted", "You approved " . $researchTitle);
     }
     ;
@@ -176,9 +178,9 @@ if (isset($_POST['confirmBtnReject'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
+        insertLog($currentUser, "Rejected"+$currentResearch+" (Research)", date('Y-m-d H:i:s'));
         alertSuccess("Voted", "You rejected " . $researchTitle);
-    }
-    ;
+    };
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);

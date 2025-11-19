@@ -13,10 +13,14 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $location = $_POST['currentPage'];
     $search = null;
 
-    if (isset($_POST['searchQuery'], )) {
+    // Pagination variables
+    $currentPageNum = isset($_POST['pageNumber']) ? (int)$_POST['pageNumber'] : 1;
+    $itemsPerPage = 10;
+    $offset = ($currentPageNum - 1) * $itemsPerPage;
+
+    if (isset($_POST['searchQuery'])) {
         $search = $_POST['searchQuery'];
     }
-
 
     $con = newCon();
 
@@ -28,7 +32,6 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $noFilters = ($campus === "None" && $dept === "None" && $size === "None" && $gender === "None");
 
     // Dynamically build SELECT fields
-    // $sql = "SELECT CONCAT(ei.fname, ' ', ei.m_initial, '. ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
     $sql = "SELECT CONCAT(ei.fname, ' ', ei.lname) AS full_name, ei.id AS emp_id, et.email";
 
     if ($noFilters) {
@@ -58,7 +61,6 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     )";
     }
 
-
     // Build WHERE conditions for specific filters (not Show All)
     if ($campus !== "None" && $campus !== "Show All") {
         $campus = $con->real_escape_string($campus);
@@ -77,13 +79,24 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
         $sql .= " AND ei.gender = '$gender'";
     }
 
+    // Count total records for pagination (only for employees page, not generate report)
+    $countSql = "SELECT COUNT(*) as total " . substr($sql, strpos($sql, 'FROM'));
+    $countResult = $con->query($countSql);
+    $totalRecords = $countResult->fetch_assoc()['total'];
+    $totalPages = ceil($totalRecords / $itemsPerPage);
+
+    // Add pagination ONLY if NOT on generate report page
+    if ($location !== "generate") {
+        $sql .= " LIMIT $itemsPerPage OFFSET $offset";
+    }
+
     $result = $con->query($sql);
 
     // Gender count query
     $genderCountSql = "SELECT ei.gender, COUNT(*) as count
                        FROM employee_info ei
                        INNER JOIN employee_tbl et ON ei.id = et.id
-                       WHERE 1=1";
+                       WHERE et.status = 'Active'";
 
     // Apply the same filters as the main query
     if ($campus !== "None" && $campus !== "Show All") {
@@ -106,7 +119,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     $sizeCountSql = "SELECT ei.size, COUNT(*) as count
                      FROM employee_info ei
                      INNER JOIN employee_tbl et ON ei.id = et.id
-                     WHERE 1=1";
+                     WHERE et.status = 'Active'";
 
     // Apply the same filters as the main query
     if ($campus !== "None" && $campus !== "Show All") {
@@ -179,10 +192,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
     }
 
     if ($generate !== "report" && $location !== "dashboard") {
-        // ==================================
-        // ADD EXTRA HEADER HERE
         echo '<th>Actions</th>';
-        // ==================================
     }
 
     echo '</tr></thead><tbody id="employeeTableBody">';
@@ -196,7 +206,6 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
             if ($noFilters) {
                 echo '<td>' . htmlspecialchars($row['campus']) . '</td>';
                 echo '<td>' . htmlspecialchars($row['department']) . '</td>';
-                // echo '<td class="empEmail" style="display: none;">' . htmlspecialchars($row['email'])  . '</td>';
                 if ($generate === "report" && $position === "Focal Person") {
                     echo '<td></td>';
                 }
@@ -214,10 +223,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                 echo '<td></td>';
             }
 
-
             if ($generate !== "report" && $location !== "dashboard") {
-                // ==================================
-                // ADD EXTRA BUTTONS / MORE HERE
                 $idAttr = htmlspecialchars($row['emp_id']);
                 echo '<td>
                     <button type="button" class="btn btn-outline-primary btn-sm view-btn me-1"
@@ -245,7 +251,6 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                     </button>
 
                 </td>';
-
 
                 echo file_get_contents(__DIR__ . '/../Users/reusableHTML/viewEmployeeModal.php');
 
@@ -296,7 +301,6 @@ $(document).off('click', '.delete-btn').on('click', '.delete-btn', function() {
     $.post('../phpFunctions/deleteEmployee.php', { id: id }, function(resp) {
         if (resp && resp.success) {
             alert(resp.message);
-            // Instead of reloading, remove the row:
             $(`button.delete-btn[data-id='\${id}']`).closest('tr').fadeOut(300, function(){ $(this).remove(); });
         } else {
             alert(resp && resp.error ? resp.error : 'Delete failed');
@@ -307,16 +311,131 @@ $(document).off('click', '.delete-btn').on('click', '.delete-btn', function() {
 JS;
             }
 
-
-
             echo '</tr>';
         }
     } else {
-        echo '<tr><td colspan="6">No matching records found</td></tr>
-        ';
+        $colspan = $noFilters ? 6 : 3;
+        echo '<tr><td colspan="' . $colspan . '">No matching records found</td></tr>';
     }
 
     echo '</tbody></table>';
+
+    // Add pagination controls ONLY if NOT on generate report page
+    if ($location !== "generate" && $totalPages > 1) {
+        echo '<div class="row mt-3">';
+        echo '<div class="col d-flex justify-content-center align-items-center gap-2">';
+        echo '<nav aria-label="Employee table pagination">';
+        echo '<ul class="pagination mb-0">';
+        
+        // Previous button
+        if ($currentPageNum > 1) {
+            echo '<li class="page-item">';
+            echo '<button class="page-link pagination-btn" data-page="' . ($currentPageNum - 1) . '">Previous</button>';
+            echo '</li>';
+        } else {
+            echo '<li class="page-item disabled">';
+            echo '<span class="page-link">Previous</span>';
+            echo '</li>';
+        }
+        
+        // Page numbers
+        $startPage = max(1, $currentPageNum - 2);
+        $endPage = min($totalPages, $currentPageNum + 2);
+        
+        if ($startPage > 1) {
+            echo '<li class="page-item">';
+            echo '<button class="page-link pagination-btn" data-page="1">1</button>';
+            echo '</li>';
+            if ($startPage > 2) {
+                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+        }
+        
+        for ($i = $startPage; $i <= $endPage; $i++) {
+            if ($i == $currentPageNum) {
+                echo '<li class="page-item active">';
+                echo '<span class="page-link">' . $i . '</span>';
+                echo '</li>';
+            } else {
+                echo '<li class="page-item">';
+                echo '<button class="page-link pagination-btn" data-page="' . $i . '">' . $i . '</button>';
+                echo '</li>';
+            }
+        }
+        
+        if ($endPage < $totalPages) {
+            if ($endPage < $totalPages - 1) {
+                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+            echo '<li class="page-item">';
+            echo '<button class="page-link pagination-btn" data-page="' . $totalPages . '">' . $totalPages . '</button>';
+            echo '</li>';
+        }
+        
+        // Next button
+        if ($currentPageNum < $totalPages) {
+            echo '<li class="page-item">';
+            echo '<button class="page-link pagination-btn" data-page="' . ($currentPageNum + 1) . '">Next</button>';
+            echo '</li>';
+        } else {
+            echo '<li class="page-item disabled">';
+            echo '<span class="page-link">Next</span>';
+            echo '</li>';
+        }
+        
+        echo '</ul>';
+        echo '</nav>';
+        echo '<div class="ms-3">';
+        echo '<span class="text-muted">Page ' . $currentPageNum . ' of ' . $totalPages . ' (' . $totalRecords . ' total records)</span>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+        
+        // Add JavaScript for pagination
+        echo <<<PAGINATION_JS
+<script>
+$(document).off('click', '.pagination-btn').on('click', '.pagination-btn', function() {
+    const pageNumber = $(this).data('page');
+    console.log('📄 Loading page:', pageNumber);
+    
+    // Get current filter values
+    const campusFilter = $('#filterCampus').val() || 'None';
+    const deptFilter = $('#filterDept').val() || 'None';
+    const sizeFilter = $('#filterSize').val() || 'None';
+    const genderFilter = $('#filterGender').val() || 'None';
+    const searchQuery = $('#searchBar').val() || '';
+    const showSummary = $('#checkboxShowSummary').is(':checked') ? 'yes' : 'no';
+    
+    // Call the filter function with pagination
+    $.ajax({
+        url: '../phpFunctions/filterFunction.php',
+        type: 'POST',
+        data: {
+            currentPage: 'employee',
+            campusFilter: campusFilter,
+            deptFilter: deptFilter,
+            sizeFilter: sizeFilter,
+            genderFilter: genderFilter,
+            showSummary: showSummary,
+            showReceipt: 'no',
+            whatGenerate: 'filter',
+            currentPosition: '{$position}',
+            searchQuery: searchQuery,
+            pageNumber: pageNumber
+        },
+        success: function(response) {
+            $('#showEmployeeTable').html(response);
+            console.log('✅ Page loaded successfully');
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Pagination error:', error);
+            alert('Failed to load page. Please try again.');
+        }
+    });
+});
+</script>
+PAGINATION_JS;
+    }
 
     // Display counts in a table
     if ($summary === "yes") {
@@ -329,7 +448,7 @@ JS;
         echo '<table class="table table-bordered table-hover table-sm">';
         echo '<thead><tr><th colspan="2">Summary</th></tr></thead>';
         echo '<tbody>';
-        echo '<tr><td>Total Rows</td><td>' . ($result ? $result->num_rows : 0) . '</td></tr>';
+        echo '<tr><td>Total Rows</td><td>' . $totalRecords . '</td></tr>';
         echo '</tbody>';
         echo '</table>
     ';
@@ -390,3 +509,4 @@ JS;
 
     $con->close();
 }
+?>

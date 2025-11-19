@@ -203,7 +203,7 @@ function generateReportFilter(
       url: "../phpFunctions/filterFunction.php",
       method: "POST",
       data: {
-        currentPage: "reportPage",
+        currentPage: "generate",
         deptFilter: deptFilter,
         campusFilter: campusFilter,
         sizeFilter: sizeFilter,
