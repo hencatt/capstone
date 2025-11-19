@@ -555,7 +555,7 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
 
 
     // Director and TechnicalAssistant Sidebar
-    if ($role === "Director" || $role === "Technical Assistant") {
+    if ($role === "Director") {
         echo $sidebar['logo'];
         echo $sidebar['wrapperTop'];
 
@@ -568,6 +568,29 @@ function sidebar($active, $role, $currentPage = null, $subPage = null)
         echo $sidebar['inventory'];
         echo $sidebar['events'];
         echo $sidebar['logs'];
+
+        echo $sidebar['category.research'];
+        echo $sidebar['researchView'];
+        echo $sidebar['researchGallery'];
+
+        echo $sidebar['category.settings'];
+        echo $sidebar['report'];
+        echo $sidebar['logout'];
+        echo $sidebar['wrapperBottom'];
+    }
+
+    if ($role === "Technical Assistant") {
+        echo $sidebar['logo'];
+        echo $sidebar['wrapperTop'];
+
+        echo $sidebar['category.home'];
+        echo $sidebar['dashboard'];
+
+        echo $sidebar['category.general'];
+        echo $sidebar['announcement'];
+        echo $sidebar['employees'];
+        echo $sidebar['inventory'];
+        echo $sidebar['events'];
 
         echo $sidebar['category.research'];
         echo $sidebar['researchView'];
