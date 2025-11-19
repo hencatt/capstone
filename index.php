@@ -33,75 +33,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verifyResponse = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$recaptchaResponse");
         $responseData = json_decode($verifyResponse);
 
-        // if (!$responseData->success) {
-        //     echo '<div class="alert alert-danger">Please complete the reCAPTCHA.</div>';
-        // } else { ## else start
+        if (!$responseData->success) {
+            echo '<div class="alert alert-danger">Please complete the reCAPTCHA.</div>';
+        } else {
 
-        // Logic for login
-        $input = trim($_POST['email']);
-        $password = trim($_POST['pass']);
+            // Logic for login
+            $input = trim($_POST['email']);
+            $password = trim($_POST['pass']);
 
-        $select = mysqli_query($con, "SELECT * FROM accounts_tbl WHERE email = '$input'");
-        if ($select && mysqli_num_rows($select) > 0) {
-            $user = mysqli_fetch_assoc($select);
-            $hashedPassword = $user['pass'];
+            $select = mysqli_query($con, "SELECT * FROM accounts_tbl WHERE email = '$input'");
+            if ($select && mysqli_num_rows($select) > 0) {
+                $user = mysqli_fetch_assoc($select);
+                $hashedPassword = $user['pass'];
 
-            if (password_verify($password, $hashedPassword)) {
-                session_start();
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_position'] = $user['position'];
-                $_SESSION['user_fname'] = $user['fname'];
-                $_SESSION['user_lname'] = $user['lname'];
-                $_SESSION['fullname'] = $_SESSION['user_fname'] . " " . $_SESSION['user_lname'];
+                if (password_verify($password, $hashedPassword)) {
+                    session_start();
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_position'] = $user['position'];
+                    $_SESSION['user_fname'] = $user['fname'];
+                    $_SESSION['user_lname'] = $user['lname'];
+                    $_SESSION['fullname'] = $_SESSION['user_fname'] . " " . $_SESSION['user_lname'];
 
-                // Fetch department and campus
-                $_SESSION['user_department'] = $user['department'];
-                $_SESSION['user_campus'] = $user['campus'];
+                    // Fetch department and campus
+                    $_SESSION['user_department'] = $user['department'];
+                    $_SESSION['user_campus'] = $user['campus'];
 
-                // Log user login
-                insertLog($_SESSION['fullname'], "User Login", date('Y-m-d H:i:s'));
+                    // Log user login
+                    insertLog($_SESSION['fullname'], "User Login", date('Y-m-d H:i:s'));
 
-                // Redirect based on user position
-                switch ($_SESSION['user_position']) {
-                    case "Director":
-                        header("Location: ./Users/director.php");
-                        break;
-                    case "Focal Person":
-                        header("Location: ./Users/focalPerson.php");
-                        break;
-                    case "Technical Assistant":
-                        header("Location: ./Users/TA.php");
-                        break;
-                    case "Researcher":
-                        header("Location: ./Users/researchView.php");
-                        break;
-                    case "RET Chair":
-                        header("Location: ./Users/events.php");
-                        break;
-                    case "Panel":
-                        header("Location: ./Users/researchApproval.php");
-                        break;
-                    default:
-                        echo "Invalid Position";
-                        break;
+                    // Redirect based on user position
+                    switch ($_SESSION['user_position']) {
+                        case "Director":
+                            header("Location: ./Users/director.php");
+                            break;
+                        case "Focal Person":
+                            header("Location: ./Users/focalPerson.php");
+                            break;
+                        case "Technical Assistant":
+                            header("Location: ./Users/TA.php");
+                            break;
+                        case "Researcher":
+                            header("Location: ./Users/researchView.php");
+                            break;
+                        case "RET Chair":
+                            header("Location: ./Users/events.php");
+                            break;
+                        case "Panel":
+                            header("Location: ./Users/researchApproval.php");
+                            break;
+                        default:
+                            echo "Invalid Position";
+                            break;
+                    }
+                } else {
+                    echo '<div class="alert alert-danger">Invalid password.</div>';
+                    // Log the failed attempt
+                    $insertQuery = "INSERT INTO login_attempts (ip_add, attempt_time) VALUES (?, ?)";
+                    $stmt = $con->prepare($insertQuery);
+                    $stmt->bind_param("ss", $ipAddress, $currentTime);
+                    $stmt->execute();
                 }
             } else {
-                echo '<div class="alert alert-danger">Invalid password.</div>';
+                echo '<div class="alert alert-danger">Invalid email</div>';
                 // Log the failed attempt
                 $insertQuery = "INSERT INTO login_attempts (ip_add, attempt_time) VALUES (?, ?)";
                 $stmt = $con->prepare($insertQuery);
                 $stmt->bind_param("ss", $ipAddress, $currentTime);
                 $stmt->execute();
             }
-        } else {
-            echo '<div class="alert alert-danger">Invalid email</div>';
-            // Log the failed attempt
-            $insertQuery = "INSERT INTO login_attempts (ip_add, attempt_time) VALUES (?, ?)";
-            $stmt = $con->prepare($insertQuery);
-            $stmt->bind_param("ss", $ipAddress, $currentTime);
-            $stmt->execute();
+            // } ## else ennd
         }
-        // } ## else ennd
     }
 }
 ?>
