@@ -78,24 +78,24 @@ if (isset($_POST['btnGeneratePDF'])) {
 
                                 <?php
                                 if ($currentPosition === "Director" || $currentPosition === "Technical Assistant"):
-                                ?>
+                                    ?>
                                     <label class="btn btn-secondary">
                                         <input type="radio" name="toggleOptions" id="inventoryToggle" autocomplete="off">
                                         Inventory
                                     </label>
-                                <?php
+                                    <?php
                                 endif;
                                 ?>
 
 
                                 <?php
                                 if ($currentPosition === "Focal Person"):
-                                ?>
+                                    ?>
                                     <label class="btn btn-secondary">
                                         <input type="radio" name="toggleOptions" id="receivedItemToggle" autocomplete="off">
                                         Received Item/s
                                     </label>
-                                <?php
+                                    <?php
                                 endif;
                                 ?>
                             </div>
@@ -258,13 +258,13 @@ if (isset($_POST['btnGeneratePDF'])) {
 
                             <?php
                             if ($currentPosition !== "Focal Person"):
-                            ?>
+                                ?>
                                 <div id="makeReceiptDIV">
                                     <label for="checkboxReceipt" class="form-check-label">Make Receipt</label>
                                     <input type="checkbox" name="checkboxReceipt" id="checkboxReceipt" value="Make Receipt"
                                         class="form-check-input">
                                 </div>
-                            <?php
+                                <?php
                             endif;
                             ?>
                             <div id="makeSummaryDIV">
@@ -276,9 +276,13 @@ if (isset($_POST['btnGeneratePDF'])) {
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-2">
-                        <button type="submit" id="btnGeneratePDF" name="btnGeneratePDF" class="btn btn-success">Generate
-                            PDF</button>
+                    <div class="col d-flex gap-2">
+                        <button type="button" id="btnGeneratePDF" name="btnGeneratePDF" class="btn btn-success">
+                            <i class="fas fa-file-pdf"></i> Generate PDF
+                        </button>
+                        <button type="button" id="btnGenerateCSV" name="btnGenerateCSV" class="btn btn-primary">
+                            <i class="fas fa-file-csv"></i> Generate CSV
+                        </button>
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -308,7 +312,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                                         <!-- the generated result -->
                                         <div id="receivedItemPrintTable"></div>
 
-                                    </div> 
+                                    </div>
                                 <?php endif; ?>
 
 
@@ -358,13 +362,53 @@ if (isset($_POST['btnGeneratePDF'])) {
         const filter_size = $('#filterSize');
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             $("#inventoryReport").hide();
             $("#inventoryTable").hide();
             $("receivedItemsDIV").hide();
 
-            $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function() {
+            // ==================================
+
+            // Show CSV button when filters are applied (same conditions as PDF button)
+            function updateButtonVisibility() {
+                if ($('#generatePDF').is(':visible')) {
+                    $('#btnGenerateCSV').fadeIn();
+                } else {
+                    $('#btnGenerateCSV').hide();
+                }
+            }
+
+            // Monitor changes to filters
+            $('#filterCampus, #filterDepartment, #filterSize, #filterGender, #checkboxShowSummary, #inputCategory').on('change', function () {
+                setTimeout(updateButtonVisibility, 100);
+            });
+
+            // Handle CSV button click based on current report type
+            $(document).on('click', '#btnGenerateCSV', function () {
+                console.log('Generating CSV...');
+
+                if ($('#employeeReport').is(':visible') && $('#employeeToggle').is(':checked')) {
+                    // Employee Report
+                    generateEmployeeCSV(position);
+                } else if ($('#inventoryReport').is(':visible') && $('#inventoryToggle').is(':checked')) {
+                    // Inventory Report
+                    generateInventoryCSV();
+                } else if ($('#receivedItemsDIV').is(':visible') && $('#receivedItemToggle').is(':checked')) {
+                    // Received Items Report
+                    generateReceivedItemsCSV();
+                }
+            });
+
+
+            // ============================
+
+            // Update visibility when toggling between report types
+            $('input[name="toggleOptions"]').on('change', function () {
+                setTimeout(updateButtonVisibility, 100);
+            });
+
+            $("#inventoryFilterButton").load("./reusableHTML/inventoryFilterButton.php", function () {
                 generateInventoryFilter(
                     position,
                     "#btnGeneratePDF",
@@ -376,13 +420,13 @@ if (isset($_POST['btnGeneratePDF'])) {
 
 
 
-            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function() {
+            $("#receivedItemsDIV").load("./reusableHTML/receivedItemTable.php", function () {
 
                 // ✅ Load available inventory items to dropdown
                 $.ajax({
                     url: "../phpFunctions/get_inventory_items.php",
                     type: "POST",
-                    success: function(res) {
+                    success: function (res) {
                         let items = JSON.parse(res);
                         let select = $("#inputItemName");
 
@@ -396,7 +440,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                 });
 
                 // ✅ When user selects item, fetch its qty
-                $("#inputItemName").on("change", function() {
+                $("#inputItemName").on("change", function () {
                     let itemId = $(this).val();
                     if (!itemId) return;
 
@@ -406,7 +450,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                         data: {
                             itemId
                         },
-                        success: function(res) {
+                        success: function (res) {
                             let data = JSON.parse(res);
                             $("#inputReceived").val(data.itemQuantity);
                             $("#dbRemaining").val(data.itemQuantity);
@@ -466,7 +510,7 @@ if (isset($_POST['btnGeneratePDF'])) {
             }
 
 
-            $('input[name="toggleOptions"]').change(function() {
+            $('input[name="toggleOptions"]').change(function () {
                 if ($('#employeeToggle').is(':checked')) {
                     showEmployeeSummary();
                     hideInventorySummary();
@@ -507,7 +551,7 @@ if (isset($_POST['btnGeneratePDF'])) {
             const marginSelect = $("#margin");
             const orientationSelect = $("#orientation");
 
-            $(document).on("click", "#btnGeneratePDF", function() {
+            $(document).on("click", "#btnGeneratePDF", function () {
 
                 // Hide input fields before PDF generation
                 $("#receivedItemsDIV").find("#inputFields").hide();

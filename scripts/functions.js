@@ -225,3 +225,80 @@ function generateReportFilter(
 
   updateResult();
 }
+
+
+// NEW FUNCTION: Generate CSV for Employee Report
+function generateEmployeeCSV(position) {
+  const campusFilter = $('#filterCampus').val();
+  const deptFilter = $('#filterDepartment').val();
+  const sizeFilter = $('#filterSize').val();
+  const genderFilter = $('#filterGender').val();
+  const showSummary = $('#checkboxShowSummary').is(':checked') ? 'yes' : 'no';
+  const searchQuery = $('#searchBar').val() || '';
+
+  // Create a hidden form and submit
+  const form = $('<form>', {
+    method: 'POST',
+    action: '../phpFunctions/generateCSV.php',
+    target: '_blank'
+  });
+
+  form.append($('<input>', { type: 'hidden', name: 'reportType', value: 'employee' }));
+  form.append($('<input>', { type: 'hidden', name: 'campusFilter', value: campusFilter }));
+  form.append($('<input>', { type: 'hidden', name: 'deptFilter', value: deptFilter }));
+  form.append($('<input>', { type: 'hidden', name: 'sizeFilter', value: sizeFilter }));
+  form.append($('<input>', { type: 'hidden', name: 'genderFilter', value: genderFilter }));
+  form.append($('<input>', { type: 'hidden', name: 'showSummary', value: showSummary }));
+  form.append($('<input>', { type: 'hidden', name: 'searchQuery', value: searchQuery }));
+
+  $('body').append(form);
+  form.submit();
+  form.remove();
+}
+
+// NEW FUNCTION: Generate CSV for Inventory Report
+function generateInventoryCSV() {
+  const category = $('#inputCategory').val();
+
+  const form = $('<form>', {
+    method: 'POST',
+    action: '../phpFunctions/generateCSV.php',
+    target: '_blank'
+  });
+
+  form.append($('<input>', { type: 'hidden', name: 'reportType', value: 'inventory' }));
+  form.append($('<input>', { type: 'hidden', name: 'item_category', value: category }));
+
+  $('body').append(form);
+  form.submit();
+  form.remove();
+}
+
+// NEW FUNCTION: Generate CSV for Received Items
+function generateReceivedItemsCSV() {
+  const name = $('#inputName').val();
+  const itemId = $('#inputItemName').val();
+  const received = $('#dbRemaining').val();
+  const distributed = $('#inputDistributed').val();
+
+  if (!name || !itemId || received === "" || distributed === "") {
+    alert("Please fill all fields first.");
+    return;
+  }
+
+  const form = $('<form>', {
+    method: 'POST',
+    action: '../phpFunctions/generateCSV.php',
+    target: '_blank'
+  });
+
+  form.append($('<input>', { type: 'hidden', name: 'reportType', value: 'received_items' }));
+  form.append($('<input>', { type: 'hidden', name: 'name', value: name }));
+  form.append($('<input>', { type: 'hidden', name: 'itemId', value: itemId }));
+  form.append($('<input>', { type: 'hidden', name: 'received', value: received }));
+  form.append($('<input>', { type: 'hidden', name: 'distributed', value: distributed }));
+
+  $('body').append(form);
+  form.submit();
+  form.remove();
+}
