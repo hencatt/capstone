@@ -102,7 +102,7 @@ $currentLname = $user['lname'];
                 <div class="row mt-2">
                     <div class="col">
                         Explore all researches categorized based on their current voting results
-                        (<b>Approved</b>, <b>Rejected</b>, <b>Pending</b>).
+                        (<b style="color: green">Approved</b>, <b style="color: red">Rejected</b>, <b style="color: #ff9d09ff">Pending</b>).
                     </div>
                 </div>
 
