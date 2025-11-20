@@ -354,7 +354,7 @@ if ($conn->connect_error) {
             <div id="contents">
                 <div>
 
-                    <div class="row mt-4">
+                    <div class="row">
                         <div class="col">
                             <h1>Employees</h1>
                         </div>

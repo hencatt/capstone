@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                 <!-- main overview -->
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="row mt-lg-5 mb-lg-5">
+                        <div class="row">
                             <div class="col-3 summaryOverview">
                                 <h6>Total Numbers of Employee</h6><br>
                                 <h4 class="itemText">
@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                         </div>
                     </div>
 
-                    <div class="row overview mt-lg-5 mb-lg-5">
+                    <div class="row overview mt-5">
                         <div class="col-3 summaryOverview">
                             <h6>Number of Items</h6><br>
                             <h4 class="itemText">
@@ -258,10 +258,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
 
                     <div class="row tableOverview">
                         <div class="row">
-                            
+
                             <div class="col">
                                 <!-- inventory overview -->
                                 <h1>Inventory</h1>
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
                             </div>
                         </div>
                         <div class="row mt-4">
@@ -272,9 +275,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveInfo'])) {
                                     style="background-color: #0a7afa;"> <span class="material-symbols-outlined">
                                         search
                                     </span></button>
-                            </div>
-                            <div class="col d-flex justify-content-end">
-                                <a href="./inventory.php"><button class="btn btn-outline-primary">View More</button></a>
                             </div>
                         </div>
 

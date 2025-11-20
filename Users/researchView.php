@@ -107,101 +107,109 @@ updateResearchStatus();
                     </div> -->
                 </div>
                 <!-- TOGGLE START -->
-<?php if ($currentPosition !== "Researcher"): ?>
-<div class="row mt-4">
-    <div class="col">
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-secondary active" id="proposal_btn">
-                <input type="radio" name="toggleOptions" autocomplete="off" value="Proposal" checked> Proposal
-            </label>
-            <label class="btn btn-secondary" id="completed_btn">
-                <input type="radio" name="toggleOptions" autocomplete="off" value="Completed"> Completed
-            </label>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
-<!-- TOGGLE END -->
+                <?php if ($currentPosition !== "Researcher"): ?>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-secondary active" id="proposal_btn">
+                                    <input type="radio" name="toggleOptions" autocomplete="off" value="Proposal" checked>
+                                    Proposal
+                                </label>
+                                <label class="btn btn-secondary" id="completed_btn">
+                                    <input type="radio" name="toggleOptions" autocomplete="off" value="Completed"> Completed
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <!-- TOGGLE END -->
 
-<div class="row mt-3 flex flex-col gap-3">
-    <div class="col" style="background-color: white; padding: 10px; border-radius: 10px;">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Research Title</th>
-                    <?php if ($currentPosition === "RET Chair"): ?>
-                        <th>Grant</th>
-                    <?php endif; ?>
-                    <th>Date Submitted</th>
-                    <th>Status</th>
-                    <th>Category</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="researchTableBody">
-                <?php
-                $con = con();
-                if ($currentPosition === "Researcher") {
-                    $sql = "SELECT * FROM research_tbl WHERE author = ?";
-                    $stmt = $con->prepare($sql);
-                    $stmt->bind_param("s", $currentUser);
-                } else {
-                    $sql = "SELECT * FROM research_tbl";
-                    $stmt = $con->prepare($sql);
-                }
-                $stmt->execute();
-                $result = $stmt->get_result();
+                <div class="row mt-3 flex flex-col gap-3">
+                    <div class="col" style="background-color: white; padding: 10px; border-radius: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Research Title</th>
+                                    <?php if ($currentPosition === "RET Chair"): ?>
+                                        <th>Grant</th>
+                                    <?php endif; ?>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                    <th>Category</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="researchTableBody">
+                                <?php
+                                $con = con();
+                                if ($currentPosition === "Researcher") {
+                                    $sql = "SELECT * FROM research_tbl WHERE author = ?";
+                                    $stmt = $con->prepare($sql);
+                                    $stmt->bind_param("s", $currentUser);
+                                } else {
+                                    $sql = "SELECT * FROM research_tbl";
+                                    $stmt = $con->prepare($sql);
+                                }
+                                $stmt->execute();
+                                $result = $stmt->get_result();
 
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $statusColor = match($row['status']) {
-                            "Approved" => "color: green;",
-                            "Rejected" => "color: red;",
-                            default => "color: orange;",
-                        };
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        $statusColor = match ($row['status']) {
+                                            "Approved" => "color: green;",
+                                            "Rejected" => "color: red;",
+                                            default => "color: orange;",
+                                        };
 
-                        echo '<tr data-category="' . htmlspecialchars($row['research_category']) . '">';
-                        echo '<td>' . htmlspecialchars($row['research_title']) . '</td>';
+                                        echo '<tr data-category="' . htmlspecialchars($row['research_category']) . '">';
+                                        echo '<td>' . htmlspecialchars($row['research_title']) . '</td>';
 
-                        if ($currentPosition === "RET Chair") {
-                            echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
+                                        if ($currentPosition === "RET Chair") {
+                                            echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
+                                        }
+
+                                        echo '<td>' . htmlspecialchars($row['date_submitted']) . '</td>';
+                                        echo '<td style="' . $statusColor . '">' . htmlspecialchars($row['status']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($row['research_category']) . '</td>';
+                                        echo '<td><a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=View Researches" style="color: #5f8cecff;">View More</a></td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    echo '
+                                    <tr><td colspan="5" style="text-align: center;">
+                                        <div class="alert alert-info" role="alert">
+                                            <i class="fas fa-info-circle"></i> That\'s all for now...
+                                        </div>
+                                    </td></tr>';
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <script defer>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const toggleButtons = document.querySelectorAll('input[name="toggleOptions"]');
+                        const rows = document.querySelectorAll('#researchTableBody tr');
+
+                        function filterTable(category) {
+                            rows.forEach(row => {
+                                const rowCategory = row.getAttribute('data-category');
+                                row.style.display = (rowCategory === category) ? '' : 'none';
+                            });
                         }
 
-                        echo '<td>' . htmlspecialchars($row['date_submitted']) . '</td>';
-                        echo '<td style="' . $statusColor . '">' . htmlspecialchars($row['status']) . '</td>';
-                        echo '<td>' . htmlspecialchars($row['research_category']) . '</td>';
-                        echo '<td><a href="researchDetails.php?id=' . htmlspecialchars($row['id']) . '&prev=View Researches" style="color: #5f8cecff;">View More</a></td>';
-                        echo '</tr>';
-                    }
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                        // Default: show only Proposalt
+                        filterTable("Proposal");
 
-<script defer>
-document.addEventListener("DOMContentLoaded", () => {
-    const toggleButtons = document.querySelectorAll('input[name="toggleOptions"]');
-    const rows = document.querySelectorAll('#researchTableBody tr');
-
-    function filterTable(category) {
-        rows.forEach(row => {
-            const rowCategory = row.getAttribute('data-category');
-            row.style.display = (rowCategory === category) ? '' : 'none';
-        });
-    }
-
-    // Default: show only Proposalt
-    filterTable("Proposal");
-
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('change', () => {
-            filterTable(btn.value);
-        });
-    });
-});
-</script>
+                        toggleButtons.forEach(btn => {
+                            btn.addEventListener('change', () => {
+                                filterTable(btn.value);
+                            });
+                        });
+                    });
+                </script>
 </body>
 
 </html>

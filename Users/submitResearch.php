@@ -131,7 +131,7 @@ if (isset($_POST['submitResearch'])) {
             <?php echo topbar("$currentUser", $currentPosition, "researchSubmit") ?>
 
             <div id="contents">
-                <div class="row mt-5">
+                <div class="row">
                     <h1>Research</h1>
                     <div class="col">
                         <p>Upload your New Research. After uploading the file, your research will be reviewed by the

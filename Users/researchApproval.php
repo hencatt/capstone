@@ -34,7 +34,7 @@ $currentUserId = $user['id'];
             <?php echo topbar("$currentUser", "$currentPosition", "approval") ?>
             <div id="contents">
 
-                <div class="row mt-4">
+                <div class="row">
                     <div class="col">
                         <h1>Research Approval</h1>
                     </div>

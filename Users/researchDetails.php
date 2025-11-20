@@ -308,7 +308,7 @@ if (isset($_POST['confirmBtnReject'])) {
             <?php topbar($currentUser, $currentPosition, "researchDetails", $researchTitle, $previousPage) ?>
 
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <div class="col d-flex gap-3 align-items-center">
                         <h1><?= $researchTitle; ?></h1>
                         <span class="badge bg-secondary" style="font-size: 0.85rem;">

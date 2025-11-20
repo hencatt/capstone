@@ -62,7 +62,7 @@ if (isset($_POST['btnGeneratePDF'])) {
         <div class="col-lg-10 col-sm-8 col-xs-6 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "report") ?>
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <h1>Generate Report <span class="material-symbols-outlined">
                             article
                         </span></h1>
@@ -125,10 +125,30 @@ if (isset($_POST['btnGeneratePDF'])) {
                             <!-- EMPLOYEE FILTERS COLUMN -->
                             <div class="row mt-3">
                                 <div class="col d-flex flex-row align-items-center justify-content-start gap-3">
+                                    
+                                    <div class="col" id="toggleFilterCampus">
+                                        <div class="row">
+                                            <h6>Campus</h6>
+                                            <div class="col">
+                                                <select name="filterCampus" id="filterCampus" class="form-select">
+                                                    <option value="" disabled>Filter Campus</option>
+                                                    <option value="None" selected>None</option>
+                                                    <option value="Show All">Show All</option>
+                                                    <option value="Sumacab">Sumacab</option>
+                                                    <option value="Gen. Tinio">Gen. Tinio</option>
+                                                    <option value="San Isidro">San Isidro</option>
+                                                    <option value="Atate">Atate</option>
+                                                    <option value="Fort Magsaysay">Fort Magsaysay</option>
+                                                    <option value="Gabaldon">Gabaldon</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="col" id="toggleFilterDepartment">
                                         <div class="row">
-                                            <h6>Department</h6>
                                             <div class="col">
+                                                <h6>Department</h6>
                                                 <select name="filterDepartment" id="filterDepartment"
                                                     class="form-select">
                                                     <option value="" disabled>Filter Department</option>
@@ -153,24 +173,7 @@ if (isset($_POST['btnGeneratePDF'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col" id="toggleFilterCampus">
-                                        <div class="row">
-                                            <h6>Campus</h6>
-                                            <div class="col">
-                                                <select name="filterCampus" id="filterCampus" class="form-select">
-                                                    <option value="" disabled>Filter Campus</option>
-                                                    <option value="None" selected>None</option>
-                                                    <option value="Show All">Show All</option>
-                                                    <option value="Sumacab">Sumacab</option>
-                                                    <option value="Gen. Tinio">Gen. Tinio</option>
-                                                    <option value="San Isidro">San Isidro</option>
-                                                    <option value="Atate">Atate</option>
-                                                    <option value="Fort Magsaysay">Fort Magsaysay</option>
-                                                    <option value="Gabaldon">Gabaldon</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="col" id="toggleFilterGender">
                                         <div class="row">
                                             <h6>Gender</h6>

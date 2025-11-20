@@ -41,7 +41,7 @@ deleteItemInventory("deleteItem", $currentUser);
         <div class="col-10 mt-lg-3 mainContent">
             <?php echo topbar("$currentUser", "$currentPosition", "inventory") ?>
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <div class="col">
                         <h1>Inventory</h1>
                     </div>

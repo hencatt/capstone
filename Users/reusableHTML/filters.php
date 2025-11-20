@@ -1,3 +1,23 @@
+<!-- Campus Filter -->
+<div class="row">
+    <div class="col">
+        <label for="filterCampus" class="form-label">Campus</label>
+        <select name="filterCampus" id="filterCampus" class="form-select">
+            <option value="" disabled>Filter Campus</option>
+            <option value="None" selected>None</option>
+            <option value="Show All">Show All</option>
+            <option value="Sumacab">Sumacab</option>
+            <option value="Gen. Tinio">Gen. Tinio</option>
+            <option value="San Isidro">San Isidro</option>
+            <option value="Atate">Atate</option>
+            <option value="Fort Magsaysay">Fort Magsaysay</option>
+            <option value="Gabaldon">Gabaldon</option>
+            <!-- and many more -->
+        </select>
+    </div>
+</div>
+
+
 <!-- dept filter -->
 <div class="row">
     <div class="col">
@@ -21,25 +41,6 @@
             <option value="CON">CON</option>
             <option value="GS">GS</option>
             <option value="NTP">NTP</option>
-        </select>
-    </div>
-</div>
-
-<!-- Campus Filter -->
-<div class="row">
-    <div class="col">
-        <label for="filterCampus" class="form-label">Campus</label>
-        <select name="filterCampus" id="filterCampus" class="form-select">
-            <option value="" disabled>Filter Campus</option>
-            <option value="None" selected>None</option>
-            <option value="Show All">Show All</option>
-            <option value="Sumacab">Sumacab</option>
-            <option value="Gen. Tinio">Gen. Tinio</option>
-            <option value="San Isidro">San Isidro</option>
-            <option value="Atate">Atate</option>
-            <option value="Fort Magsaysay">Fort Magsaysay</option>
-            <option value="Gabaldon">Gabaldon</option>
-            <!-- and many more -->
         </select>
     </div>
 </div>
