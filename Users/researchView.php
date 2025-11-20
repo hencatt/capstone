@@ -160,14 +160,11 @@ updateResearchStatus();
                                             "Rejected" => "color: red;",
                                             default => "color: orange;",
                                         };
-
                                         echo '<tr data-category="' . htmlspecialchars($row['research_category']) . '">';
                                         echo '<td>' . htmlspecialchars($row['research_title']) . '</td>';
-
                                         if ($currentPosition === "RET Chair") {
                                             echo '<td>' . htmlspecialchars($row['research_grant']) . '</td>';
                                         }
-
                                         echo '<td>' . htmlspecialchars($row['date_submitted']) . '</td>';
                                         echo '<td style="' . $statusColor . '">' . htmlspecialchars($row['status']) . '</td>';
                                         echo '<td>' . htmlspecialchars($row['research_category']) . '</td>';
@@ -175,12 +172,16 @@ updateResearchStatus();
                                         echo '</tr>';
                                     }
                                 } else {
+                                    $colspan = ($currentPosition === "RET Chair") ? 6 : 5;
+                                    // Add id to identify empty state row
                                     echo '
-                                    <tr><td colspan="5" style="text-align: center;">
-                                        <div class="alert alert-info" role="alert">
-                                            <i class="fas fa-info-circle"></i> That\'s all for now...
-                                        </div>
-                                    </td></tr>';
+                                        <tr id="empty-state-row">
+                                            <td colspan="' . $colspan . '" style="text-align: center;">
+                                                <div class="alert alert-info" role="alert">
+                                                    <i class="fas fa-info-circle"></i> No research records found in this category.
+                                                </div>
+                                            </td>
+                                        </tr>';
                                 }
                                 ?>
                             </tbody>
@@ -192,6 +193,12 @@ updateResearchStatus();
                     document.addEventListener("DOMContentLoaded", () => {
                         const toggleButtons = document.querySelectorAll('input[name="toggleOptions"]');
                         const rows = document.querySelectorAll('#researchTableBody tr');
+                        const emptyStateRow = document.getElementById('empty-state-row');
+
+                        // If there's an empty state row, don't filter anything
+                        if (emptyStateRow) {
+                            return; // Exit early - show the empty message
+                        }
 
                         function filterTable(category) {
                             rows.forEach(row => {
@@ -200,7 +207,7 @@ updateResearchStatus();
                             });
                         }
 
-                        // Default: show only Proposalt
+                        // Default: show only Proposal
                         filterTable("Proposal");
 
                         toggleButtons.forEach(btn => {
