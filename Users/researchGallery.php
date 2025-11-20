@@ -93,7 +93,7 @@ $currentLname = $user['lname'];
             <?php topbar($currentUser, $currentPosition, "researchGallery") ?>
 
             <div id="contents">
-                <div class="row mt-4">
+                <div class="row">
                     <div class="col">
                         <h1>Research Gallery</h1>
                     </div>
