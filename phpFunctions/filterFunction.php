@@ -242,7 +242,7 @@ if (isset($_POST['currentPage'], $_POST['campusFilter'], $_POST['deptFilter'], $
                 echo '
                     <button type="button" class="btn btn-outline-danger btn-sm delete-btn"
                         data-id="' . $idAttr . '" title="Delete Record">
-                        <i class="fas fa-trash"></i> Delete
+                        <i class="fas fa-trash"></i> Archive
                     </button>
 
                     <button type="button" class="btn btn-outline-secondary btn-sm assignBtn"
