@@ -95,7 +95,7 @@ function topbar($user, $role, $location, $pageTitle = null, $previousTitle = nul
     echo
         <<<EOD
         
-        <div class="row gap-5 d-flex justify-content-between" id="topBar" 
+        <div class="row mt-3 gap-5 d-flex justify-content-between" id="topBar" 
         style="background-color:white; padding:10px; border-radius:20px; filter: drop-shadow(0 0 0.15rem);">
                     <div class="col-6 d-flex flex-row align-items-center">
     EOD;
