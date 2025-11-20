@@ -11,6 +11,7 @@ $currentDepartment = $user['department'];
 $currentCampus = $user['campus'];
 $currentFname = $user['fname'];
 $currentLname = $user['lname'];
+$currentMname = $user['mname'];
 $currentEmail = $user['email'];
 $id = $user['id'];
 
@@ -134,8 +135,8 @@ if (isset($_POST['submitResearch'])) {
                 <div class="row">
                     <h1>Research</h1>
                     <div class="col">
-                        <p>Upload your New Research. After uploading the file, your research will be reviewed by the
-                            admin.</p>
+                        <p>Upload your <i>research</i>. After uploading the file, your research will be reviewed by the
+                            <b>panel</b>.</p>
                     </div>
                 </div>
                 <!-- Research Submission Form -->
@@ -171,7 +172,7 @@ if (isset($_POST['submitResearch'])) {
                                             <tr>
                                                 <td><?php echo $currentLname; ?></td>
                                                 <td><?php echo $currentFname; ?></td>
-                                                <td></td>
+                                                <td><?php echo $currentMname?></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -408,7 +409,7 @@ if (isset($_POST['submitResearch'])) {
                                 </div>
                             </div>
 
-                            <div class="row mt-5">
+                            <div class="row mt-4">
                                 <div class="col">
                                     <label for="researchDescription" class="form-label">Research
                                         Description/Abstract</label>

@@ -48,24 +48,50 @@ function setUser()
     return $con->query($sql);
 }
 
+function setUserExtraInfo()
+{
+    $currentId = $_SESSION['user_id'];
+    $con = newCon();
+    $sql = "SELECT m_initial, address, birthday, sex, gender, size FROM employee_info WHERE id = '$currentId'";
+    return $con->query($sql);
+}
 function getUser()
 {
     $currentId = $_SESSION['user_id'];
     $result = setUser();
+    $result2 = setUserExtraInfo();
 
-    if ($result->num_rows > 0) {
+    $user = ["id" => $currentId];
+
+    if ($result && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        return [
-            "id" => $currentId,
+        $user = array_merge($user, [
             "fname" => htmlspecialchars($row["fname"]),
             "lname" => htmlspecialchars($row["lname"]),
-            "email" => htmlspecialchars($row["email"]),
             "fullname" => htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']),
+            "email" => htmlspecialchars($row['email']),
             "position" => htmlspecialchars($row['position']),
             "campus" => htmlspecialchars_decode($row['campus']),
             "department" => htmlspecialchars($row['department']),
-        ];
+        ]);
     } else {
-        echo "<script>console.log('No UserID Found')</script>";
+        echo "<script>console.log('No UserID Found in accounts_tbl')</script>";
     }
+
+    if ($result2 && $result2->num_rows > 0) {
+        $row2 = $result2->fetch_assoc();
+        $user = array_merge($user, [
+            "mname" => htmlspecialchars($row2["m_initial"]),
+            "address" => htmlspecialchars($row2["address"]),
+            "birthday" => htmlspecialchars($row2["birthday"]),
+            "sex" => htmlspecialchars($row2["sex"]),
+            "gender" => htmlspecialchars($row2["gender"]),
+            "size" => htmlspecialchars($row2["size"]),
+        ]);
+    } else {
+        echo "<script>console.log('No UserID Found in employee_info')</script>";
+    }
+
+    return $user;
 }
+
