@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col">
                         <div class="row d-flex justify-content-center align-items-center">
                             <div class="col" style="text-align: center;">
-                                <img src="/capstone/assets/recreateSVG.svg" alt="" style="
+                                <img src="/capstone/assets/gadNew.png" alt="" style="
                                 width: 400px;
                                 ">
                             </div>

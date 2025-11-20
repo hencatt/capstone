@@ -401,6 +401,11 @@ if (isset($_POST["saveInfo"])) {
                             </div>
 
                             <div class="profile-info">
+                                <label>Position</label>
+                                <div><?= $currentPosition ?></div>
+                            </div>
+
+                            <div class="profile-info">
                                 <label>Campus</label>
                                 <div><?= $row["campus"]; ?></div>
                             </div>

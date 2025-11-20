@@ -73,7 +73,7 @@ if (isset($_POST['announcementBtn'])) {
             <?php topbar($currentUser, $currentPosition, "announcement") ?>
             <div id="contents">
 
-                <div class="row mt-5">
+                <div class="row">
                     <h1>Announcement <span class="material-symbols-outlined">
                             campaign
                         </span></h1>

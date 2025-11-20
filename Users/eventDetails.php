@@ -318,12 +318,27 @@ $con->close();
                                     </div>
                                 </div>
                             <?php else: ?>
-                                <div class="no-panels-card">
-                                    <i class="fas fa-user-slash fa-3x mb-3"></i>
-                                    <h4>No Panel Members Assigned Yet</h4>
-                                    <p class="mb-0">Click the "Assign Panel" button below to assign panel members to this event.
-                                    </p>
-                                </div>
+                                <?php
+                                if ($currentPosition === "Director"):
+                                    ?>
+                                    <div class="no-panels-card">
+                                        <i class="fas fa-user-slash fa-3x mb-3"></i>
+                                        <h4>No Panel Members Assigned Yet</h4>
+                                        <p class="mb-0">Click the "Assign Panel" button below to assign panel members to this event.
+                                        </p>
+                                    </div>
+                                    <?php
+                                else:
+                                    ?>
+                                    <div class="no-panels-card">
+                                        <i class="fas fa-user-slash fa-3x mb-3"></i>
+                                        <h4>No Panel Members Assigned Yet</h4>
+                                        <p class="mb-0">Please wait for the <b>Director</b> to assign panels for this event.
+                                        </p>
+                                    </div>
+                                    <?php
+                                endif;
+                                ?>
                             <?php endif; ?>
                         </div>
                     </div>
