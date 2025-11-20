@@ -55,6 +55,62 @@ if ($result->num_rows > 0) {
     $file = $row['file'];
 }
 
+if (isset($_POST['resubmitResearch'])) {
+    $fileName = $_FILES['researchReupload']['name'];
+    $fileTmp = $_FILES['researchReupload']['tmp_name'];
+    $fileError = $_FILES['researchReupload']['error'];
+    $fileSize = $_FILES['researchReupload']['size'];
+
+    // Validate file upload
+    if ($fileError === 0) {
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowed = ['pdf'];
+
+        if (in_array($fileExt, $allowed)) {
+            if ($fileSize < 10000000) { // 10MB limit
+                $targetDir = "researchfiles/";
+                $newFileName = uniqid('research_', true) . '.' . $fileExt;
+                $targetFile = $targetDir . $newFileName;
+
+                if (move_uploaded_file($fileTmp, $targetFile)) {
+                    // Delete old file if exists
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+
+                    // Update database with new file path
+                    $con = con();
+                    $sql = "UPDATE research_tbl SET file = ?, date_submitted = ? WHERE id = ?";
+                    $stmt = $con->prepare($sql);
+                    $currentDate = date('Y-m-d');
+                    $stmt->bind_param("ssi", $targetFile, $currentDate, $currentResearch);
+
+                    if ($stmt->execute()) {
+                        insertLog($currentUser, "Re-submitted research: " . $researchTitle, date('Y-m-d H:i:s'));
+                        alertSuccess("Success", "Research file has been re-submitted successfully!");
+
+                        // Send email notification
+                        include '../phpFunctions/email.php';
+                        sendSubmissionNotification($con, $currentResearch, $researchTitle);
+                    } else {
+                        alertError("Error", "Failed to update research file in database.");
+                    }
+                    $stmt->close();
+                    redirectPage($currentResearch);
+                } else {
+                    alertError("Error", "Failed to upload file. Please try again.");
+                }
+            } else {
+                alertError("Error", "File size is too large. Maximum size is 10MB.");
+            }
+        } else {
+            alertError("Error", "Only PDF files are allowed.");
+        }
+    } else {
+        alertError("Error", "There was an error uploading your file.");
+    }
+}
+
 function redirectPage($researchId)
 {
     header("Location: researchDetails.php?id=" . $researchId);
@@ -67,9 +123,9 @@ function checkVoters($researchId, $panelId)
 
     $con = con();
 
-    $sql = "SELECT panel_id, research_id 
-        FROM votes_tbl 
-        WHERE research_id = ? AND panel_id = ?";
+    $sql = "SELECT panel_id, research_id
+FROM votes_tbl
+WHERE research_id = ? AND panel_id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("ii", $researchId, $panelId);
     $stmt->execute();
@@ -92,11 +148,11 @@ function checkVotes($researchId)
 
     $con = con();
 
-    $sql = "SELECT 
-                SUM(vote = 'Approve') AS approve_count,
-                SUM(vote = 'Reject')  AS reject_count
-            FROM votes_tbl
-            WHERE research_id = ?";
+    $sql = "SELECT
+SUM(vote = 'Approve') AS approve_count,
+SUM(vote = 'Reject') AS reject_count
+FROM votes_tbl
+WHERE research_id = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("i", $researchId);
     $stmt->execute();
@@ -158,7 +214,7 @@ if (isset($_POST['confirmBtnApprove'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
-        insertLog($currentUser, "Accepted"+$currentResearch+" (Research)", date('Y-m-d H:i:s'));
+        insertLog($currentUser, "Accepted" + $currentResearch + " (Research)", date('Y-m-d H:i:s'));
         alertSuccess("Voted", "You approved " . $researchTitle);
     }
     ;
@@ -178,9 +234,10 @@ if (isset($_POST['confirmBtnReject'])) {
     $stmt = $con->prepare($sql);
     $stmt->bind_param("sssii", $vote, $voteName, $currentDateTime, $currentResearch, $currentUserId);
     if ($stmt->execute()) {
-        insertLog($currentUser, "Rejected"+$currentResearch+" (Research)", date('Y-m-d H:i:s'));
+        insertLog($currentUser, "Rejected" + $currentResearch + " (Research)", date('Y-m-d H:i:s'));
         alertSuccess("Voted", "You rejected " . $researchTitle);
-    };
+    }
+    ;
 
     checkVotes($currentResearch);
     redirectPage($currentResearch);
@@ -639,6 +696,116 @@ if (isset($_POST['confirmBtnReject'])) {
         </div>
     </div>
 
+
+    <!-- Re-submission Modal -->
+    <div class="modal fade" id="resubmitModal" tabindex="-1" aria-labelledby="resubmitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="resubmitModalLabel">
+                        <i class="fas fa-redo"></i> Re-submit Research PDF
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                        aria-label="Close">×</button>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Current File:</strong> <?= basename($file) ?>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="researchReupload" class="form-label">
+                                <i class="fas fa-file-pdf"></i> Select New PDF File
+                            </label>
+                            <input type="file" name="researchReupload" id="researchReupload" class="form-control"
+                                accept=".pdf" required>
+                            <small class="text-muted">Maximum file size: 10MB</small>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Note:</strong> The old PDF file will be replaced with the new one.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" name="resubmitResearch" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload New File
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        /* Add these styles to ensure modal works properly */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            outline: 0;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1040;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.5;
+        }
+
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: 1.75rem auto;
+            pointer-events: none;
+            max-width: 500px;
+        }
+
+        .modal.show .modal-dialog {
+            transform: none;
+        }
+
+        .modal-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, .2);
+            border-radius: 0.3rem;
+            outline: 0;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+
+
     <?php include('../phpFunctions/alerts.php'); ?>
 
     <script>
@@ -646,6 +813,81 @@ if (isset($_POST['confirmBtnReject'])) {
             console.log("aaaaaaaaaaaaaaaaaaaaa");
             const grantBtn = document.getElementById("changeGrantStatus");
             const resubmitBtn = document.getElementById("changeResubmissionStatus");
+            const reSubmitBtn = document.getElementById("reSubmitPdf");
+            const resubmitModal = document.getElementById("resubmitModal");
+            const closeModalBtns = document.querySelectorAll('[data-dismiss="modal"]');
+
+            if (reSubmitBtn && resubmitModal) {
+                // Open modal
+                reSubmitBtn.addEventListener("click", function () {
+                    resubmitModal.style.display = "block";
+                    resubmitModal.classList.add("show");
+                    document.body.classList.add("modal-open");
+
+                    // Add backdrop
+                    const backdrop = document.createElement("div");
+                    backdrop.className = "modal-backdrop fade show";
+                    backdrop.id = "modalBackdrop";
+                    document.body.appendChild(backdrop);
+                });
+
+                // Close modal function
+                function closeModal() {
+                    resubmitModal.style.display = "none";
+                    resubmitModal.classList.remove("show");
+                    document.body.classList.remove("modal-open");
+
+                    // Remove backdrop
+                    const backdrop = document.getElementById("modalBackdrop");
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                }
+
+                // Close on button click
+                closeModalBtns.forEach(btn => {
+                    btn.addEventListener("click", closeModal);
+                });
+
+                // Close on backdrop click
+                resubmitModal.addEventListener("click", function (e) {
+                    if (e.target === resubmitModal) {
+                        closeModal();
+                    }
+                });
+
+                // Close on ESC key
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape" && resubmitModal.classList.contains("show")) {
+                        closeModal();
+                    }
+                });
+            }
+
+            // File input validation
+            const fileInput = document.getElementById("researchReupload");
+            if (fileInput) {
+                fileInput.addEventListener("change", function () {
+                    const file = this.files[0];
+                    if (file) {
+                        // Check file size (10MB = 10 * 1024 * 1024 bytes)
+                        if (file.size > 10485760) {
+                            alert("File size exceeds 10MB limit!");
+                            this.value = "";
+                            return;
+                        }
+
+                        // Check file type
+                        const fileExt = file.name.split('.').pop().toLowerCase();
+                        if (fileExt !== 'pdf') {
+                            alert("Only PDF files are allowed!");
+                            this.value = "";
+                            return;
+                        }
+                    }
+                });
+            }
+
 
             // trigger modals
             if (grantBtn) grantBtn.addEventListener("click", openGrantModal);

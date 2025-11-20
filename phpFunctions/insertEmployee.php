@@ -31,21 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Get and sanitize input data from the form field names
         $fname = trim($_POST['inputFname'] ?? '');
-        $mname = trim($_POST['inputMname'] ?? '');
+        $mname = trim($_POST['inputMname'] ?? ''); // This is m_initial in DB
         $lname = trim($_POST['inputLname'] ?? '');
         $email = trim($_POST['inputEmail'] ?? '');
         $contact = trim($_POST['inputContact'] ?? '');
         $sex = trim($_POST['inputSex'] ?? '');
         $gender = trim($_POST['inputGender'] ?? '');
         $otherGender = trim($_POST['otherGender'] ?? '');
-        $birthdate = trim($_POST['inputBirthdate'] ?? '');
+        $birthdate = trim($_POST['inputBirthdate'] ?? ''); // This is birthday in DB
         $address = trim($_POST['inputAddress'] ?? '');
-        $maritalStatus = trim($_POST['inputMaritalStatus'] ?? '');
+        $maritalStatus = trim($_POST['inputMaritalStatus'] ?? ''); // This is marital_status in DB
         $size = trim($_POST['inputSize'] ?? '');
-        $priorityStatus = trim($_POST['inputPriority'] ?? 'None');
+        $priorityStatus = trim($_POST['inputPriority'] ?? 'None'); // This is priority_status in DB
         $income = trim($_POST['inputIncome'] ?? '');
         $hasChildren = trim($_POST['hasChildren'] ?? 'No');
-        $childrenNum = !empty($_POST['inputChildrenNum']) ? intval($_POST['inputChildrenNum']) : 0;
+        $childrenNum = !empty($_POST['inputChildrenNum']) ? intval($_POST['inputChildrenNum']) : 0; // This is children_num in DB
         $concern = trim($_POST['inputConcern'] ?? '');
 
         // Use Focal Person's department and campus
@@ -131,24 +131,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $updateEmployee->close();
 
-            // Update employee_info
+            // Update employee_info - CORRECTED COLUMN NAMES
             $updateInfo = $con->prepare("UPDATE employee_info SET 
-                fname = ?, m_initial = ?, lname = ?, sex = ?, gender = ?, birthday = ?, 
-                address = ?, marital_status = ?, size = ?, priority_status = ?, 
-                income = ?, children_num = ?, concern = ? 
+                fname = ?, m_initial = ?, lname = ?, address = ?, birthday = ?, 
+                marital_status = ?, sex = ?, gender = ?, priority_status = ?, 
+                size = ?, income = ?, children_num = ?, concern = ? 
                 WHERE employee_id = ?");
             $updateInfo->bind_param(
-                "sssssssssssssi",
+                "ssssssssssisis",
                 $fname,
                 $mname,
                 $lname,
+                $address,
+                $birthdate,
+                $maritalStatus,
                 $sex,
                 $gender,
-                $birthdate,
-                $address,
-                $maritalStatus,
-                $size,
                 $priorityStatus,
+                $size,
                 $income,
                 $childrenNum,
                 $concern,
@@ -195,27 +195,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $employee_id = $con->insert_id;
             $insertEmployee->close();
 
-            // Insert into employee_info
+            // Insert into employee_info - CORRECTED COLUMN ORDER AND NAMES
+            // Table structure: id, fname, m_initial, lname, address, birthday, marital_status, sex, gender, priority_status, size, income, employee_id, children_num, concern
             $insertInfo = $con->prepare("INSERT INTO employee_info 
-                (fname, m_initial, lname, sex, gender, birthday, address, marital_status, 
-                size, priority_status, income, children_num, concern, employee_id) 
+                (fname, m_initial, lname, address, birthday, marital_status, 
+                sex, gender, priority_status, size, income, employee_id, children_num, concern) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $insertInfo->bind_param(
-                "ssssssssssssssi",
+                "sssssssssssiis",
                 $fname,
                 $mname,
                 $lname,
+                $address,
+                $birthdate,
+                $maritalStatus,
                 $sex,
                 $gender,
-                $birthdate,
-                $address,
-                $maritalStatus,
-                $size,
                 $priorityStatus,
+                $size,
                 $income,
+                $employee_id,
                 $childrenNum,
-                $concern,
-                $employee_id
+                $concern
             );
 
             if (!$insertInfo->execute()) {
