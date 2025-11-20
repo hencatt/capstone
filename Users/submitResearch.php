@@ -140,7 +140,7 @@ if (isset($_POST['submitResearch'])) {
                 </div>
                 <!-- Research Submission Form -->
                 <form method="POST" enctype="multipart/form-data">
-                    <div class="row gx-5 mb-5" style="border: solid black 1px;">
+                    <div class="row gx-5 mb-5">
                         <div class="col">
                             <div class="row mt-3">
                                 <div class="col">
@@ -290,11 +290,57 @@ if (isset($_POST['submitResearch'])) {
                                     </select>
                                 </div>
                             </div>
+
+
+
+                            <div class="row mt-5">
+                                <div class="col">
+                                    <label for="researchEvent" class="form-label">Select Event</label>
+                                    <select name="researchEvent" id="researchEvent" class="form-control" required>
+                                        <option value="" selected disabled>Select Event</option>
+                                        <?php
+                                        $category = "Research Event";
+                                        $sql = "SELECT id, announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";
+                                        $stmt = $con->prepare($sql);
+                                        $stmt->bind_param("s", $category);
+
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+
+                                        if ($result && $result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo '<option 
+                                            value="' . htmlspecialchars($row['id']) . '" 
+                                            data-deadline="' . htmlspecialchars($row['proposalDate']) . '">
+                                            ' . htmlspecialchars($row['announceTitle']) . '
+                                        </option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <!-- Add Panel Members Display Section (Add this after Select Event) -->
+                            <div class="row mt-3" id="panelMembersSection" style="display: none;">
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">Panel Members for this Event</h6>
+                                        </div>
+                                        <div class="card-body" id="panelMembersList">
+                                            <p class="text-muted">Select an event to see panel members</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="col">
                             <div class="row mt-3">
                                 <div class="col">
-                                    <label for="researchUpload" class="form-label">Upload File</label>
+                                    <label for="researchUpload" class="form-label">Upload PDF File</label>
                                     <input type="file" name="researchUpload" id="researchUpload" class="form-control"
                                         required>
                                 </div>
@@ -370,51 +416,6 @@ if (isset($_POST['submitResearch'])) {
                                         style="height: 400px;" required></textarea>
                                 </div>
                             </div>
-
-
-                            <div class="row mt-5">
-                                <div class="col">
-                                    <label for="researchEvent" class="form-label">Select Event</label>
-                                    <select name="researchEvent" id="researchEvent" class="form-control" required>
-                                        <option value="" selected disabled>Select Event</option>
-                                        <?php
-                                        $category = "Research Event";
-                                        $sql = "SELECT id, announceTitle, proposalDate FROM announcement_tbl WHERE category = ?";
-                                        $stmt = $con->prepare($sql);
-                                        $stmt->bind_param("s", $category);
-
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-
-                                        if ($result && $result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                echo '<option 
-                                            value="' . htmlspecialchars($row['id']) . '" 
-                                            data-deadline="' . htmlspecialchars($row['proposalDate']) . '">
-                                            ' . htmlspecialchars($row['announceTitle']) . '
-                                        </option>';
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-
-                            <!-- Add Panel Members Display Section (Add this after Select Event) -->
-                            <div class="row mt-3" id="panelMembersSection" style="display: none;">
-                                <div class="col">
-                                    <div class="card">
-                                        <div class="card-header bg-primary text-white">
-                                            <h6 class="mb-0">Panel Members for this Event</h6>
-                                        </div>
-                                        <div class="card-body" id="panelMembersList">
-                                            <p class="text-muted">Select an event to see panel members</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
 
                             <div class="row mt-5 mb-3">
                                 <div class="col d-flex justify-content-end">
